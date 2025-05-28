@@ -4,7 +4,6 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
 
-
 }
 
 android {
@@ -77,5 +76,6 @@ dependencies {
     implementation(libs.camera.view)
     implementation(libs.mlkit.barcode)
 
+    implementation(libs.androidx.navigation.compose)
 
 }

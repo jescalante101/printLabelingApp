@@ -1,28 +1,15 @@
-package com.example.fibra_labeling.ui.screen
+package com.example.fibra_labeling.ui.screen.print
 
 import BarcodeScannerScreen
-import android.Manifest
-import android.widget.Toast
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.background
-import androidx.compose.foundation.focusable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -30,7 +17,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -50,9 +36,15 @@ import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(viewModel: HomeViewModel= koinViewModel()){
+fun PrintScreen(
+    viewModel: PrintViewModel= koinViewModel(),
+    onBack: () -> Unit,
+    onNavigateToScan: () -> Unit,
+){
     var codValue by remember { mutableStateOf("") }
     val focusRequester = remember { FocusRequester() }
+
+    val lastScannedBarcode by viewModel.lastScannedBarcode.collectAsState()
 
     val pesajeResult by viewModel.pesajeResult.collectAsState()
     val loading by viewModel.loading.collectAsState()  // Necesitas agregar esto en tu ViewModel (ver abajo)
@@ -67,7 +59,17 @@ fun HomeScreen(viewModel: HomeViewModel= koinViewModel()){
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
-            TopAppBar(title = { Text("Labeling") })
+            TopAppBar(
+                title = { Text("Labeling") },
+                navigationIcon = {
+                    IconButton(onClick = { onBack() }) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_arrow_left),
+                            contentDescription = "Back"
+                        )
+                    }
+                }
+            )
         }
     ) { innerPadding ->
         Box(
@@ -75,78 +77,72 @@ fun HomeScreen(viewModel: HomeViewModel= koinViewModel()){
                 .padding(innerPadding)
                 .fillMaxSize()
         ) {
-            
-            if (mostrarScanner) {
-                BarcodeScannerScreen (
-                    onBarcodeScanned = { scannedCode ->
-                        codValue = scannedCode
-                        mostrarScanner = false
 
-                    },
-                    onBack = { mostrarScanner = false }
-                )
-            } else {
-                Column(
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+            ) {
+                OutlinedTextField(
+                    value = lastScannedBarcode.toString(),
+                    onValueChange = { codValue = it },
+
+                    label = { Text("Código de barras") },
+                    maxLines = 1,
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp)
-                ) {
-                    OutlinedTextField(
-                        value = codValue,
-                        onValueChange = { codValue = it },
-                        label = { Text("Código de barras") },
-                        maxLines = 1,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .focusRequester(focusRequester),
-                        leadingIcon = {
-                            Icon(
-                                painter = painterResource(R.drawable.barcode_scan),
-                                contentDescription = "Barcode Icon"
-                            )
-                        },
-                        trailingIcon = {
-                            IconButton(
-                                onClick = { mostrarScanner = true }
-                            ) {
-                                Icon(
-                                    painter = painterResource(R.drawable.camera),
-                                    contentDescription = "Escanear"
-                                )
+                        .fillMaxWidth()
+                        .focusRequester(focusRequester),
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(R.drawable.barcode_scan),
+                            contentDescription = "Barcode Icon"
+                        )
+                    },
+                    trailingIcon = {
+                        IconButton(
+                            onClick = {
+                                onNavigateToScan()
                             }
-                        },
-                        enabled = true
-                    )
-                    Spacer(modifier = Modifier.height(24.dp))
-
-                    Card (
-                        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.onPrimary),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 12.dp)
-
-                    ) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Text("Código: ", style = MaterialTheme.typography.titleMedium)
-                            Text("Nombre:")
-                            Text("Proveedor: ")
-                            Text("Lote: ")
-                            Text("Almacén: ")
-                            Text("Peso: ")
-                            Text("Motivo: ")
-                            Text("Ubicación: ")
-                            Text("Piso: ")
-                            Text("Metro lineal: ")
-                            Text("Equivalente: ")
-                            Text("Fecha de creación: ")
-                            Text("Usuario de creación: ")
-                            Text("Fecha de actualización: ")
-                            Text("Usuario de actualización: ")
-                            Text("Estado: ")
-
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.camera),
+                                contentDescription = "Escanear"
+                            )
                         }
+                    },
+                    enabled = false
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Card (
+                    colors = CardDefaults.cardColors(MaterialTheme.colorScheme.onPrimary),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 12.dp)
+
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text("Código: ", style = MaterialTheme.typography.titleMedium)
+                        Text("Nombre:")
+                        Text("Proveedor: ")
+                        Text("Lote: ")
+                        Text("Almacén: ")
+                        Text("Peso: ")
+                        Text("Motivo: ")
+                        Text("Ubicación: ")
+                        Text("Piso: ")
+                        Text("Metro lineal: ")
+                        Text("Equivalente: ")
+                        Text("Fecha de creación: ")
+                        Text("Usuario de creación: ")
+                        Text("Fecha de actualización: ")
+                        Text("Usuario de actualización: ")
+                        Text("Estado: ")
+
                     }
                 }
+            }
+
 
 
 
@@ -214,7 +210,7 @@ fun HomeScreen(viewModel: HomeViewModel= koinViewModel()){
                 }
 
                  */
-            }
+
             // Focus automático
             LaunchedEffect(Unit) { focusRequester.requestFocus() }
         }

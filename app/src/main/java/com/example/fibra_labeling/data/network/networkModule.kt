@@ -2,7 +2,8 @@ package com.example.fibra_labeling.data.network
 
 import com.example.fibra_labeling.data.repository.PesajeRepositoryImpl
 import com.example.fibra_labeling.data.repository.PesajeRespository
-import com.example.fibra_labeling.ui.screen.HomeViewModel
+import com.example.fibra_labeling.ui.screen.home.HomeViewModel
+import com.example.fibra_labeling.ui.screen.print.PrintViewModel
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
@@ -44,5 +45,10 @@ val networkModule = module {
     single<ApiService> { get<Retrofit>().create(ApiService::class.java) }
 
     single<PesajeRespository> { PesajeRepositoryImpl(get()) }
-    viewModel { HomeViewModel(get()) }
+    viewModel {
+        HomeViewModel(get())
+    }
+
+    viewModel{ PrintViewModel(get(), get()) }
+
 }

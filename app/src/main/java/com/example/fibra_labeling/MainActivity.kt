@@ -4,21 +4,11 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.fibra_labeling.di.appModules
-import com.example.fibra_labeling.ui.screen.HomeScreen
+import androidx.navigation.compose.rememberNavController
+import com.example.fibra_labeling.ui.navigation.AppNavHost
+import com.example.fibra_labeling.ui.navigation.Screen
+import com.example.fibra_labeling.ui.screen.home.HomeScreen
 import com.example.fibra_labeling.ui.theme.Fibra_labelingTheme
-import org.koin.core.context.startKoin
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,7 +16,11 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             Fibra_labelingTheme {
-                HomeScreen()
+               val navController = rememberNavController()
+                AppNavHost(
+                    navController = navController,
+                    startDestination = Screen.Home.route
+                )
             }
         }
     }

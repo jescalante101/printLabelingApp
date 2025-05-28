@@ -23,23 +23,30 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
+import androidx.navigation.NavController
+import com.example.fibra_labeling.ui.screen.print.BARCODE_SCAN_RESULT_KEY
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import java.util.concurrent.Executors
 
 @Composable
 fun BarcodeScannerScreen(
-    onBarcodeScanned: (String) -> Unit,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    navController: NavController
 ) {
-    val context = LocalContext.current
     var hasCameraPermission by remember { mutableStateOf(false) }
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { granted -> hasCameraPermission = granted }
 
+    // Request permission when the composable enters the composition
     LaunchedEffect(Unit) {
         permissionLauncher.launch(Manifest.permission.CAMERA)
     }
+
+    var barcodeProcessed by remember { mutableStateOf(false) }
 
     Box(Modifier.fillMaxSize()) {
         if (!hasCameraPermission) {
@@ -48,34 +55,53 @@ fun BarcodeScannerScreen(
                 modifier = Modifier.align(Alignment.Center)
             )
         } else {
-            val lifecycleOwner = LocalContext.current as? LifecycleOwner
+            val context = LocalContext.current
+            val lifecycleOwner = context as? LifecycleOwner
+
+            // Executor para el análisis de imagen (es buena práctica usar un background thread)
+            val cameraExecutor = remember { Executors.newSingleThreadExecutor() }
+
+            // Limpiar el executor cuando el composable sale de la composición
+            DisposableEffect(Unit) {
+                onDispose {
+                    cameraExecutor.shutdown()
+                }
+            }
+
             if (lifecycleOwner != null) {
                 AndroidView(
                     factory = { ctx ->
                         val previewView = PreviewView(ctx)
                         val cameraProviderFuture = ProcessCameraProvider.getInstance(ctx)
+
                         cameraProviderFuture.addListener({
                             val cameraProvider = cameraProviderFuture.get()
                             val preview = androidx.camera.core.Preview.Builder().build()
                             preview.setSurfaceProvider(previewView.surfaceProvider)
 
-                            val barcodeScanner = BarcodeScanning.getClient()
+                            val barcodeScannerClient = BarcodeScanning.getClient() // Renombrado para evitar confusión
                             val analysis = ImageAnalysis.Builder()
                                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                                 .build()
-                            analysis.setAnalyzer(
-                                ContextCompat.getMainExecutor(ctx),
-                                { imageProxy ->
+
+                            analysis.setAnalyzer(cameraExecutor) { imageProxy -> // Usar el executor
+                                if (!barcodeProcessed){
                                     processImageProxy(
                                         imageProxy,
-                                        barcodeScanner
+                                        barcodeScannerClient // Pasamos el cliente real
                                     ) { barcodeValue ->
                                         if (barcodeValue != null) {
-                                            onBarcodeScanned(barcodeValue)
+                                            Log.e("BarcodeScanner", "Barcode found: $barcodeValue")
+                                            barcodeProcessed = true // Marcar como procesado
+                                            navController.previousBackStackEntry?.savedStateHandle?.set(
+                                                BARCODE_SCAN_RESULT_KEY, barcodeValue
+                                            )
+                                            onBack()
+                                            cameraProvider.unbind(analysis)
                                         }
                                     }
                                 }
-                            )
+                            }
 
                             try {
                                 cameraProvider.unbindAll()
@@ -86,7 +112,7 @@ fun BarcodeScannerScreen(
                                     analysis
                                 )
                             } catch (e: Exception) {
-                                Log.e("BarcodeScanner", "Error al iniciar la cámara", e)
+                                Log.e("BarcodeScanner", "Error al iniciar la cámara: ${e.message}", e)
                             }
                         }, ContextCompat.getMainExecutor(ctx))
                         previewView
@@ -105,6 +131,7 @@ fun BarcodeScannerScreen(
         }
     }
 }
+
 
 // Función utilitaria
 @OptIn(ExperimentalGetImage::class)
@@ -127,3 +154,5 @@ private fun processImageProxy(
         imageProxy.close()
     }
 }
+
+
