@@ -7,6 +7,7 @@ import androidx.camera.core.CameraSelector
 import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
+import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.layout.Box
@@ -24,11 +25,9 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
-import com.example.fibra_labeling.ui.screen.print.BARCODE_SCAN_RESULT_KEY
+import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
 import java.util.concurrent.Executors
 
 @Composable
@@ -76,7 +75,7 @@ fun BarcodeScannerScreen(
 
                         cameraProviderFuture.addListener({
                             val cameraProvider = cameraProviderFuture.get()
-                            val preview = androidx.camera.core.Preview.Builder().build()
+                            val preview = Preview.Builder().build()
                             preview.setSurfaceProvider(previewView.surfaceProvider)
 
                             val barcodeScannerClient = BarcodeScanning.getClient() // Renombrado para evitar confusión
@@ -94,9 +93,9 @@ fun BarcodeScannerScreen(
                                             Log.e("BarcodeScanner", "Barcode found: $barcodeValue")
                                             barcodeProcessed = true // Marcar como procesado
                                             navController.previousBackStackEntry?.savedStateHandle?.set(
-                                                BARCODE_SCAN_RESULT_KEY, barcodeValue
+                                                "barcode_scan_result", barcodeValue
                                             )
-                                            onBack()
+                                            navController.popBackStack()
                                             cameraProvider.unbind(analysis)
                                         }
                                     }
@@ -137,7 +136,7 @@ fun BarcodeScannerScreen(
 @OptIn(ExperimentalGetImage::class)
 private fun processImageProxy(
     imageProxy: ImageProxy,
-    scanner: com.google.mlkit.vision.barcode.BarcodeScanner,
+    scanner: BarcodeScanner,
     onBarcodeFound: (String?) -> Unit
 ) {
     val mediaImage = imageProxy.image

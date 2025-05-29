@@ -9,12 +9,15 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.Text
@@ -30,7 +33,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.fibra_labeling.R
+import com.example.fibra_labeling.ui.navigation.Screen
+import com.example.fibra_labeling.ui.theme.Fibra_labelingTheme
 import kotlin.random.Random
 
 
@@ -45,7 +53,7 @@ fun CustomButtonCard(
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-
+        modifier = Modifier.padding(horizontal = 16.dp)
         ) {
 
         AnimatedVisibility(
@@ -60,33 +68,31 @@ fun CustomButtonCard(
                 modifier = Modifier.animateContentSize(),
                 onClick = onClick,
                 shape = ShapeDefaults.ExtraLarge,
-                colors = CardDefaults.cardColors(Color(
-                    Random.nextFloat(),
-                    Random.nextFloat(),
-                    Random.nextFloat(),0.1f
-                )),
+                colors = CardDefaults.cardColors(MaterialTheme.colorScheme.onSurface)
 
-                ) {
+            ) {
                 Column (
                     modifier = Modifier
-                        .padding(36.dp)
+                        .padding(36.dp).height(120.dp)
                     ,
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement =Arrangement.Center,
                 ) {
-                    Image(
+                    Icon(
                         painter = painterResource(id = category.icon),
                         contentDescription = category.name,
-                        contentScale = ContentScale.Fit,
-                        modifier = Modifier.fillMaxWidth().wrapContentHeight()
-
+                        modifier = Modifier.fillMaxWidth().wrapContentHeight().size(36.dp),
+                        tint = MaterialTheme.colorScheme.secondaryContainer
                     )
                     Spacer(modifier = Modifier.height(16.dp)) // Espacio entre icono y texto
                     Text(
                         text = category.name,
                         style = MaterialTheme.typography.titleSmall.copy(
                             fontWeight = FontWeight.Black
+
                         ),
+                        color = MaterialTheme.colorScheme.secondaryContainer,
+                        textAlign = TextAlign.Center
                     )
 
                 }
@@ -96,7 +102,29 @@ fun CustomButtonCard(
 
 }
 
+@Preview
+@Composable
+fun PreviewCustomButtonCard() {
+    Fibra_labelingTheme {
+        Column(modifier = Modifier.padding(16.dp).fillMaxSize()) {
+            CustomButtonCard(
+                category = HomeCategories(
+                    icon = R.drawable.ic_menu,
+                    name = "Home",
+                    navigation = Screen.Home.route
+                ),
+                onClick = {}
+            )
+        }
+    }
+}
+
+
+
+
+
 data class HomeCategories(
     val icon: Int,
-    val name: String
+    val name: String,
+    val navigation: String
 )

@@ -36,31 +36,12 @@ class PrintViewModel(
             createDate = "",
             status = "",
             userUpdate = "",
+            docEntry = 0,
             updateDate = ""
         ))
     )
-    private val _lastScannedBarcode = MutableStateFlow<String?>(null)
+    private val _lastScannedBarcode = MutableStateFlow<String?>("")
     val lastScannedBarcode: StateFlow<String?> = _lastScannedBarcode
-
-    init {
-        viewModelScope.launch {
-//            savedStateHandle.getLiveData<String?>(BARCODE_SCAN_RESULT_KEY, null)
-//                .onEach { value ->
-//                    Log.d("PrintVM_Debug", "SavedStateHandle Flow - Nueva emisión para '$BARCODE_SCAN_RESULT_KEY': $value")
-//                }
-//                .collect { codeBar ->
-//                    if (codeBar!=null) {
-//                        _lastScannedBarcode.value= codeBar
-//                        Log.e("BarcodeResult",codeBar)
-//                        savedStateHandle[BARCODE_SCAN_RESULT_KEY] = null
-//                    }
-//                }
-//            val initialBarcode = savedStateHandle.get<String?>(BARCODE_SCAN_RESULT_KEY)
-//            Log.d("PrintVM_Debug", "Valor inicial de SavedStateHandle para '$BARCODE_SCAN_RESULT_KEY' al init: $initialBarcode")
-//            _lastScannedBarcode.value = initialBarcode
-
-        }
-    }
 
     val pesajeResult: StateFlow<Result<ImobPasaje>> = _pesajeResult
 
@@ -81,5 +62,8 @@ class PrintViewModel(
                     _loading.value = false
                 }
         }
+    }
+    fun actualizarCodeBar(value: String){
+        _lastScannedBarcode.value = value
     }
 }

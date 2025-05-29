@@ -24,6 +24,7 @@ camera-view = "1.4.2"
 mlkit-barcode = "17.3.0"
 
 navigation-compose = "2.9.0"
+navigationComposeJvmstubs = "2.9.0"
 
 
 
@@ -65,6 +66,7 @@ camera-view = { module = "androidx.camera:camera-view", version.ref = "camera-vi
 mlkit-barcode = { module = "com.google.mlkit:barcode-scanning", version.ref = "mlkit-barcode" }
 
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation-compose" }
+androidx-navigation-compose-jvmstubs = { group = "androidx.navigation", name = "navigation-compose-jvmstubs", version.ref = "navigationComposeJvmstubs" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -1,15 +1,12 @@
 package com.example.fibra_labeling.ui.navigation
 
 import BarcodeScannerScreen
-import android.annotation.SuppressLint
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -34,9 +31,11 @@ fun AppNavHost(navController: NavHostController = rememberNavController(), start
         ){
             HomeScreen(
                 onNavigateToPrint = { navController.navigate(Screen.Print.route) },
-                onNavigateToReport = { navController.navigate(Screen.Report.route)},
-                onNavigateToProfile = { navController.navigate(Screen.Profile.route) },
-                onNavigateToSettings = { navController.navigate(Screen.Settings.route) }
+                onNavigateToReception = { navController.navigate(Screen.Reception.route) },
+                onNavigateToTransfer = { navController.navigate(Screen.Transfer.route) },
+                onNavigateToInventory = { navController.navigate(Screen.Inventory.route) },
+                onNavigateToPackingList = { navController.navigate(Screen.PackingList.route) },
+
             )
 
         }
@@ -54,7 +53,8 @@ fun AppNavHost(navController: NavHostController = rememberNavController(), start
         ){
             PrintScreen(
                 onBack = { navController.popBackStack() },
-                onNavigateToScan = { navController.navigate(Screen.Scan.route) }
+                onNavigateToScan = { navController.navigate(Screen.Scan.route) },
+                navController = navController
             )
         }
 

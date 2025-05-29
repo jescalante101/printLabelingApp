@@ -7,7 +7,7 @@ import retrofit2.http.Path
 
 interface ApiService {
 
-    @GET("/pesaje/bycodebar/{codeBar}")
+    @GET("pesaje/{codeBar}")
     suspend fun getPesaje(@Path("codeBar") codeBar: String): ImobPasaje
 
 }

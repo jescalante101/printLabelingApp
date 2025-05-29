@@ -1,7 +1,9 @@
 package com.example.fibra_labeling.data.network
 
+import androidx.activity.ComponentActivity
 import com.example.fibra_labeling.data.repository.PesajeRepositoryImpl
 import com.example.fibra_labeling.data.repository.PesajeRespository
+import com.example.fibra_labeling.ui.BarcodeViewModel
 import com.example.fibra_labeling.ui.screen.home.HomeViewModel
 import com.example.fibra_labeling.ui.screen.print.PrintViewModel
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
@@ -36,7 +38,7 @@ val networkModule = module {
     single {
         val contentType = "application/json".toMediaType()
         Retrofit.Builder()
-            .baseUrl("http://192.168.20.227:7217/")
+            .baseUrl("http://192.168.20.10:7217/")
             .addConverterFactory(get<Json>().asConverterFactory(contentType))
             .client(get())
             .build()
@@ -45,10 +47,14 @@ val networkModule = module {
     single<ApiService> { get<Retrofit>().create(ApiService::class.java) }
 
     single<PesajeRespository> { PesajeRepositoryImpl(get()) }
+
     viewModel {
         HomeViewModel(get())
     }
 
+
+
     viewModel{ PrintViewModel(get(), get()) }
+    viewModel{ BarcodeViewModel() }
 
 }
