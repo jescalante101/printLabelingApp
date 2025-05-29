@@ -13,6 +13,7 @@ import androidx.camera.view.PreviewView
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -122,7 +123,7 @@ fun BarcodeScannerScreen(
                     onClick = onBack,
                     modifier = Modifier.align(Alignment.TopStart)
                 ) {
-                    Icon(Icons.Default.ArrowBack, contentDescription = "Regresar")
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Regresar")
                 }
             } else {
                 Text("No hay LifecycleOwner disponible", Modifier.align(Alignment.Center))

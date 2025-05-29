@@ -146,10 +146,13 @@ fun HomeScreen(
         drawerState = drawerState
 
     ) {
+
+
         Box(
             modifier = Modifier.fillMaxSize()
                 .background(gradientBrush)
         ) {
+
             Scaffold(
                 containerColor = Color.Transparent,
             ) { padding ->
@@ -157,53 +160,11 @@ fun HomeScreen(
                     columns = StaggeredGridCells.Adaptive(160.dp),
                     verticalItemSpacing = 16.dp,
 //                horizontalArrangement = Arrangement.spacedBy(24.dp),
-                    modifier = Modifier.padding(padding)
+                    modifier = Modifier.padding(padding).padding(top = 24.dp)
                 ) {
                     item(span = StaggeredGridItemSpan.FullLine) {
-                        Spacer(modifier = Modifier.height(1.dp))
+                        Spacer(modifier = Modifier.height(12.dp))
                     }
-
-                    item(span = StaggeredGridItemSpan.FullLine) {
-                        CustomAppBar(
-                            title = {Text(
-                                "FIBRAAPP",
-                                color = Color.Black,
-                                style = MaterialTheme.typography.titleMedium
-                            )},
-                            leadingIcon = {
-                                IconButton(
-                                    onClick = {
-                                       scope.launch {
-                                           if(drawerState.isClosed){
-                                                drawerState.open()
-                                           }else{
-                                                drawerState.close()
-                                           }
-                                       }
-
-                                    }
-                                ) {
-                                    Icon(
-                                        painter = painterResource(R.drawable.ic_menu),
-                                        contentDescription = "User",
-                                        tint = Color.Black
-                                    )
-                                }
-                            },
-                            trailingIcon = {
-                                IconButton(
-                                    onClick = {}
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Filled.AccountCircle,
-                                        contentDescription = "User",
-                                        tint = Color.Black
-                                    )
-                                }
-                            },
-                        )
-                    }
-
                     item(span = StaggeredGridItemSpan.FullLine) {
                         Text(
                             text = "Warehouse Management",
@@ -237,6 +198,53 @@ fun HomeScreen(
 
                 }
             }
+
+
+            Box(
+                modifier = Modifier.padding(top= 32.dp)
+            ) {
+                CustomAppBar(
+                    title = {Text(
+                        "FIBRAAPP",
+                        color = Color.Black,
+                        style = MaterialTheme.typography.titleMedium
+                    )},
+                    leadingIcon = {
+                        IconButton(
+                            onClick = {
+                                scope.launch {
+                                    if(drawerState.isClosed){
+                                        drawerState.open()
+                                    }else{
+                                        drawerState.close()
+                                    }
+                                }
+
+                            }
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_menu),
+                                contentDescription = "User",
+                                tint = Color.Black
+                            )
+                        }
+                    },
+                    trailingIcon = {
+                        IconButton(
+                            onClick = {}
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.AccountCircle,
+                                contentDescription = "User",
+                                tint = Color.Black
+                            )
+                        }
+                    },
+
+                    )
+            }
+
+
         }
 
     }

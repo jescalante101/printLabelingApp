@@ -54,7 +54,7 @@ val networkModule = module {
 
 
 
-    viewModel{ PrintViewModel(get(), get()) }
+    viewModel{ PrintViewModel(get()) }
     viewModel{ BarcodeViewModel() }
 
 }

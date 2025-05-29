@@ -3,9 +3,11 @@ package com.example.fibra_labeling.ui.screen.print
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.activity.ComponentActivity
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,14 +16,18 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
@@ -30,7 +36,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -39,12 +47,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.fibra_labeling.R
 import com.example.fibra_labeling.ui.BarcodeViewModel
 import com.example.fibra_labeling.ui.component.CustomAppBar
+import com.example.fibra_labeling.ui.screen.print.component.LoadingDialog
+import com.example.fibra_labeling.ui.screen.print.component.MessageDialog
 import com.example.fibra_labeling.ui.screen.print.component.SapFioriDetailCard
 import com.example.fibra_labeling.ui.util.gradientBrush
 import org.koin.androidx.compose.koinViewModel
@@ -61,12 +72,21 @@ fun PrintScreen(
     val focusRequester = remember { FocusRequester() } // Necesitas importar FocusRequester
     val pesajeResult by viewModel.pesajeResult.collectAsState() // Necesitas agregar esto en tu ViewModel
     val loading by viewModel.loading.collectAsState()  // Necesitas agregar esto en tu ViewModel (ver abajo)
+    val isPrint by viewModel.isPrint.collectAsState()
+
+    val isPrintLoading by viewModel.isPrintLoading.collectAsState()
+    val printResult by viewModel.printResult.collectAsState()
+
+    var showDialog by remember { mutableStateOf(false) }
+
+    var messagePrint by remember { mutableStateOf("") }
+
     val activity = LocalContext.current as ComponentActivity
-
-
     val barcodeViewModel: BarcodeViewModel = koinViewModel(
         viewModelStoreOwner = activity
     )
+    val lastBarcode by viewModel.lastScannedBarcode.collectAsState()
+    val currentBackStackEntry = navController.currentBackStackEntryAsState().value
 
     LaunchedEffect(Unit) {
         barcodeViewModel.barcode.collect { scannedCode ->
@@ -78,11 +98,9 @@ fun PrintScreen(
         }
     }
 
+    LoadingDialog(show = isPrintLoading)
 
 
-
-    val lastBarcode by viewModel.lastScannedBarcode.collectAsState()
-    val currentBackStackEntry = navController.currentBackStackEntryAsState().value
 
     LaunchedEffect(currentBackStackEntry) {
         val result = currentBackStackEntry
@@ -97,6 +115,33 @@ fun PrintScreen(
         }
     }
 
+    LaunchedEffect(printResult) {
+        if (printResult.isSuccess && printResult.getOrNull() != null) {
+            val data = printResult.getOrNull()
+
+            if (data?.success == true && data.data != null) {
+                messagePrint = data.message ?: "Impresión exitosa!"
+                showDialog = true
+            } else {
+                messagePrint = data?.message ?: "Error desconocido en la impresión."
+                showDialog = false
+            }
+        }else if(printResult.isFailure){
+            messagePrint = printResult.exceptionOrNull()?.localizedMessage ?: "Error desconocido en la impresión."
+            showDialog = true
+        }else{
+            showDialog=false
+        }
+    }
+
+    MessageDialog(
+        show = showDialog,
+        message = messagePrint,
+        onDismiss = {
+            Log.d("PRINT",showDialog.toString())
+            showDialog=false
+        }
+    )
 
     Box(
         modifier = Modifier
@@ -106,33 +151,37 @@ fun PrintScreen(
 
         Scaffold(
             containerColor = Color.Transparent,
+
+            floatingActionButton = {
+                if (isPrint) {
+                    FloatingActionButton(
+                        onClick = {
+                            if(lastBarcode!=null){
+                                viewModel.printPesaje(
+                                    lastBarcode.toString().trim()
+                                )
+                            }
+
+
+                        },
+                        containerColor = MaterialTheme.colorScheme.primary
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_print),
+                            contentDescription = "Menu",
+                            tint = Color.White
+                        )
+                    }
+                }
+            }
         ) {
             LazyColumn (
                 modifier = Modifier
-                    .fillMaxSize()
-
+                    .fillMaxSize().padding(it).padding(top = 48.dp)
             ) {
-                item {
-                    Spacer(modifier = Modifier.height(60.dp))
-                }
 
                 item {
-                    CustomAppBar(
-                        title = { Text("Generar Etiqueta", color = Color.Black) },
-                        leadingIcon = {
-                            IconButton(
-                                onClick = {
-                                    onBack()
-                                }
-                            ) {
-                                Icon(
-                                    painter = painterResource(R.drawable.ic_arrow_left),
-                                    contentDescription = "Back",
-                                    tint = Color.Black
-                                )
-                            }
-                        }
-                    )
+                    Spacer(modifier = Modifier.height(24.dp))
                 }
 
                 item {
@@ -145,7 +194,9 @@ fun PrintScreen(
                         label = {
                             Text(
                                 "Código de barras",
-                                color = MaterialTheme.colorScheme.onSurface
+                                color = Color.White,
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Black
                             )
                         },
                         maxLines = 1,
@@ -175,13 +226,14 @@ fun PrintScreen(
                         },
                         readOnly = true,
                         enabled = false,
-                        textStyle = TextStyle.Companion.Default.copy(
-                            color = MaterialTheme.colorScheme.onSurface,
-                            fontSize = MaterialTheme.typography.bodyMedium.fontSize,
-                            fontFamily = MaterialTheme.typography.bodyMedium.fontFamily
 
-                        ),
-                        colors = TextFieldDefaults.colors(Color.White)
+                        colors = OutlinedTextFieldDefaults.colors(
+                            unfocusedTextColor = Color.Gray,        // Color del texto cuando NO está enfocado
+                            focusedContainerColor = Color.White,    // Fondo cuando está enfocado
+                            unfocusedContainerColor = Color(0xFFF0F0F0),
+                            disabledTextColor = Color.White,
+
+                        )
                     )
                 }
 
@@ -208,15 +260,20 @@ fun PrintScreen(
                             pesajeResult.isSuccess && pesajeResult.getOrNull() != null -> {
                                 val data = pesajeResult.getOrNull()
                                 if (data != null && data.codeBar.isNotBlank()) {
-                                    Card (
+                                    Column (
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .padding(vertical = 12.dp, horizontal = 16.dp)
+                                            .padding(vertical = 12.dp, horizontal = 4.dp)
                                     ) {
-                                        SapFioriDetailCard(
-                                            item = data,
-                                            modifier = Modifier.padding(horizontal = 16.dp)
-                                        )
+                                        AnimatedVisibility(
+                                            visible = data.codeBar.isNotBlank()
+
+                                        ) {
+                                            SapFioriDetailCard(
+                                                item = data,
+                                                modifier = Modifier.padding(horizontal = 4.dp)
+                                            )
+                                        }
                                     }
                                 } else {
 
@@ -227,11 +284,6 @@ fun PrintScreen(
                                         style = MaterialTheme.typography.titleLarge
                                     )
 
-//                                    data?.let {
-//                                        SapFioriDetailCard(
-//                                            item = it,
-//                                        )
-//                                    }
                                 }
                             }
                             else -> {
@@ -244,12 +296,46 @@ fun PrintScreen(
                     }
                 }
 
-            }
 
-            // Focus automático
+            }
             LaunchedEffect(Unit) { focusRequester.requestFocus() }
 
         }
+
+
+       Box(
+           modifier = Modifier.padding(top= 32.dp)
+       ){
+           CustomAppBar(
+               title = { Text("Generar Etiqueta", color = Color.Black) },
+               leadingIcon = {
+                   IconButton(
+                       onClick = {
+                           onBack()
+                       }
+                   ) {
+                       Icon(
+                           painter = painterResource(R.drawable.ic_arrow_left),
+                           contentDescription = "Back",
+                           tint = Color.Black
+                       )
+                   }
+               },
+               trailingIcon ={
+                   IconButton(
+                       onClick = {
+                           onNavigateToScan()
+                       }
+                   ){
+                       Icon(
+                          imageVector = Icons.Default.AccountCircle,
+                           contentDescription = "user",
+                           tint = Color.Black
+                       )
+                   }
+               }
+           )
+       }
     }
 
 }

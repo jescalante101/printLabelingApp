@@ -48,7 +48,7 @@ data class ImobPasaje(
     val userCreate: String,
 
     @SerialName("CreateDate")
-    val createDate: String, // Podrías considerar usar un tipo de Fecha/Hora aquí si necesitas manipularla
+    val createDate: String,
 
     @SerialName("Status")
     val status: String? = null,

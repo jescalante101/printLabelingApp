@@ -24,9 +24,6 @@ class MainActivity : ComponentActivity() {
 
     private val barcodeViewModel: BarcodeViewModel by viewModel()
 
-    private var barcodeBuffer = StringBuilder()
-
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

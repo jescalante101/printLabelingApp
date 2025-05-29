@@ -47,7 +47,7 @@ fun SapFioriDetailCard(item: ImobPasaje, modifier: Modifier = Modifier) {
             ) {
                 Text(
                     text = item.name,
-                    style = MaterialTheme.typography.titleLarge,
+                    style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black
                 )
@@ -91,11 +91,16 @@ fun SapFioriDetailCard(item: ImobPasaje, modifier: Modifier = Modifier) {
             }
             Spacer(Modifier.height(12.dp))
             // Código de barras visual
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(painter = painterResource(R.drawable.barcode_scan), contentDescription = "Código de barras", tint = Color(0xFF425563))
-                Spacer(Modifier.width(8.dp))
-                Text(item.codeBar, style = MaterialTheme.typography.bodyMedium,color = Color(0xFF425563))
+
+            Row {
+                CodigoBarrasImage(item.codeBar)
             }
+
+//            Row(verticalAlignment = Alignment.CenterVertically) {
+//                Icon(painter = painterResource(R.drawable.barcode_scan), contentDescription = "Código de barras", tint = Color(0xFF425563))
+//                Spacer(Modifier.width(8.dp))
+//                Text(item.codeBar, style = MaterialTheme.typography.bodyMedium,color = Color(0xFF425563))
+//            }
         }
     }
 }
@@ -124,8 +129,8 @@ fun GroupRowFiori(label: String, value: String) {
             .padding(vertical = 4.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(label, color = Color(0xFF425563), fontWeight = FontWeight.SemiBold)
-        Text(value, color = Color.Black, fontWeight = FontWeight.Normal)
+        Text(label, color = Color(0xFF425563), fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.bodySmall)
+        Text(value, color = Color.Black, fontWeight = FontWeight.Normal, style = MaterialTheme.typography.bodySmall)
     }
 }
 
