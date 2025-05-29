@@ -104,7 +104,11 @@ fun HomeScreen(
                         .verticalScroll(rememberScrollState())
                 ) {
                     Spacer(Modifier.height(12.dp))
-                    Text("Drawer Title", modifier = Modifier.padding(16.dp), style = MaterialTheme.typography.titleLarge)
+                    Text("Drawer Title",
+                        modifier = Modifier.padding(16.dp),
+                        style = MaterialTheme.typography.titleLarge,
+                        color = Color.White
+                    )
                     HorizontalDivider()
 
                     Text("Section 1", modifier = Modifier.padding(16.dp), style = MaterialTheme.typography.titleMedium)
@@ -151,7 +155,7 @@ fun HomeScreen(
             ) { padding ->
                 LazyVerticalStaggeredGrid(
                     columns = StaggeredGridCells.Adaptive(160.dp),
-                    verticalItemSpacing = 24.dp,
+                    verticalItemSpacing = 16.dp,
 //                horizontalArrangement = Arrangement.spacedBy(24.dp),
                     modifier = Modifier.padding(padding)
                 ) {
@@ -162,8 +166,9 @@ fun HomeScreen(
                     item(span = StaggeredGridItemSpan.FullLine) {
                         CustomAppBar(
                             title = {Text(
-                                "Fibra App",
+                                "FIBRAAPP",
                                 color = Color.Black,
+                                style = MaterialTheme.typography.titleMedium
                             )},
                             leadingIcon = {
                                 IconButton(
@@ -203,6 +208,8 @@ fun HomeScreen(
                         Text(
                             text = "Warehouse Management",
                             style = MaterialTheme.typography.headlineMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White,
                             modifier = Modifier.padding(16.dp)
                         )
                     }

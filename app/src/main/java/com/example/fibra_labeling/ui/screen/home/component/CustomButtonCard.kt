@@ -73,7 +73,7 @@ fun CustomButtonCard(
             ) {
                 Column (
                     modifier = Modifier
-                        .padding(36.dp).height(120.dp)
+                        .padding(28.dp).height(120.dp)
                     ,
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement =Arrangement.Center,
@@ -84,7 +84,7 @@ fun CustomButtonCard(
                         modifier = Modifier.fillMaxWidth().wrapContentHeight().size(36.dp),
                         tint = MaterialTheme.colorScheme.secondaryContainer
                     )
-                    Spacer(modifier = Modifier.height(16.dp)) // Espacio entre icono y texto
+                    Spacer(modifier = Modifier.height(12.dp)) // Espacio entre icono y texto
                     Text(
                         text = category.name,
                         style = MaterialTheme.typography.titleSmall.copy(
