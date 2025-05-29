@@ -12,7 +12,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.fibra_labeling.ui.screen.home.HomeScreen
+import com.example.fibra_labeling.ui.screen.inventory.InventoryScreen
+import com.example.fibra_labeling.ui.screen.packing.PackingScreen
 import com.example.fibra_labeling.ui.screen.print.PrintScreen
+import com.example.fibra_labeling.ui.screen.reception.ReceptionScreen
+import com.example.fibra_labeling.ui.screen.transfer.TransferScreen
 
 @Composable
 fun AppNavHost(navController: NavHostController = rememberNavController(), startDestination: String = Screen.Home.route){
@@ -65,6 +69,38 @@ fun AppNavHost(navController: NavHostController = rememberNavController(), start
                 onBack = { navController.popBackStack() },
                 navController = navController
             )
+        }
+
+        composable(
+            Screen.Reception.route,
+        ){
+            ReceptionScreen (
+                onNavigateBack = { navController.popBackStack() },
+            )
+        }
+
+        composable(
+            Screen.Transfer.route,
+        ){
+            TransferScreen (
+                onNavigateBack = { navController.popBackStack() },
+            )
+        }
+
+        composable(
+            Screen.Inventory.route,
+        ){
+            InventoryScreen {
+                navController.popBackStack()
+            }
+        }
+
+        composable(
+            Screen.PackingList.route,
+        ) {
+            PackingScreen {
+                navController.popBackStack()
+            }
         }
 
 

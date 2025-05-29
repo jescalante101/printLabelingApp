@@ -3,11 +3,14 @@ package com.example.fibra_labeling.ui.screen.print
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.activity.ComponentActivity
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
@@ -31,6 +34,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -40,7 +44,9 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.fibra_labeling.R
 import com.example.fibra_labeling.ui.BarcodeViewModel
+import com.example.fibra_labeling.ui.component.CustomAppBar
 import com.example.fibra_labeling.ui.screen.print.component.SapFioriDetailCard
+import com.example.fibra_labeling.ui.util.gradientBrush
 import org.koin.androidx.compose.koinViewModel
 
 @SuppressLint("ContextCastToActivity")
@@ -92,49 +98,43 @@ fun PrintScreen(
     }
 
 
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(gradientBrush)
+    ){
 
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        topBar = {
-            TopAppBar(
-                title = { Text("Labeling") },
-                navigationIcon = {
-                    IconButton(onClick = { onBack() }) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_arrow_left),
-                            contentDescription = "Back"
-                        )
-                    }
-                }
-            )
-        },
-        floatingActionButton = {
-
-            FloatingActionButton(
-                onClick = {
-
-                },
-                shape = CircleShape,
-                contentColor = Color.White
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_print),
-                    contentDescription = "Print"
-                )
-            }
-        }
-    ) { innerPadding ->
-        Box(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize()
+        Scaffold(
+            containerColor = Color.Transparent,
         ) {
-
             LazyColumn (
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp)
+
             ) {
+                item {
+                    Spacer(modifier = Modifier.height(60.dp))
+                }
+
+                item {
+                    CustomAppBar(
+                        title = { Text("Generar Etiqueta", color = Color.Black) },
+                        leadingIcon = {
+                            IconButton(
+                                onClick = {
+                                    onBack()
+                                }
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_arrow_left),
+                                    contentDescription = "Back",
+                                    tint = Color.Black
+                                )
+                            }
+                        }
+                    )
+                }
+
                 item {
                     OutlinedTextField(
                         shape = MaterialTheme.shapes.medium,
@@ -147,11 +147,12 @@ fun PrintScreen(
                                 "Código de barras",
                                 color = MaterialTheme.colorScheme.onSurface
                             )
-                                },
+                        },
                         maxLines = 1,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .focusRequester(focusRequester),
+                            .focusRequester(focusRequester)
+                            .padding(horizontal = 16.dp),
                         leadingIcon = {
                             Icon(
                                 painter = painterResource(R.drawable.barcode_scan),
@@ -201,7 +202,7 @@ fun PrintScreen(
 
                                     text = "No se ha podido obtener los datos para este codigo ${lastBarcode.toString()}",
                                     color = MaterialTheme.colorScheme.error,
-                                    modifier = Modifier.padding(16.dp)
+                                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
                                 )
                             }
                             pesajeResult.isSuccess && pesajeResult.getOrNull() != null -> {
@@ -210,10 +211,11 @@ fun PrintScreen(
                                     Card (
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .padding(vertical = 12.dp)
+                                            .padding(vertical = 12.dp, horizontal = 16.dp)
                                     ) {
                                         SapFioriDetailCard(
                                             item = data,
+                                            modifier = Modifier.padding(horizontal = 16.dp)
                                         )
                                     }
                                 } else {
@@ -244,17 +246,10 @@ fun PrintScreen(
 
             }
 
-
-
-
-                // Estado de Loading
-
-
-
-
-
             // Focus automático
             LaunchedEffect(Unit) { focusRequester.requestFocus() }
+
         }
     }
+
 }

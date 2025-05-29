@@ -17,27 +17,39 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.List
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Card
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.DrawerDefaults
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -52,6 +64,8 @@ import com.example.fibra_labeling.ui.navigation.Screen
 import com.example.fibra_labeling.ui.screen.home.component.CustomButtonCard
 import com.example.fibra_labeling.ui.screen.home.component.HomeCategories
 import com.example.fibra_labeling.ui.screen.home.component.HomeHeader
+import com.example.fibra_labeling.ui.util.gradientBrush
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -72,92 +86,154 @@ fun HomeScreen(
         HomeCategories(R.drawable.ic_packing, "PackingList",Screen.PackingList.route)
     )
 
-    val gradientBrush = Brush.verticalGradient(
-        colors = listOf(
-            Color(0xFF4D9BB0), // Azul SAP Fiori
-            Color(0xFF0F3F5B)  // Gris oscuro SAP Fiori
-        )
-    )
 
-    Box(
-        modifier = Modifier.fillMaxSize()
-            .background(gradientBrush)
+
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+
+    ModalNavigationDrawer(
+        drawerContent = {
+            ModalDrawerSheet(
+                modifier = Modifier
+                    .background(gradientBrush),
+                drawerContainerColor = Color.Transparent
+            ){
+
+                Column(
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    Spacer(Modifier.height(12.dp))
+                    Text("Drawer Title", modifier = Modifier.padding(16.dp), style = MaterialTheme.typography.titleLarge)
+                    HorizontalDivider()
+
+                    Text("Section 1", modifier = Modifier.padding(16.dp), style = MaterialTheme.typography.titleMedium)
+                    NavigationDrawerItem(
+                        label = { Text("Item 1") },
+                        selected = false,
+                        onClick = { /* Handle click */ }
+                    )
+                    NavigationDrawerItem(
+                        label = { Text("Item 2") },
+                        selected = false,
+                        onClick = { /* Handle click */ }
+                    )
+
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+
+                    Text("Section 2", modifier = Modifier.padding(16.dp), style = MaterialTheme.typography.titleMedium)
+                    NavigationDrawerItem(
+                        label = { Text("Settings") },
+                        selected = false,
+                        icon = { Icon(Icons.Outlined.Settings, contentDescription = null) },
+                        badge = { Text("20") }, // Placeholder
+                        onClick = { /* Handle click */ }
+                    )
+                    NavigationDrawerItem(
+                        label = { Text("Help and feedback") },
+                        selected = false,
+                        icon = { Icon(Icons.AutoMirrored.Outlined.List, contentDescription = null) },
+                        onClick = { /* Handle click */ },
+                    )
+                    Spacer(Modifier.height(12.dp))
+                }
+            }
+        },
+        drawerState = drawerState
+
     ) {
-        Scaffold(
-            containerColor = Color.Transparent,
-        ) { padding ->
-            LazyVerticalStaggeredGrid(
-                columns = StaggeredGridCells.Adaptive(150.dp),
-                verticalItemSpacing = 24.dp,
+        Box(
+            modifier = Modifier.fillMaxSize()
+                .background(gradientBrush)
+        ) {
+            Scaffold(
+                containerColor = Color.Transparent,
+            ) { padding ->
+                LazyVerticalStaggeredGrid(
+                    columns = StaggeredGridCells.Adaptive(160.dp),
+                    verticalItemSpacing = 24.dp,
 //                horizontalArrangement = Arrangement.spacedBy(24.dp),
-                modifier = Modifier.padding(padding)
-            ) {
-                item(span = StaggeredGridItemSpan.FullLine) {
-                    Spacer(modifier = Modifier.height(1.dp))
+                    modifier = Modifier.padding(padding)
+                ) {
+                    item(span = StaggeredGridItemSpan.FullLine) {
+                        Spacer(modifier = Modifier.height(1.dp))
+                    }
+
+                    item(span = StaggeredGridItemSpan.FullLine) {
+                        CustomAppBar(
+                            title = {Text(
+                                "Fibra App",
+                                color = Color.Black,
+                            )},
+                            leadingIcon = {
+                                IconButton(
+                                    onClick = {
+                                       scope.launch {
+                                           if(drawerState.isClosed){
+                                                drawerState.open()
+                                           }else{
+                                                drawerState.close()
+                                           }
+                                       }
+
+                                    }
+                                ) {
+                                    Icon(
+                                        painter = painterResource(R.drawable.ic_menu),
+                                        contentDescription = "User",
+                                        tint = Color.Black
+                                    )
+                                }
+                            },
+                            trailingIcon = {
+                                IconButton(
+                                    onClick = {}
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Filled.AccountCircle,
+                                        contentDescription = "User",
+                                        tint = Color.Black
+                                    )
+                                }
+                            },
+                        )
+                    }
+
+                    item(span = StaggeredGridItemSpan.FullLine) {
+                        Text(
+                            text = "Warehouse Management",
+                            style = MaterialTheme.typography.headlineMedium,
+                            modifier = Modifier.padding(16.dp)
+                        )
+                    }
+
+                    items(
+                        categories.size,
+                        key = { categories[it].name },
+                    ) { category ->
+                        CustomButtonCard (
+                            category = categories[category],
+                            onClick = {
+                                println("Clicked on ${categories[category].name}")
+                                when(categories[category].navigation){
+                                    "print"  -> onNavigateToPrint()
+                                    "reception" -> onNavigateToReception()
+                                    "transfer" -> onNavigateToTransfer()
+                                    "inventory" -> onNavigateToInventory()
+                                    "packingList"-> onNavigateToPackingList()
+
+                                }
+                            },
+                        )
+                    }
+
+
                 }
-
-                item(span = StaggeredGridItemSpan.FullLine) {
-                    CustomAppBar(
-                        title = {Text(
-                            "Fibra App",
-                            color = Color.Black,
-                        )},
-                        leadingIcon = {
-                            IconButton(
-                                onClick = {}
-                            ) {
-                                Icon(
-                                    painter = painterResource(R.drawable.ic_menu),
-                                    contentDescription = "User",
-                                    tint = Color.Black
-                                )
-                            }
-                        },
-                        trailingIcon = {
-                            IconButton(
-                                onClick = {}
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Filled.AccountCircle,
-                                    contentDescription = "User",
-                                    tint = Color.Black
-                                )
-                            }
-                        },
-                    )
-                }
-
-                item(span = StaggeredGridItemSpan.FullLine) {
-                    Text(
-                        text = "Warehouse Management",
-                        style = MaterialTheme.typography.headlineMedium,
-                        modifier = Modifier.padding(16.dp)
-                    )
-                }
-
-                items(
-                    categories.size,
-                    key = { categories[it].name },
-                ) { category ->
-                    CustomButtonCard (
-                        category = categories[category],
-                        onClick = {
-                            println("Clicked on ${categories[category].name}")
-                            when(categories[category].navigation){
-                                "print"  -> onNavigateToPrint()
-                                "reception" -> onNavigateToReception()
-                                "transfer" -> onNavigateToTransfer()
-                                "inventory" -> onNavigateToInventory()
-                                "packingList"-> onNavigateToPackingList()
-                            }
-                        },
-                    )
-                }
-
-
             }
         }
+
     }
+
 
 
 }

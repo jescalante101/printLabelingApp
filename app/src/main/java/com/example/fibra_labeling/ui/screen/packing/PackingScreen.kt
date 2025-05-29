@@ -1,4 +1,4 @@
-package com.example.fibra_labeling.ui.screen.transfer
+package com.example.fibra_labeling.ui.screen.packing
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -13,9 +13,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import com.example.fibra_labeling.R
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TransferScreen(
+fun PackingScreen(
     onNavigateBack: () -> Unit
 ){
     Scaffold (
@@ -33,15 +34,16 @@ fun TransferScreen(
                         )
                     }
                 },
-                title = { Text("Reception Screen") }
+                title = { Text("Packing Screen") }
             )
         }
     ){
-        padding ->
+            padding ->
         Column (
             modifier = Modifier.padding(padding),
+
         ){
-            Text("Transfer Screen")
+            Text("Packing List Screen")
         }
     }
 }
