@@ -307,7 +307,7 @@ fun PrintScreen(
            modifier = Modifier.padding(top= 32.dp)
        ){
            CustomAppBar(
-               title = { Text("Generar Etiqueta", color = Color.Black) },
+               title = { Text("Generar Etiqueta", color = Color.Black, style = MaterialTheme.typography.titleMedium ) },
                leadingIcon = {
                    IconButton(
                        onClick = {
@@ -324,7 +324,7 @@ fun PrintScreen(
                trailingIcon ={
                    IconButton(
                        onClick = {
-                           onNavigateToScan()
+
                        }
                    ){
                        Icon(

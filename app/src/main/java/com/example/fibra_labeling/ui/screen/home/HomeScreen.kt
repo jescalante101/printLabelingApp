@@ -1,5 +1,6 @@
 package com.example.fibra_labeling.ui.screen.home
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -77,13 +78,15 @@ fun HomeScreen(
     onNavigateToTransfer: () -> Unit,
     onNavigateToInventory: () -> Unit,
     onNavigateToPackingList: () -> Unit,
+    onNavigateToProduction: () -> Unit,
 ){
     val categories = listOf(
         HomeCategories(R.drawable.ic_scan, "Generar etiquetas",Screen.Print.route),
         HomeCategories(R.drawable.ic_report,"Recepción de compras",Screen.Reception.route),
         HomeCategories(R.drawable.ic_transfer, "Tranferencias",Screen.Transfer.route),
         HomeCategories(R.drawable.ic_inventory, "Toma de inventario",Screen.Inventory.route),
-        HomeCategories(R.drawable.ic_packing, "PackingList",Screen.PackingList.route)
+        HomeCategories(R.drawable.ic_packing, "PackingList",Screen.PackingList.route),
+        HomeCategories(R.drawable.ic_report, "Recibo Producción",Screen.Production.route)
     )
 
 
@@ -189,7 +192,7 @@ fun HomeScreen(
                                     "transfer" -> onNavigateToTransfer()
                                     "inventory" -> onNavigateToInventory()
                                     "packingList"-> onNavigateToPackingList()
-
+                                    "production"-> onNavigateToProduction()
                                 }
                             },
                         )
@@ -204,11 +207,13 @@ fun HomeScreen(
                 modifier = Modifier.padding(top= 32.dp)
             ) {
                 CustomAppBar(
-                    title = {Text(
-                        "FIBRAAPP",
-                        color = Color.Black,
-                        style = MaterialTheme.typography.titleMedium
-                    )},
+                    title = {
+                        Image(
+                            painter = painterResource(R.drawable.ic_logo3),
+                            contentDescription = "Logo",
+                            modifier = Modifier.size(150.dp)
+                        )
+                    },
                     leadingIcon = {
                         IconButton(
                             onClick = {

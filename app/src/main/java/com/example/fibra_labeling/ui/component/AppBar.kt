@@ -1,5 +1,6 @@
 package com.example.fibra_labeling.ui.component
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -82,10 +83,13 @@ fun PreviewAppBar(){
         Scaffold(
             topBar = {
                 CustomAppBar(
-                    title = {Text(
-                        "Demo",
-                        color = Color.Black,
-                    )},
+                    title = {
+                        Image(
+                            painter = painterResource(R.drawable.ic_logo2),
+                            contentDescription = "Logo",
+                            modifier = Modifier.size(150.dp)
+                        )
+                    },
                     leadingIcon = {
                         IconButton(
                             onClick = {}

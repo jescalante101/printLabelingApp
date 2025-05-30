@@ -7,6 +7,8 @@ sealed class Screen(val route:String) {
     object Reception: Screen("reception")
     object Inventory: Screen("inventory")
     object PackingList: Screen("packingList")
+    object Production: Screen("production")
+    object ICounting: Screen("counting")
 
     object Scan: Screen("scan")
 }

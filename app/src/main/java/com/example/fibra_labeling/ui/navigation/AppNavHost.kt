@@ -12,9 +12,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.fibra_labeling.ui.screen.home.HomeScreen
+import com.example.fibra_labeling.ui.screen.inventory.ICountingScreen
 import com.example.fibra_labeling.ui.screen.inventory.InventoryScreen
 import com.example.fibra_labeling.ui.screen.packing.PackingScreen
 import com.example.fibra_labeling.ui.screen.print.PrintScreen
+import com.example.fibra_labeling.ui.screen.production.ProductionScreen
 import com.example.fibra_labeling.ui.screen.reception.ReceptionScreen
 import com.example.fibra_labeling.ui.screen.transfer.TransferScreen
 
@@ -24,7 +26,6 @@ fun AppNavHost(navController: NavHostController = rememberNavController(), start
         navController = navController,
         startDestination = startDestination,
     ){
-
         composable(
             Screen.Home.route,
             enterTransition = {
@@ -33,13 +34,14 @@ fun AppNavHost(navController: NavHostController = rememberNavController(), start
             }
 
         ){
+
             HomeScreen(
                 onNavigateToPrint = { navController.navigate(Screen.Print.route) },
                 onNavigateToReception = { navController.navigate(Screen.Reception.route) },
                 onNavigateToTransfer = { navController.navigate(Screen.Transfer.route) },
                 onNavigateToInventory = { navController.navigate(Screen.Inventory.route) },
                 onNavigateToPackingList = { navController.navigate(Screen.PackingList.route) },
-
+                onNavigateToProduction = { navController.navigate(Screen.Production.route) }
             )
 
         }
@@ -90,9 +92,10 @@ fun AppNavHost(navController: NavHostController = rememberNavController(), start
         composable(
             Screen.Inventory.route,
         ){
-            InventoryScreen {
-                navController.popBackStack()
-            }
+            InventoryScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToCounting = { navController.navigate(Screen.ICounting.route) }
+            )
         }
 
         composable(
@@ -103,6 +106,20 @@ fun AppNavHost(navController: NavHostController = rememberNavController(), start
             }
         }
 
+        composable(
+            Screen.Production.route,
+        ) {
+            ProductionScreen {
+                navController.popBackStack()
+            }
+        }
+        composable(
+            Screen.ICounting.route
+        ){
+            ICountingScreen {
+                navController.popBackStack()
+            }
+        }
 
 
     }
