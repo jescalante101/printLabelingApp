@@ -1,4 +1,4 @@
-package com.example.fibra_labeling.ui.screen.print.component
+package com.example.fibra_labeling.ui.screen.component
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image

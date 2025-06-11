@@ -25,14 +25,20 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.fibra_labeling.R
 import com.example.fibra_labeling.ui.component.CustomAppBar
-import com.example.fibra_labeling.ui.screen.inventory.component.CustomItemCard
+import com.example.fibra_labeling.ui.screen.component.CodigoBarrasImage
+import com.example.fibra_labeling.ui.screen.component.CustomSearch
+import com.example.fibra_labeling.ui.screen.inventory.component.BorderAccentCardFull
+import com.example.fibra_labeling.ui.screen.inventory.component.ProductoInfo
+import com.example.fibra_labeling.ui.theme.Fibra_labelingTheme
 import com.example.fibra_labeling.ui.util.gradientBrush
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -41,71 +47,43 @@ fun InventoryScreen(
     onNavigateBack: () -> Unit,
     onNavigateToCounting: () -> Unit
 ){
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(gradientBrush)
-    ) {
-
-
-
-        Scaffold(
-            containerColor = Color.Transparent,
-        ) {
+    Box {
+        Scaffold {
             LazyColumn (
                 modifier = Modifier
                     .fillMaxSize().padding(it).padding(top = 56.dp)
             ) {
-
                 item {
-                    OutlinedTextField(
-                        shape = MaterialTheme.shapes.medium,
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+                item {
+                    CustomSearch(
                         value = "",
-                        onValueChange = {
-
-                        },
-                        label = {
-                            Text(
-                                "Buscar",
-                                color = Color.White,
-                                style = MaterialTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.Black
-                            )
-                        },
-                        maxLines = 1,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp),
+                        onChangeValue = {},
+                        placeholder = "Buscar",
+                        focusRequester = FocusRequester.Default,
                         leadingIcon = {
                             Icon(
                                 painter = painterResource(R.drawable.barcode_scan),
                                 contentDescription = "Barcode Icon",
-                                tint = Color.White
                             )
                         },
                         trailingIcon = {
                             IconButton(
                                 onClick = {
-                                    onNavigateToCounting()
+                                    //onNavigateToCounting()
                                 }
                             ) {
                                 Icon(
                                     painter = painterResource(R.drawable.ic_search),
                                     contentDescription = "Search",
-                                    tint = Color.White
                                 )
                             }
                         },
-
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Color.White,
-                            unfocusedBorderColor = Color.White,
-                            cursorColor = Color.White,
-                            focusedContainerColor = Color.DarkGray
-                        )
+                        isReadOnly = false,
+                        enabled = true
                     )
                 }
-
                 item {
                     Spacer(
                         modifier = Modifier.height(8.dp)
@@ -120,8 +98,19 @@ fun InventoryScreen(
                         enter = fadeIn(),
                         exit = fadeOut()
                     ) {
-                        CustomItemCard(
-                            modifier = Modifier.animateItem(),
+                        BorderAccentCardFull (
+                            producto = ProductoInfo(
+                                codigo = "1234567890",
+                                proveedor = "Proveedor A",
+                                producto = "Producto 1",
+                                almacen = "Almacen 1",
+                                ubicacion = "Ubicación 1",
+                                fecha = "01/01/2023",
+                                barCode = "1234567890123"
+                            ),
+                            barcodeContent = {
+                                CodigoBarrasImage("1234567890123")
+                            },
                             onClick = {
                                 onNavigateToCounting()
                             }
@@ -169,4 +158,15 @@ fun InventoryScreen(
         }
     }
 
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewInventory(){
+    Fibra_labelingTheme {
+        InventoryScreen(
+            onNavigateBack = {},
+            onNavigateToCounting = {}
+        )
+    }
 }

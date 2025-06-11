@@ -1,9 +1,6 @@
 package com.example.fibra_labeling.ui.screen.inventory
 
 import android.util.Log
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -17,20 +14,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -106,7 +98,7 @@ fun ICountingScreen(
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text("1 850 H", fontWeight = FontWeight.Bold, fontSize = 32.sp, color = Color(0xFF2E7D32))
+                        Text("1 850 ", fontWeight = FontWeight.Bold, fontSize = 32.sp, color = Color(0xFF2E7D32))
                         Text("Stock", color = Color.Gray)
                     }
                     Box(
@@ -116,7 +108,7 @@ fun ICountingScreen(
                             .background(Color(0xFFE0E0E0))
                     )
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text("${cantidad} H", fontWeight = FontWeight.Bold, fontSize = 32.sp, color = Color(0xFFD84315))
+                        Text("${cantidad} ", fontWeight = FontWeight.Bold, fontSize = 32.sp, color = Color(0xFFD84315))
                         Text("Cantidad contada", color = Color.Gray)
                     }
                 }
@@ -218,7 +210,7 @@ fun ICountingScreen(
                                     ),
                                     onClick = {
                                         if(label == "x"){
-                                            cantidad = if (label.isEmpty()){
+                                            cantidad = if (cantidad.length == 1){
                                                 "0"
                                             }else{
                                                 cantidad.dropLast(1)

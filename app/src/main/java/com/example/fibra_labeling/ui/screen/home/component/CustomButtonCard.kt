@@ -68,7 +68,6 @@ fun CustomButtonCard(
                 modifier = Modifier.animateContentSize(),
                 onClick = onClick,
                 shape = ShapeDefaults.ExtraLarge,
-                colors = CardDefaults.cardColors(MaterialTheme.colorScheme.onSurface)
 
             ) {
                 Column (
@@ -82,7 +81,7 @@ fun CustomButtonCard(
                         painter = painterResource(id = category.icon),
                         contentDescription = category.name,
                         modifier = Modifier.fillMaxWidth().wrapContentHeight().size(36.dp),
-                        tint = MaterialTheme.colorScheme.secondaryContainer
+
                     )
                     Spacer(modifier = Modifier.height(12.dp)) // Espacio entre icono y texto
                     Text(
@@ -91,7 +90,7 @@ fun CustomButtonCard(
                             fontWeight = FontWeight.Black
 
                         ),
-                        color = MaterialTheme.colorScheme.secondaryContainer,
+
                         textAlign = TextAlign.Center
                     )
 

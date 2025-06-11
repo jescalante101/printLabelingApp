@@ -1,20 +1,42 @@
 package com.example.fibra_labeling.data.network
 
+import com.example.fibra_labeling.data.model.AlmacenResponse
 import com.example.fibra_labeling.data.model.CodeBarRequest
 import com.example.fibra_labeling.data.model.ImobPasaje
+import com.example.fibra_labeling.data.model.IsPrintOnlineResponse
+import com.example.fibra_labeling.data.model.OitmResponse
+import com.example.fibra_labeling.data.model.PesajeRequest
+import com.example.fibra_labeling.data.model.PesajeResponse
 import com.example.fibra_labeling.data.model.PrintResponse
+import com.example.fibra_labeling.data.model.ProveedorResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface ApiService {
 
-    @GET("pesaje/{codeBar}")
+    @GET("bycodebar/{codeBar}")
     suspend fun getPesaje(@Path("codeBar") codeBar: String): ImobPasaje
 
-
-    @POST("pesaje/print")
+    @POST("print-etiqueta")
     suspend fun printPesaje(@Body codeBarValue: CodeBarRequest): PrintResponse
+
+    @GET("oitm")
+    suspend fun getOitms(@Query("filter") filter: String, @Query("page") page: Int, @Query("pageSize") pageSize: Int): OitmResponse
+
+    @GET("proveedor/nombre")
+    suspend fun getProveedorName(@Query("code") code: String): ProveedorResponse
+
+    @GET("almacenes")
+    suspend fun getAlmacens(): List<AlmacenResponse>
+
+    @POST("insertar-pesaje")
+    suspend fun insertPesaje(@Body pesaje: PesajeRequest): PesajeResponse
+
+    @GET("is-print-online")
+    suspend fun isPrintOnline(@Query("ip") ip: String, @Query("puerto") puerto: Int): IsPrintOnlineResponse
+
 
 }

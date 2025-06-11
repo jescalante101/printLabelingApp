@@ -14,10 +14,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -39,7 +43,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Brush
@@ -54,9 +60,11 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.fibra_labeling.R
 import com.example.fibra_labeling.ui.BarcodeViewModel
 import com.example.fibra_labeling.ui.component.CustomAppBar
+import com.example.fibra_labeling.ui.navigation.Screen
 import com.example.fibra_labeling.ui.screen.print.component.LoadingDialog
 import com.example.fibra_labeling.ui.screen.print.component.MessageDialog
 import com.example.fibra_labeling.ui.screen.print.component.SapFioriDetailCard
+import com.example.fibra_labeling.ui.screen.print.register.component.SearchBar
 import com.example.fibra_labeling.ui.util.gradientBrush
 import org.koin.androidx.compose.koinViewModel
 
@@ -67,6 +75,7 @@ fun PrintScreen(
     viewModel: PrintViewModel= koinViewModel(),
     onBack: () -> Unit,
     onNavigateToScan: () -> Unit,
+    onNavigateToRegister: () -> Unit,
     navController: NavController
 ){
     val focusRequester = remember { FocusRequester() } // Necesitas importar FocusRequester
@@ -143,36 +152,70 @@ fun PrintScreen(
         }
     )
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(gradientBrush)
-    ){
+    LaunchedEffect(Unit) {
+        viewModel.eventoNavegacion.collect { destino ->
+            when (destino) {
+                "printSetting" -> navController.navigate(Screen.PrintSetting.route)
+            }
+        }
+    }
 
+    Box{
         Scaffold(
-            containerColor = Color.Transparent,
-
             floatingActionButton = {
-                if (isPrint) {
+                Column(
+                    modifier = Modifier.padding(bottom = 16.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.End
+                ) {
+                    if (isPrint) {
+                        FloatingActionButton(
+                            onClick = {
+                                if(lastBarcode!=null){
+                                    viewModel.printPesaje(
+                                        lastBarcode.toString().trim()
+                                    )
+                                }
+
+                            },
+                            containerColor = Color(0xFF2C3E50),
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_print),
+                                contentDescription = "Menu",
+                                tint = Color.White
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
                     FloatingActionButton(
                         onClick = {
-                            if(lastBarcode!=null){
-                                viewModel.printPesaje(
-                                    lastBarcode.toString().trim()
-                                )
-                            }
-
-
+                            onNavigateToRegister()
                         },
-                        containerColor = MaterialTheme.colorScheme.primary
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_print),
-                            contentDescription = "Menu",
-                            tint = Color.White
-                        )
+                        containerColor = Color(0xFF2C3E50).copy(0.9f),
+                        ) {
+                        Row(
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp)
+                                .background(Color.Transparent),
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Nuevo",
+                                color = Color.White
+
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Icon(
+                                painter = painterResource(R.drawable.ic_new),
+                                contentDescription = "Menu",
+                                tint = Color.White
+                            )
+                        }
                     }
                 }
+
             }
         ) {
             LazyColumn (
@@ -183,32 +226,24 @@ fun PrintScreen(
                 item {
                     Spacer(modifier = Modifier.height(24.dp))
                 }
-
                 item {
                     OutlinedTextField(
-                        shape = MaterialTheme.shapes.medium,
                         value = lastBarcode.toString(),
                         onValueChange = {
                             viewModel.actualizarCodeBar(it)
                         },
-                        label = {
+                        placeholder = {
                             Text(
-                                "Código de barras",
-                                color = Color.White,
-                                style = MaterialTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.Black
+                                text = "Use el dispositivo o cámara para escanear el código de barras....",
+                                color = Color(0xFF95A5A6),
+                                style = MaterialTheme.typography.bodySmall
                             )
                         },
-                        maxLines = 1,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .focusRequester(focusRequester)
-                            .padding(horizontal = 16.dp),
                         leadingIcon = {
                             Icon(
                                 painter = painterResource(R.drawable.barcode_scan),
                                 contentDescription = "Barcode Icon",
-                                tint = Color.White
+                                tint = Color(0xFF7F8C8D)
                             )
                         },
                         trailingIcon = {
@@ -220,20 +255,29 @@ fun PrintScreen(
                                 Icon(
                                     painter = painterResource(R.drawable.camera),
                                     contentDescription = "Escanear",
-                                    tint = Color.White
+                                    tint = Color(0xFF7F8C8D)
                                 )
                             }
                         },
                         readOnly = true,
                         enabled = false,
-
+                        singleLine = true,
+                        shape = RoundedCornerShape(12.dp),
                         colors = OutlinedTextFieldDefaults.colors(
-                            unfocusedTextColor = Color.Gray,        // Color del texto cuando NO está enfocado
-                            focusedContainerColor = Color.White,    // Fondo cuando está enfocado
-                            unfocusedContainerColor = Color(0xFFF0F0F0),
-                            disabledTextColor = Color.White,
+                            focusedBorderColor = Color(0xFF3498DB),
+                            unfocusedBorderColor = Color(0xFFE0E0E0),
+                            focusedContainerColor = Color.White,
+                            unfocusedContainerColor = Color.White,
 
-                        )
+                            ),
+                        textStyle = MaterialTheme.typography.bodyMedium.copy(
+                            color = Color.Black,
+                            fontWeight = FontWeight.Medium
+                        ),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .focusRequester(focusRequester)
+                            .padding(horizontal = 16.dp),
                     )
                 }
 
@@ -250,10 +294,13 @@ fun PrintScreen(
                             pesajeResult.isFailure -> {
                                 val errorMsg = pesajeResult.exceptionOrNull()?.localizedMessage ?: "Error desconocido"
                                 Log.d("COD NO VALID",errorMsg)
+                                var msj="No se ha podido obtener los datos para este codigo $lastBarcode"
+                                if(errorMsg.toString().contains("Connection timed out")){
+                                    msj="La conexión falló. Es posible que el servidor esté experimentando dificultades o que tu conexión a internet no sea estable. Revisa tu conexión y vuelve a intentarlo."
+                                }
                                 Text(
-
-                                    text = "No se ha podido obtener los datos para este codigo ${lastBarcode.toString()}",
-                                    color = MaterialTheme.colorScheme.error,
+                                    text = msj,
+                                    color = MaterialTheme.colorScheme.error.copy(0.8f),
                                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
                                 )
                             }
@@ -281,7 +328,7 @@ fun PrintScreen(
                                         text = "¡Para obtener la información del producto o paquete, escanea el código de barras! Puedes usar la cámara de tu dispositivo o el lector integrado.",
                                         color = MaterialTheme.colorScheme.error,
                                         modifier = Modifier.padding(16.dp),
-                                        style = MaterialTheme.typography.titleLarge
+                                        style = MaterialTheme.typography.labelLarge
                                     )
 
                                 }

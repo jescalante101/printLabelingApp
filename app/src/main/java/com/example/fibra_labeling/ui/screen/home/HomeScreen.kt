@@ -79,6 +79,7 @@ fun HomeScreen(
     onNavigateToInventory: () -> Unit,
     onNavigateToPackingList: () -> Unit,
     onNavigateToProduction: () -> Unit,
+    onNavigateToSetting: () -> Unit
 ){
     val categories = listOf(
         HomeCategories(R.drawable.ic_scan, "Generar etiquetas",Screen.Print.route),
@@ -107,7 +108,7 @@ fun HomeScreen(
                         .verticalScroll(rememberScrollState())
                 ) {
                     Spacer(Modifier.height(12.dp))
-                    Text("Drawer Title",
+                    Text("Opciones",
                         modifier = Modifier.padding(16.dp),
                         style = MaterialTheme.typography.titleLarge,
                         color = Color.White
@@ -116,9 +117,11 @@ fun HomeScreen(
 
                     Text("Section 1", modifier = Modifier.padding(16.dp), style = MaterialTheme.typography.titleMedium)
                     NavigationDrawerItem(
-                        label = { Text("Item 1") },
+                        label = { Text("Impresora") },
                         selected = false,
-                        onClick = { /* Handle click */ }
+                        onClick = {
+                            onNavigateToSetting()
+                        }
                     )
                     NavigationDrawerItem(
                         label = { Text("Item 2") },
@@ -201,8 +204,6 @@ fun HomeScreen(
 
                 }
             }
-
-
             Box(
                 modifier = Modifier.padding(top= 32.dp)
             ) {

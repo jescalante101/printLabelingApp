@@ -1,20 +1,21 @@
-package com.example.fibra_labeling.data.network
+package com.example.fibra_labeling.di
 
-import androidx.activity.ComponentActivity
+import com.example.fibra_labeling.data.network.ApiService
+import com.example.fibra_labeling.data.repository.OitmRepository
+import com.example.fibra_labeling.data.repository.OitmRespositoryImpl
 import com.example.fibra_labeling.data.repository.PesajeRepositoryImpl
-import com.example.fibra_labeling.data.repository.PesajeRespository
-import com.example.fibra_labeling.ui.BarcodeViewModel
-import com.example.fibra_labeling.ui.screen.home.HomeViewModel
-import com.example.fibra_labeling.ui.screen.print.PrintViewModel
+import com.example.fibra_labeling.data.repository.PesajeRepository
+import com.example.fibra_labeling.data.repository.SettingRepository
+import com.example.fibra_labeling.data.repository.SettingRepositoryImpl
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import retrofit2.Retrofit
+import java.util.concurrent.TimeUnit
 
 @OptIn(ExperimentalSerializationApi::class)
 val networkModule = module {
@@ -26,19 +27,21 @@ val networkModule = module {
             encodeDefaults = true
         }
     }
-
     single {
         OkHttpClient.Builder()
             .addInterceptor(HttpLoggingInterceptor().apply {
                 level = HttpLoggingInterceptor.Level.BODY
             })
+            .connectTimeout(30, TimeUnit.SECONDS)    // Tiempo máximo para conectar al servidor
+            .readTimeout(60, TimeUnit.SECONDS)       // Tiempo máximo esperando respuesta
+            .writeTimeout(60, TimeUnit.SECONDS)
             .build()
     }
 
     single {
         val contentType = "application/json".toMediaType()
         Retrofit.Builder()
-            .baseUrl("http://192.168.20.10:7217/")
+            .baseUrl("http://192.168.20.237:5000/")
             .addConverterFactory(get<Json>().asConverterFactory(contentType))
             .client(get())
             .build()
@@ -46,15 +49,8 @@ val networkModule = module {
 
     single<ApiService> { get<Retrofit>().create(ApiService::class.java) }
 
-    single<PesajeRespository> { PesajeRepositoryImpl(get()) }
-
-    viewModel {
-        HomeViewModel(get())
-    }
-
-
-
-    viewModel{ PrintViewModel(get()) }
-    viewModel{ BarcodeViewModel() }
+    single<PesajeRepository> { PesajeRepositoryImpl(get()) }
+    single<OitmRepository> { OitmRespositoryImpl(get()) }
+    single<SettingRepository> { SettingRepositoryImpl(get()) }
 
 }

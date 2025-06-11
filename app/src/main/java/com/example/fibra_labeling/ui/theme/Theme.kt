@@ -110,7 +110,7 @@ fun Fibra_labelingTheme(
     }
 
     MaterialTheme(
-        colorScheme = DarkColors,
+        colorScheme = LightColors,
         typography = Typography,
         content = content
     )

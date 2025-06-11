@@ -5,57 +5,57 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ImobPasaje(
-    @SerialName("DocEntry") // Añadido para mapear "DocEntry"
-    val docEntry: Int, // El valor es un número, así que Int es apropiado
+    @SerialName("docEntry") // Añadido para mapear "DocEntry"
+    val docEntry: Int?=0, // El valor es un número, así que Int es apropiado
 
-    @SerialName("ItemCode")
+    @SerialName("itemCode")
     val itemCode: String,
 
     @SerialName("name") // JSON usa "name", tu propiedad es "name" (coincide)
     val name: String,
 
-    @SerialName("Proveedor")
+    @SerialName("proveedor")
     val proveedor: String,
 
-    @SerialName("Lote")
+    @SerialName("lote")
     val lote: String,
 
-    @SerialName("Almacen")
+    @SerialName("almacen")
     val almacen: String,
 
-    @SerialName("Motivo")
+    @SerialName("motivo")
     val motivo: String,
 
-    @SerialName("Ubicacion")
+    @SerialName("ubicacion")
     val ubicacion: String,
 
-    @SerialName("Piso")
+    @SerialName("piso")
     val piso: String,
 
-    @SerialName("MetroLineal")
+    @SerialName("metroLineal")
     val metroLineal: String,
 
-    @SerialName("Equivalente")
+    @SerialName("equivalente")
     val equivalente: String,
 
-    @SerialName("Peso")
+    @SerialName("peso")
     val peso: Double? = 0.0,
 
-    @SerialName("CodeBar")
+    @SerialName("codeBar")
     val codeBar: String,
 
-    @SerialName("UserCreate")
+    @SerialName("userCreate")
     val userCreate: String,
 
-    @SerialName("CreateDate")
+    @SerialName("createDate")
     val createDate: String,
 
-    @SerialName("Status")
-    val status: String? = null,
+    @SerialName("status")
+    val status: String? = "",
 
-    @SerialName("UserUpdate")
-    val userUpdate: String? = null,
+    @SerialName("userUpdate")
+    val userUpdate: String? = "",
 
-    @SerialName("UpdateDate")
-    val updateDate: String? = null
+    @SerialName("updateDate")
+    val updateDate: String? = ""
 )
