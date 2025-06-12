@@ -17,5 +17,7 @@ sealed class Screen(val route:String) {
     object ICounting: Screen("counting")
     object PrintSetting: Screen("printSetting")
 
+    object InventarioOnc: Screen("inventarioOnc")
+
 
 }

@@ -17,6 +17,7 @@ import androidx.navigation.navArgument
 import com.example.fibra_labeling.ui.screen.home.HomeScreen
 import com.example.fibra_labeling.ui.screen.inventory.ICountingScreen
 import com.example.fibra_labeling.ui.screen.inventory.InventoryScreen
+import com.example.fibra_labeling.ui.screen.inventory.RegisterCabecera
 import com.example.fibra_labeling.ui.screen.packing.PackingScreen
 import com.example.fibra_labeling.ui.screen.print.PrintScreen
 import com.example.fibra_labeling.ui.screen.print.register.NewPrintScreen
@@ -45,7 +46,7 @@ fun AppNavHost(navController: NavHostController = rememberNavController(), start
                 onNavigateToPrint = { navController.navigate(Screen.Print.route) },
                 onNavigateToReception = { navController.navigate(Screen.Reception.route) },
                 onNavigateToTransfer = { navController.navigate(Screen.Transfer.route) },
-                onNavigateToInventory = { navController.navigate(Screen.Inventory.route) },
+                onNavigateToInventory = { navController.navigate(Screen.InventarioOnc.route) },
                 onNavigateToPackingList = { navController.navigate(Screen.PackingList.route) },
                 onNavigateToProduction = { navController.navigate(Screen.Production.route) },
                 onNavigateToSetting = { navController.navigate(Screen.PrintSetting.route) }
@@ -104,7 +105,6 @@ fun AppNavHost(navController: NavHostController = rememberNavController(), start
                 onBack = { navController.popBackStack() },
                 code = code ?: "",
                 name = name ?: ""
-
             )
         }
 
@@ -154,6 +154,15 @@ fun AppNavHost(navController: NavHostController = rememberNavController(), start
             ICountingScreen {
                 navController.popBackStack()
             }
+        }
+
+        composable(
+            Screen.InventarioOnc.route
+        ) {
+            RegisterCabecera (
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToInvetory = { navController.navigate(Screen.Inventory.route) }
+            )
         }
 
         ///SETTIG SCREEN
