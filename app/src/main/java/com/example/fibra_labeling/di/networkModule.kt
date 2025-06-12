@@ -1,12 +1,12 @@
 package com.example.fibra_labeling.di
 
 import com.example.fibra_labeling.data.network.ApiService
-import com.example.fibra_labeling.data.repository.OitmRepository
-import com.example.fibra_labeling.data.repository.OitmRespositoryImpl
-import com.example.fibra_labeling.data.repository.PesajeRepositoryImpl
-import com.example.fibra_labeling.data.repository.PesajeRepository
-import com.example.fibra_labeling.data.repository.SettingRepository
-import com.example.fibra_labeling.data.repository.SettingRepositoryImpl
+import com.example.fibra_labeling.data.remote.OitmRepository
+import com.example.fibra_labeling.data.remote.OitmRespositoryImpl
+import com.example.fibra_labeling.data.remote.PesajeRepositoryImpl
+import com.example.fibra_labeling.data.remote.PesajeRepository
+import com.example.fibra_labeling.data.remote.SettingRepository
+import com.example.fibra_labeling.data.remote.SettingRepositoryImpl
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json

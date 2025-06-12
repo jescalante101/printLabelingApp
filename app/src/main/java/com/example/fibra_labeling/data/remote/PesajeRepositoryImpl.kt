@@ -1,8 +1,7 @@
-package com.example.fibra_labeling.data.repository
+package com.example.fibra_labeling.data.remote
 
 import com.example.fibra_labeling.data.model.CodeBarRequest
 import com.example.fibra_labeling.data.model.ImobPasaje
-import com.example.fibra_labeling.data.model.IsPrintOnlineResponse
 import com.example.fibra_labeling.data.model.PrintResponse
 import com.example.fibra_labeling.data.network.ApiService
 import kotlinx.coroutines.flow.Flow

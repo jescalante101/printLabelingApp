@@ -1,8 +1,6 @@
 package com.example.fibra_labeling.ui.screen.print.register
 
 import android.util.Log
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,7 +9,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -20,8 +17,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -40,12 +35,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
@@ -59,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.fibra_labeling.R
 import com.example.fibra_labeling.ui.component.CustomAppBar
+import com.example.fibra_labeling.ui.screen.component.FioriDropdown
 import com.example.fibra_labeling.ui.screen.print.register.component.FioriDropdownAlmacen
 import com.example.fibra_labeling.ui.theme.Fibra_labelingTheme
 import org.koin.androidx.compose.koinViewModel
@@ -467,81 +459,6 @@ fun FioriTextField(
 }
 
 
-@Composable
-fun FioriDropdown(
-    label: String,
-    options: List<String>,
-    selected: String="",
-    onSelectedChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    isError: Boolean = false,
-    supportingText: @Composable (() -> Unit)? = null,
-) {
-    var text by rememberSaveable { mutableStateOf(selected) }
-    var isDropdownVisible by remember { mutableStateOf(false) }
-    val filteredSuggestions = remember(text) {
-        options.filter { it.contains(text, ignoreCase = true) }
-    }
-    val focusRequester = remember { FocusRequester() }
-
-    Column(modifier = modifier) {
-        OutlinedTextField(
-            value = text,
-            onValueChange = { newText ->
-                text = newText
-                isDropdownVisible = newText.isNotEmpty() && filteredSuggestions.isNotEmpty() || newText.isEmpty()
-            },
-            label = { Text(label) },
-            trailingIcon = {
-                IconButton(
-                    onClick = {
-                        isDropdownVisible = !isDropdownVisible
-                        focusRequester.requestFocus()
-                    }
-                ) {
-                    Icon(
-                        if (isDropdownVisible) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
-                        contentDescription = "Buscar"
-                    )
-                }
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .onFocusEvent {
-                    isDropdownVisible = it.isFocused
-                }
-                .focusRequester(focusRequester),
-            isError = isError,
-            supportingText = supportingText
-        )
-
-        if (isDropdownVisible) {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 4.dp)
-                    .heightIn(max = 200.dp)
-                    .background(MaterialTheme.colorScheme.onTertiary)
-                    .clickable(enabled = false) { /* Para evitar que el clic cierre el dropdown inmediatamente */ }
-            ) {
-                items(filteredSuggestions.size) { suggestion ->
-                    Text(
-                        text = filteredSuggestions[suggestion],
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
-                            .clickable {
-                                text = filteredSuggestions[suggestion]
-                                isDropdownVisible = false
-                                onSelectedChange(filteredSuggestions[suggestion])
-                            },
-                        style = MaterialTheme.typography.labelLarge,
-                    )
-                }
-            }
-        }
-    }
-}
 
 
 

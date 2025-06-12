@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -21,6 +20,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
@@ -30,22 +33,36 @@ import androidx.compose.ui.unit.dp
 import com.example.fibra_labeling.R
 import com.example.fibra_labeling.data.remote.FibOinResquet
 import com.example.fibra_labeling.ui.component.CustomAppBar
-import com.example.fibra_labeling.ui.screen.component.CodigoBarrasImage
 import com.example.fibra_labeling.ui.screen.component.CustomSearch
-import com.example.fibra_labeling.ui.screen.inventory.component.BorderAccentCardFull
-import com.example.fibra_labeling.ui.screen.inventory.component.ProductoInfo
-import com.example.fibra_labeling.ui.theme.Fibra_labelingTheme
+import com.example.fibra_labeling.ui.screen.inventory.register.OncRegisterScreen
+import com.example.fibra_labeling.ui.screen.inventory.register.form.OncForm
 
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
-fun InventoryScreen(
+fun RegisterCabecera(
     onNavigateBack: () -> Unit,
-    onNavigateToCounting: () -> Unit
+    onNavigateToInvetory: () -> Unit
 ){
-    Box {
-        Scaffold(
 
-        ) {
+    var showSheet by remember { mutableStateOf(false) }
+    var ultimoRegistro by remember { mutableStateOf<OncForm?>(null) }
+
+
+    Box {
+        Scaffold (
+            floatingActionButton = {
+                Column {
+                    ExtendedFloatingActionButton (
+                        onClick = {
+                            showSheet = true
+                        },
+                        containerColor = Color(0xFF2C3E50),
+                    ) {
+                        Text("Nuevo",color = Color.White)
+                    }
+                }
+            }
+        ){
             LazyColumn (
                 modifier = Modifier
                     .fillMaxSize().padding(it).padding(top = 56.dp)
@@ -95,24 +112,16 @@ fun InventoryScreen(
                         enter = fadeIn(),
                         exit = fadeOut()
                     ) {
-                        BorderAccentCardFull (
-                            producto = ProductoInfo(
-                                codigo = "1234567890",
-                                proveedor = "Proveedor A",
-                                producto = "Producto 1",
-                                almacen = "Almacen 1",
-                                ubicacion = "Ubicación 1",
-                                fecha = "01/01/2023",
-                                barCode = "1234567890123"
-                            ),
-                            barcodeContent = {
-                                CodigoBarrasImage("1234567890123")
-                            },
-                            onClick = {
-                                onNavigateToCounting()
-                            }
+                        FioriCardConteoCompact(
+                            dto = FibOinResquet(
+                                countDate = "2023-08-01",
+                                usuario = "Juan Pérez",
+                                startTime = "08:00:00",
+                                endTime = "16:00:00",
+                                referencia = "Ref123",
+                                remarks = "Observaciones adicionales"
+                            )
                         )
-
                     }
                 }
 
@@ -156,15 +165,24 @@ fun InventoryScreen(
         }
     }
 
+    OncRegisterScreen (
+        showSheet = showSheet,
+        onDismiss = { showSheet = false },
+        onSave = {
+            ultimoRegistro = it
+            // Aquí puedes guardar en BD, ViewModel, etc.
+        }
+    )
+
+
+
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
-fun PreviewInventory(){
-    Fibra_labelingTheme {
-        InventoryScreen(
-            onNavigateBack = {},
-            onNavigateToCounting = {}
-        )
-    }
+fun PreviewRegisterCabecera() {
+    RegisterCabecera(
+        onNavigateBack = {},
+        onNavigateToInvetory = {}
+    )
 }

@@ -8,8 +8,8 @@ import com.example.fibra_labeling.data.model.CodeBarRequest
 import com.example.fibra_labeling.data.model.PesajeRequest
 import com.example.fibra_labeling.data.model.PesajeResponse
 import com.example.fibra_labeling.data.model.ProveedorResponse
-import com.example.fibra_labeling.data.repository.OitmRepository
-import com.example.fibra_labeling.data.repository.PesajeRepository
+import com.example.fibra_labeling.data.remote.OitmRepository
+import com.example.fibra_labeling.data.remote.PesajeRepository
 import com.example.fibra_labeling.datastore.ImpresoraPreferences
 import com.example.fibra_labeling.ui.screen.print.register.form.FormErrorState
 import com.example.fibra_labeling.ui.screen.print.register.form.FormState

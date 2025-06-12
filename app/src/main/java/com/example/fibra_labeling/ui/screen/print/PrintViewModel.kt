@@ -6,16 +6,14 @@ import androidx.lifecycle.viewModelScope
 import com.example.fibra_labeling.data.model.CodeBarRequest
 import com.example.fibra_labeling.data.model.ImobPasaje
 import com.example.fibra_labeling.data.model.PrintResponse
-import com.example.fibra_labeling.data.repository.PesajeRepository
+import com.example.fibra_labeling.data.remote.PesajeRepository
 import com.example.fibra_labeling.datastore.ImpresoraPreferences
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 const val BARCODE_SCAN_RESULT_KEY = "barcode_scan_result"

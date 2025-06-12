@@ -24,7 +24,10 @@ mlkit-barcode = "17.3.0"
 zxing-core = "3.5.3"
 datastore = "1.1.7"
 
+room = "2.7.1"
+
 [libraries]
+
 # Compose BOM (solo aquí pones versión)
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
 
@@ -71,6 +74,12 @@ zxing-core = { module = "com.google.zxing:core", version.ref = "zxing-core" }
 #DataStore
 datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 
+#Room
+room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
+room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+room-paging = { module = "androidx.room:room-paging", version.ref = "room" }
+
 # Compose Testing (agrega si lo usas)
 compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
 compose-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4" }
@@ -80,6 +89,7 @@ android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version = "2.0.21-1.0.27" }
 
 [bundles]
 network = ["retrofit", "retrofit-gson", "okhttp", "logging-interceptor"]

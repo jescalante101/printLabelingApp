@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.fibra_labeling.data.repository.SettingRepository
+import com.example.fibra_labeling.data.remote.SettingRepository
 import com.example.fibra_labeling.datastore.ImpresoraPreferences
 import com.example.fibra_labeling.ui.screen.setting.printer.form.PrintFormErrorState
 import com.example.fibra_labeling.ui.screen.setting.printer.form.PrintFormState

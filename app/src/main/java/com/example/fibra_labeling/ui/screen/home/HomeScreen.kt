@@ -50,7 +50,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -62,6 +66,7 @@ import androidx.compose.ui.unit.sp
 import com.example.fibra_labeling.R
 import com.example.fibra_labeling.ui.component.CustomAppBar
 import com.example.fibra_labeling.ui.navigation.Screen
+import com.example.fibra_labeling.ui.screen.home.component.CustomBottomSheetMenu
 import com.example.fibra_labeling.ui.screen.home.component.CustomButtonCard
 import com.example.fibra_labeling.ui.screen.home.component.HomeCategories
 import com.example.fibra_labeling.ui.screen.home.component.HomeHeader
@@ -94,6 +99,8 @@ fun HomeScreen(
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+
+    var showSheet by remember { mutableStateOf(false) }
 
     ModalNavigationDrawer(
         drawerContent = {
@@ -190,7 +197,7 @@ fun HomeScreen(
                             onClick = {
                                 println("Clicked on ${categories[category].name}")
                                 when(categories[category].navigation){
-                                    "print"  -> onNavigateToPrint()
+                                    "print"  -> {showSheet=true}
                                     "reception" -> onNavigateToReception()
                                     "transfer" -> onNavigateToTransfer()
                                     "inventory" -> onNavigateToInventory()
@@ -204,6 +211,7 @@ fun HomeScreen(
 
                 }
             }
+
             Box(
                 modifier = Modifier.padding(top= 32.dp)
             ) {
@@ -252,6 +260,14 @@ fun HomeScreen(
 
 
         }
+
+
+        CustomBottomSheetMenu (
+            onFibraFilClick = { onNavigateToPrint() },
+            onFibraPrintClick = { onNavigateToPrint() },
+            showSheet = showSheet,
+            onDismiss = { showSheet = false }
+        )
 
     }
 
