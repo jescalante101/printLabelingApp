@@ -1,9 +1,11 @@
 package com.example.fibra_labeling.data.remote
 
 import com.example.fibra_labeling.data.model.AlmacenResponse
+import com.example.fibra_labeling.data.model.CodeBarRequest
 import com.example.fibra_labeling.data.model.MaquinasResponse
 import com.example.fibra_labeling.data.model.OitmResponse
 import com.example.fibra_labeling.data.model.ProductoDetalleUi
+import com.example.fibra_labeling.data.model.fibrafil.FilPrintResponse
 import com.example.fibra_labeling.data.network.ApiService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -52,6 +54,18 @@ class FillRepositoryImpl(private val apiService: ApiService): FillRepository {
         pageSize: Int
     ): Flow<MaquinasResponse> =flow {
         emit(apiService.getMaquinas(filter, page, pageSize))
+    }.catch {
+        if(it is UnknownServiceException){
+            throw Exception("No se permite conexión HTTP. Revisa la configuración de seguridad de red.");
+        }else {
+            throw it
+        }
+    }
+
+    override suspend fun filPrintEtiqueta(
+        body:CodeBarRequest
+    ): Flow<FilPrintResponse> =flow {
+        emit(apiService.filPrintEtiqueta(body))
     }.catch {
         if(it is UnknownServiceException){
             throw Exception("No se permite conexión HTTP. Revisa la configuración de seguridad de red.");

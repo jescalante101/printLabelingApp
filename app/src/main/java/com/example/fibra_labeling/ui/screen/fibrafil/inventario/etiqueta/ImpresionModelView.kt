@@ -1,9 +1,13 @@
 package com.example.fibra_labeling.ui.screen.fibrafil.inventario.etiqueta
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.fibra_labeling.data.model.CodeBarRequest
 import com.example.fibra_labeling.data.model.ImobPasaje
+import com.example.fibra_labeling.data.model.PrintResponse
 import com.example.fibra_labeling.data.model.ProductoDetalleUi
+import com.example.fibra_labeling.data.model.fibrafil.FilPrintResponse
 import com.example.fibra_labeling.data.remote.FillRepository
 import com.example.fibra_labeling.datastore.ImpresoraPreferences
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -11,6 +15,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class ImpresionModelView(private val repository: FillRepository, private val impresoraPrefs: ImpresoraPreferences): ViewModel() {
@@ -40,6 +45,16 @@ class ImpresionModelView(private val repository: FillRepository, private val imp
     private val _isPrint = MutableStateFlow(false)
     val isPrint: StateFlow<Boolean> = _isPrint
 
+    private val _printResult = MutableStateFlow<Result< FilPrintResponse>>(Result.success(
+        FilPrintResponse(
+            message = "",
+            success = false,
+            data = null
+        )
+    ))
+
+    val printResult: StateFlow<Result<FilPrintResponse>> = _printResult
+
 
     fun obtenerEtiqueta(codeBar: String) {
         viewModelScope.launch {
@@ -56,6 +71,38 @@ class ImpresionModelView(private val repository: FillRepository, private val imp
                     _isPrint.value=true
                 }
         }
+    }
+
+    fun filPrintEtiqueta(codeBar: String) {
+        viewModelScope.launch {
+
+            _isPrintLoading.value = true
+
+            val ip = impresoraPrefs.impresoraIp.first() // suspende hasta obtener el valor real
+            val puerto = impresoraPrefs.impresoraPuerto.first()
+
+            if (ip.isBlank() || puerto.isBlank()) {
+                _printResult.value = Result.failure(Exception("Impresora no configurada para impresión"))
+                _eventoNavegacion.emit("printSetting")
+                _isPrintLoading.value=false
+                return@launch
+            }
+            val codeBarValue = CodeBarRequest(codeBar,ip,puerto.toInt())
+
+            repository.filPrintEtiqueta(codeBarValue)
+                .catch { e ->
+                    _printResult.value = Result.failure(e)
+                    _isPrintLoading.value = false
+                }
+                .collect {
+
+                    Log.e("PRINT",it.toString())
+                    _printResult.value = Result.success(it)
+                    _isPrintLoading.value = false
+                }
+        }
+
+
     }
 
     fun actualizarCodeBar(value: String){

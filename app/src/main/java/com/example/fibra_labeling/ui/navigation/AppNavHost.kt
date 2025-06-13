@@ -183,6 +183,7 @@ fun AppNavHost(navController: NavHostController = rememberNavController(), start
             ImpresionScreen (
                 onBack = {navController.popBackStack()},
                 onNavigateToRegister = {navController.navigate("${Screen.PrintRegister.route}/false")},
+                onNavigateToScan = {navController.navigate(Screen.Scan.route)},
                 navController
             )
         }

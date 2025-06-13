@@ -62,6 +62,7 @@ import org.koin.androidx.compose.koinViewModel
 fun ImpresionScreen(
     onBack: () -> Unit,
     onNavigateToRegister: () -> Unit,
+    onNavigateToScan: ()-> Unit,
     navController: NavController,
     viewModel: ImpresionModelView= koinViewModel()
 ){
@@ -69,7 +70,7 @@ fun ImpresionScreen(
     val currentBackStackEntry = navController.currentBackStackEntryAsState().value
     val isPrintLoading by viewModel.isPrintLoading.collectAsState()
     val etiquetaResult by viewModel.productDetailResult.collectAsState()
-//    val printResult by viewModel.printResult.collectAsState()
+    val printResult by viewModel.printResult.collectAsState()
     val loading by viewModel.loading.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
     val isPrint by viewModel.isPrint.collectAsState()
@@ -108,24 +109,24 @@ fun ImpresionScreen(
 
     LoadingDialog(show = isPrintLoading)
 
-//    LaunchedEffect(printResult) {
-//        if (printResult.isSuccess && printResult.getOrNull() != null) {
-//            val data = printResult.getOrNull()
-//
-//            if (data?.success == true && data.data != null) {
-//                messagePrint = data.message ?: "Impresión exitosa!"
-//                showDialog = true
-//            } else {
-//                messagePrint = data?.message ?: "Error desconocido en la impresión."
-//                showDialog = false
-//            }
-//        }else if(printResult.isFailure){
-//            messagePrint = printResult.exceptionOrNull()?.localizedMessage ?: "Error desconocido en la impresión."
-//            showDialog = true
-//        }else{
-//            showDialog=false
-//        }
-//    }
+    LaunchedEffect(printResult) {
+        if (printResult.isSuccess && printResult.getOrNull() != null) {
+            val data = printResult.getOrNull()
+
+            if (data?.success == true && data.data != null) {
+                messagePrint = data.message ?: "Impresión exitosa!"
+                showDialog = true
+            } else {
+                messagePrint = data?.message ?: "Error desconocido en la impresión."
+                showDialog = false
+            }
+        }else if(printResult.isFailure){
+            messagePrint = printResult.exceptionOrNull()?.localizedMessage ?: "Error desconocido en la impresión."
+            showDialog = true
+        }else{
+            showDialog=false
+        }
+    }
 
     MessageDialog(
         show = showDialog,
@@ -157,11 +158,9 @@ fun ImpresionScreen(
                         FloatingActionButton(
                             onClick = {
                                 if(lastBarcode!=null){
-
-//                                    viewModel.printPesaje(
-//                                        lastBarcode.toString().trim()
-//                                    )
-
+                                    viewModel.filPrintEtiqueta(
+                                        lastBarcode.toString().trim()
+                                    )
                                 }
 
                             },
@@ -218,7 +217,7 @@ fun ImpresionScreen(
                     OutlinedTextField(
                         value = lastBarcode.toString(),
                         onValueChange = {
-                           // viewModel.actualizarCodeBar(it)
+                            viewModel.actualizarCodeBar(it)
                         },
                         placeholder = {
                             Text(
@@ -238,7 +237,7 @@ fun ImpresionScreen(
                             IconButton(
                                 onClick = {
                                     //TODO: ABRIR LA PANTALLA PARA ESCANEAR POR CAMARA
-                                   // onNavigateToScan()
+                                    onNavigateToScan()
                                 }
                             ) {
                                 Icon(
@@ -398,6 +397,7 @@ fun PreviewImpresion(){
     ImpresionScreen(
         onBack = {},
         onNavigateToRegister = {},
+        onNavigateToScan = {},
         navController = NavController(LocalContext.current),
     )
 }
