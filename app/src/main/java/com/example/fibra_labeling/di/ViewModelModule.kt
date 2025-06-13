@@ -1,6 +1,8 @@
 package com.example.fibra_labeling.di
 
 import com.example.fibra_labeling.ui.BarcodeViewModel
+import com.example.fibra_labeling.ui.screen.fibrafil.inventario.etiqueta.ImpresionModelView
+import com.example.fibra_labeling.ui.screen.fibrafil.inventario.etiquetanueva.FillEtiquetaViewModel
 import com.example.fibra_labeling.ui.screen.home.HomeViewModel
 import com.example.fibra_labeling.ui.screen.print.PrintViewModel
 import com.example.fibra_labeling.ui.screen.print.register.NewPrintViewModel
@@ -16,12 +18,22 @@ val viewModelModule= module {
 
 
     viewModel{ PrintViewModel(get(),get()) }
-    viewModel{ RegisterViewModel(get()) }
+    viewModel{ RegisterViewModel(get(),get()) }
     viewModel{ NewPrintViewModel(get(),get(),get()) }
 
     viewModel{ BarcodeViewModel() }
 
     viewModel {
         PrinterSettingScreenViewModel(get(),get())
+    }
+
+    viewModel{
+        ImpresionModelView(get(),get())
+    }
+    viewModel{
+        FillEtiquetaViewModel(get(),get())
+    }
+    viewModel{
+        FillEtiquetaViewModel(get(),get())
     }
 }

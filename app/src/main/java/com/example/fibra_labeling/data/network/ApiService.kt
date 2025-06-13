@@ -4,10 +4,12 @@ import com.example.fibra_labeling.data.model.AlmacenResponse
 import com.example.fibra_labeling.data.model.CodeBarRequest
 import com.example.fibra_labeling.data.model.ImobPasaje
 import com.example.fibra_labeling.data.model.IsPrintOnlineResponse
+import com.example.fibra_labeling.data.model.MaquinasResponse
 import com.example.fibra_labeling.data.model.OitmResponse
 import com.example.fibra_labeling.data.model.PesajeRequest
 import com.example.fibra_labeling.data.model.PesajeResponse
 import com.example.fibra_labeling.data.model.PrintResponse
+import com.example.fibra_labeling.data.model.ProductoDetalleUi
 import com.example.fibra_labeling.data.model.ProveedorResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -37,6 +39,19 @@ interface ApiService {
 
     @GET("is-print-online")
     suspend fun isPrintOnline(@Query("ip") ip: String, @Query("puerto") puerto: Int): IsPrintOnlineResponse
+
+    //FIBRAFIL
+    @GET("fibrafil/fib-oitminfo-by-code")
+    suspend fun getOitwInfo(@Query("code") string: String): ProductoDetalleUi
+
+    @GET("fibrafil/oitmfills")
+    suspend fun getOitmsFill(@Query("filter") filter: String, @Query("page") page: Int, @Query("pageSize") pageSize: Int): OitmResponse
+
+    @GET("fibrafil/almacen")
+    suspend fun getAlmacenesFill():List<AlmacenResponse>
+
+    @GET("fibrafil/fib-maquinarias")
+    suspend fun getMaquinas(@Query("filter") filter: String, @Query("page") page: Int, @Query("pageSize") pageSize: Int): MaquinasResponse
 
 
 }

@@ -39,7 +39,7 @@ fun CustomBottomSheetMenu(
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("FibraFil")
+                    Text("FibraFill")
                 }
                 Spacer(Modifier.height(16.dp))
                 Button(

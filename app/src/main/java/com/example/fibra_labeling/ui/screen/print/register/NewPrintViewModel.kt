@@ -74,6 +74,7 @@ class NewPrintViewModel(
             )
         )
     )
+
     val print: MutableStateFlow<Result<PesajeResponse>> = _print
 
 

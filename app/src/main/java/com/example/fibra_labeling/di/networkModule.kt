@@ -1,6 +1,8 @@
 package com.example.fibra_labeling.di
 
 import com.example.fibra_labeling.data.network.ApiService
+import com.example.fibra_labeling.data.remote.FillRepository
+import com.example.fibra_labeling.data.remote.FillRepositoryImpl
 import com.example.fibra_labeling.data.remote.OitmRepository
 import com.example.fibra_labeling.data.remote.OitmRespositoryImpl
 import com.example.fibra_labeling.data.remote.PesajeRepositoryImpl
@@ -41,7 +43,7 @@ val networkModule = module {
     single {
         val contentType = "application/json".toMediaType()
         Retrofit.Builder()
-            .baseUrl("http://192.168.20.237:5000/")
+            .baseUrl("http://192.168.20.230:5000/")
             .addConverterFactory(get<Json>().asConverterFactory(contentType))
             .client(get())
             .build()
@@ -52,5 +54,6 @@ val networkModule = module {
     single<PesajeRepository> { PesajeRepositoryImpl(get()) }
     single<OitmRepository> { OitmRespositoryImpl(get()) }
     single<SettingRepository> { SettingRepositoryImpl(get()) }
+    single<FillRepository> { FillRepositoryImpl(get()) }
 
 }

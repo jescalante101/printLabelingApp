@@ -53,14 +53,17 @@ fun ProductoDetalleCard(
             // Código
             GroupRowFiori("Código", item.codigo)
 
-            // Lote
-            GroupRowFiori("Lote", item.lote)
+            // Referencia
+            GroupRowFiori("Ubicación", item.ubicacion ?: "-")
 
             // Referencia
             GroupRowFiori("Referencia", item.referencia ?: "-")
 
             // Máquina
             GroupRowFiori("Máquina", item.maquina ?: "-")
+
+            // Lote
+            GroupRowFiori("Lote", item.lote?: "-")
 
             Spacer(Modifier.height(16.dp))
             HorizontalDivider(Modifier.padding(vertical = 8.dp))
@@ -84,7 +87,8 @@ fun PreviewProductoDetalleCard() {
             lote = "L20240612",
             referencia = "REF-ABC-01",
             maquina = "Cortadora A",
-            codBar = "1234567890123"
+            codBar = "1234567890123",
+            ubicacion = "Estante A"
         )
     )
 }

@@ -14,6 +14,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.fibra_labeling.ui.screen.fibrafil.inventario.etiqueta.ImpresionScreen
+import com.example.fibra_labeling.ui.screen.fibrafil.inventario.etiquetanueva.AddEtiquetaScreen
 import com.example.fibra_labeling.ui.screen.home.HomeScreen
 import com.example.fibra_labeling.ui.screen.inventory.ICountingScreen
 import com.example.fibra_labeling.ui.screen.inventory.InventoryScreen
@@ -49,7 +51,8 @@ fun AppNavHost(navController: NavHostController = rememberNavController(), start
                 onNavigateToInventory = { navController.navigate(Screen.InventarioOnc.route) },
                 onNavigateToPackingList = { navController.navigate(Screen.PackingList.route) },
                 onNavigateToProduction = { navController.navigate(Screen.Production.route) },
-                onNavigateToSetting = { navController.navigate(Screen.PrintSetting.route) }
+                onNavigateToSetting = { navController.navigate(Screen.PrintSetting.route) },
+                onNavigateToFill = {navController.navigate(Screen.FillImpresion.route)}
             )
 
         }
@@ -70,7 +73,7 @@ fun AppNavHost(navController: NavHostController = rememberNavController(), start
                 onBack = { navController.popBackStack() },
                 onNavigateToScan = { navController.navigate(Screen.Scan.route) },
                 navController = navController,
-                onNavigateToRegister = { navController.navigate(Screen.PrintRegister.route) }
+                onNavigateToRegister = { navController.navigate("${Screen.PrintRegister.route}/true") }
             )
         }
 
@@ -82,16 +85,26 @@ fun AppNavHost(navController: NavHostController = rememberNavController(), start
                 navController = navController
             )
         }
+
         composable(
-            Screen.PrintRegister.route
-        ){
+            route="${Screen.PrintRegister.route}/{isPrint}",
+            arguments = listOf(
+                navArgument("isPrint"){type= NavType.BoolType}
+            )
+        ){ backStackEntry ->
+            val isPrint = backStackEntry.arguments?.getBoolean("isPrint")
             PrintRegisterScreen (
                 onBack = { navController.popBackStack() },
                 onNavigateToNewPrint = { code,name->
                     navController.navigate("${Screen.NewPrint.route}/$code/$name")
+                },
+                isPrint = isPrint == true,
+                onNavigateToFillPrint = {itemCode,productName->
+                    navController.navigate("${Screen.FillImpresionNew.route}/$itemCode/$productName")
                 }
             )
         }
+
         composable(
             route="${Screen.NewPrint.route}/{code}/{name}",
             arguments = listOf(
@@ -164,6 +177,32 @@ fun AppNavHost(navController: NavHostController = rememberNavController(), start
                 onNavigateToInvetory = { navController.navigate(Screen.Inventory.route) }
             )
         }
+        composable(
+            Screen.FillImpresion.route
+        ) {
+            ImpresionScreen (
+                onBack = {navController.popBackStack()},
+                onNavigateToRegister = {navController.navigate("${Screen.PrintRegister.route}/false")},
+                navController
+            )
+        }
+
+        composable(
+            route="${Screen.FillImpresionNew.route}/{itemCode}/{productName}",
+            arguments = listOf(
+                navArgument("itemCode"){type= NavType.StringType},
+                navArgument("productName"){type= NavType.StringType}
+            )
+        ) {backStackEntry ->
+            val itemCode = backStackEntry.arguments?.getString("itemCode")
+            val productName = backStackEntry.arguments?.getString("productName")
+            AddEtiquetaScreen (
+                onBack = {navController.popBackStack()},
+                itemCode = itemCode ?: "",
+                productName = productName ?: ""
+            )
+        }
+
 
         ///SETTIG SCREEN
          composable(
@@ -175,6 +214,7 @@ fun AppNavHost(navController: NavHostController = rememberNavController(), start
                  }
              )
          }
+
 
 
 

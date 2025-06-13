@@ -18,6 +18,8 @@ sealed class Screen(val route:String) {
     object PrintSetting: Screen("printSetting")
 
     object InventarioOnc: Screen("inventarioOnc")
+    object  FillImpresion: Screen("fillImpresion")
+    object FillImpresionNew: Screen("fillImpresionNew")
 
 
 }

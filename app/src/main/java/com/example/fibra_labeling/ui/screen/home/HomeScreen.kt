@@ -79,6 +79,7 @@ import org.koin.androidx.compose.koinViewModel
 fun HomeScreen(
     viewModel: HomeViewModel= koinViewModel(),
     onNavigateToPrint: () -> Unit ,
+    onNavigateToFill: () -> Unit,
     onNavigateToReception: () -> Unit,
     onNavigateToTransfer: () -> Unit,
     onNavigateToInventory: () -> Unit,
@@ -245,7 +246,9 @@ fun HomeScreen(
                     },
                     trailingIcon = {
                         IconButton(
-                            onClick = {}
+                            onClick = {
+
+                            }
                         ) {
                             Icon(
                                 imageVector = Icons.Filled.AccountCircle,
@@ -263,7 +266,7 @@ fun HomeScreen(
 
 
         CustomBottomSheetMenu (
-            onFibraFilClick = { onNavigateToPrint() },
+            onFibraFilClick = { onNavigateToFill() },
             onFibraPrintClick = { onNavigateToPrint() },
             showSheet = showSheet,
             onDismiss = { showSheet = false }

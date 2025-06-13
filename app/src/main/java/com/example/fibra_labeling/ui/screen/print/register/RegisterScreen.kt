@@ -26,7 +26,9 @@ import org.koin.androidx.compose.koinViewModel
 fun PrintRegisterScreen(
     onBack: () -> Unit,
     onNavigateToNewPrint: (code: String, name: String) -> Unit,
-    viewModel: RegisterViewModel= koinViewModel()
+    onNavigateToFillPrint: (itemCode:String,productName:String) -> Unit,
+    viewModel: RegisterViewModel= koinViewModel(),
+    isPrint: Boolean=true
 ) {
 
     val oitmResult by viewModel.oitmResponse.collectAsState()
@@ -36,7 +38,8 @@ fun PrintRegisterScreen(
     var searchText by remember { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
-        viewModel.getOitm()
+        viewModel.changeIsPrint(isPrint)
+        viewModel.getOitm(isFill = !isPrint)
     }
 
     Box(
@@ -64,7 +67,7 @@ fun PrintRegisterScreen(
                     onSearchTextChange = { searchText = it },
                     modifier = Modifier.padding(bottom = 16.dp),
                     onSearch = {
-                        viewModel.getOitm(it)
+                        viewModel.getOitm(filter = it, isFill = !isPrint)
                     }
                 )
 
@@ -132,7 +135,12 @@ fun PrintRegisterScreen(
                                                 onNavigateToDetail = {
                                                     val encodedProductName = Uri.encode(it.desc)
                                                     val code=Uri.encode(it.codesap)
-                                                    onNavigateToNewPrint(code,encodedProductName)
+                                                    if (isPrint){
+                                                        onNavigateToNewPrint(code,encodedProductName)
+                                                    }else{
+                                                        onNavigateToFillPrint(code,encodedProductName)
+                                                    }
+
                                                 }
 
                                             )
@@ -152,7 +160,7 @@ fun PrintRegisterScreen(
             modifier = Modifier.padding(top= 32.dp)
         ){
             CustomAppBar(
-                title = { Text("IMPRESIÓN ETIQUETA", color = Color.Black, style = MaterialTheme.typography.titleMedium ) },
+                title = { Text("IMPRESIÓN ETIQUETA ${isPrint}", color = Color.Black, style = MaterialTheme.typography.titleMedium ) },
                 leadingIcon = {
                     IconButton(
                         onClick = {
