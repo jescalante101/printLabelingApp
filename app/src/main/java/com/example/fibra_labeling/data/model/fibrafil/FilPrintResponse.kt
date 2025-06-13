@@ -8,7 +8,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class FilPrintResponse(
     @SerialName("data")
-    val `data`: ProductoDetalleUi?,
+    val `data`: ProductoDetalleUi?=null,
     @SerialName("message")
     val message: String,
     @SerialName("success")

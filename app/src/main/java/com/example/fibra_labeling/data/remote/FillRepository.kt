@@ -14,4 +14,6 @@ interface FillRepository {
     suspend fun getAlmacens(): Flow<List<AlmacenResponse>>
     suspend fun getMaquinas(filter: String, page: Int, pageSize: Int): Flow<MaquinasResponse>
     suspend fun filPrintEtiqueta(body:CodeBarRequest): Flow<FilPrintResponse>
+
+    suspend fun updateOitwInfo(productoDetalleUi: ProductoDetalleUi): Flow<FilPrintResponse>
 }

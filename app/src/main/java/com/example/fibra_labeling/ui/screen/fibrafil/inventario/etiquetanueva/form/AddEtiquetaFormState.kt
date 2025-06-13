@@ -1,6 +1,7 @@
 package com.example.fibra_labeling.ui.screen.fibrafil.inventario.etiquetanueva.form
 
 import com.example.fibra_labeling.data.model.AlmacenResponse
+import com.example.fibra_labeling.data.model.MaquinaData
 
 data class AddEtiquetaFormState(
     val codigo: String = "",
@@ -8,6 +9,7 @@ data class AddEtiquetaFormState(
     val lote: String = "",
     val almacen: AlmacenResponse?=null,
     val codigoReferencia: String = "",
-    val maquina: String = "",
-    val ubicacion: String = ""
+    val maquina: MaquinaData?=null,
+    val ubicacion: String = "",
+    val cantidad: String = "",
 )

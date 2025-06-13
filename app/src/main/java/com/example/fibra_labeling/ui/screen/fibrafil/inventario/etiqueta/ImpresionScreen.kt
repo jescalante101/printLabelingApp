@@ -189,7 +189,7 @@ fun ImpresionScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = "Nuevo",
+                                text = "Nueva Etiqueta",
                                 color = Color.White
                             )
                             Spacer(modifier = Modifier.width(8.dp))

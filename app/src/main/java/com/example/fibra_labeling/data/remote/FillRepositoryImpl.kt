@@ -73,4 +73,15 @@ class FillRepositoryImpl(private val apiService: ApiService): FillRepository {
             throw it
         }
     }
+
+    override suspend fun updateOitwInfo(productoDetalleUi: ProductoDetalleUi): Flow<FilPrintResponse> = flow {
+        emit(apiService.updateOitwInfo(productoDetalleUi))
+    }.catch {
+        if(it is UnknownServiceException){
+            throw Exception("No se permite conexión HTTP. Revisa la configuración de seguridad de red.");
+        }else {
+            throw it
+        }
+    }
+
 }

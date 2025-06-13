@@ -7,7 +7,6 @@ import androidx.room.PrimaryKey
 data class PesajeEntity(
     @PrimaryKey(autoGenerate = true)
     val localId: Long = 0,          // ID local Room (clave primaria interna)
-
     val id: String,                 // ID remoto o generado (puede ser UUID, si aún no sube usar uno temporal)
     val peso: Double,
     val fecha: String,

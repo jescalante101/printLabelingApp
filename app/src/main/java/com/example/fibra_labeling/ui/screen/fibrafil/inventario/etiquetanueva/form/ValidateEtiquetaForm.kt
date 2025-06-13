@@ -5,7 +5,7 @@ fun validateAddEtiquetaForm(form: AddEtiquetaFormState): AddEtiquetaFormErrorSta
         loteError = if (form.lote.isBlank()) "Lote requerido" else null,
         almacenError = if (form.almacen?.whsName.isNullOrBlank() || form.almacen.whsCode.isBlank()) "Almacén requerido" else null,
         codigoReferenciaError = if (form.codigoReferencia.isBlank()) "Referencia requerida" else null,
-        maquinaError = if (form.maquina.isBlank()) "Máquina requerida" else null,
+        maquinaError = if (form.maquina?.code?.isBlank() == true ) "Máquina requerida" else null,
         ubicacionError = if (form.ubicacion.isBlank()) "Ubicación requerida" else null,
     )
 }

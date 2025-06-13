@@ -68,6 +68,9 @@ fun PrintRegisterScreen(
                     modifier = Modifier.padding(bottom = 16.dp),
                     onSearch = {
                         viewModel.getOitm(filter = it, isFill = !isPrint)
+                    },
+                    onDone = {
+                        viewModel.getOitm(filter = searchText, isFill = !isPrint)
                     }
                 )
 
@@ -160,7 +163,7 @@ fun PrintRegisterScreen(
             modifier = Modifier.padding(top= 32.dp)
         ){
             CustomAppBar(
-                title = { Text("IMPRESIÓN ETIQUETA ${isPrint}", color = Color.Black, style = MaterialTheme.typography.titleMedium ) },
+                title = { Text("Productos", color = Color.Black, style = MaterialTheme.typography.titleMedium ) },
                 leadingIcon = {
                     IconButton(
                         onClick = {

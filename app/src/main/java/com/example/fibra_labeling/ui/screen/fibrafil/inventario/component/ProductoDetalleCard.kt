@@ -70,8 +70,7 @@ fun ProductoDetalleCard(
 
             // Código de barras visual
             Row(verticalAlignment = Alignment.CenterVertically) {
-                CodigoBarrasImage(item.codBar)
-
+                CodigoBarrasImage(item.codigo)
             }
         }
     }

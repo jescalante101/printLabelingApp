@@ -200,7 +200,8 @@ fun AppNavHost(navController: NavHostController = rememberNavController(), start
             AddEtiquetaScreen (
                 onBack = {navController.popBackStack()},
                 itemCode = itemCode ?: "",
-                productName = productName ?: ""
+                productName = productName ?: "",
+                navController = navController
             )
         }
 

@@ -1,5 +1,6 @@
 package com.example.fibra_labeling.data.model
 
+import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -18,5 +19,7 @@ data class ProductoDetalleUi(
     @SerialName("u_FIB_BinLocation")
     val ubicacion: String?,
     @SerialName("codeBars")
-    val codBar: String
+    val codBar: String,
+    @SerializedName("whsCode")
+    val whsCode: String="CH3-RE"
 )

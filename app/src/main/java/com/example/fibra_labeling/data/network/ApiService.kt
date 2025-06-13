@@ -57,4 +57,7 @@ interface ApiService {
     @POST("fibrafil/print-etiqueta")
     suspend fun filPrintEtiqueta(@Body codeBarValue: CodeBarRequest): FilPrintResponse
 
+    @POST("fibrafil/update-etiqueta")
+    suspend fun updateOitwInfo(@Body productoDetalleUi: ProductoDetalleUi): FilPrintResponse
+
 }

@@ -198,7 +198,7 @@ fun HomeScreen(
                             onClick = {
                                 println("Clicked on ${categories[category].name}")
                                 when(categories[category].navigation){
-                                    "print"  -> {showSheet=true}
+                                    "print"  -> onNavigateToFill()//
                                     "reception" -> onNavigateToReception()
                                     "transfer" -> onNavigateToTransfer()
                                     "inventory" -> onNavigateToInventory()
