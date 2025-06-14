@@ -72,7 +72,7 @@ fun AddEtiquetaScreen(
         viewmodel.onCodigoChange(itemCode)
         viewmodel.onProductoChange(productName)
         viewmodel.getAlmacens()
-        viewmodel.getMaquinas()
+        viewmodel.searchMaquina("","")
     }
 
     LaunchedEffect(pesajeResult) {
@@ -283,11 +283,21 @@ fun AddEtiquetaScreen(
                     item {
 
 
+//                        FioriDropdownMaquina(
+//                            label = "Máquinas",
+//                            options = maquinas,
+//                            selected = formState.maquina,
+//                            onSelectedChange = { viewmodel.onMaquinaChange(it) },
+//                            isError = errorState.almacenError != null,
+//                            supportingText = { errorState.almacenError?.let { Text(it, color = Color.Red, fontSize = 12.sp) } }
+//                        )
+
                         FioriDropdownMaquina(
-                            label = "Máquinas",
+                            label = "Máquina",
                             options = maquinas,
                             selected = formState.maquina,
                             onSelectedChange = { viewmodel.onMaquinaChange(it) },
+                            onFilterChange = { text -> viewmodel.searchMaquina(text, text) },
                             isError = errorState.almacenError != null,
                             supportingText = { errorState.almacenError?.let { Text(it, color = Color.Red, fontSize = 12.sp) } }
                         )
