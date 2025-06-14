@@ -20,7 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.fibra_labeling.data.model.ProductoDetalleUi
+import com.example.fibra_labeling.data.model.fibrafil.ProductoDetalleUi
 import com.example.fibra_labeling.ui.screen.component.CodigoBarrasImage
 import com.example.fibra_labeling.ui.screen.print.component.GroupRowFiori
 

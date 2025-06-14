@@ -2,12 +2,12 @@
 <project version="4">
   <component name="deploymentTargetSelector">
     <selectionStates>
-      <SelectionState runConfigName="app">
+      <SelectionState runConfigName="fibra_labeling.app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-06-13T20:18:20.940515Z">
+        <DropdownSelection timestamp="2025-06-14T12:08:16.023782400Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="Default" identifier="serial=192.168.20.129:40089;connection=dcce238f" />
+              <DeviceId pluginId="Default" identifier="serial=192.168.18.3:38981;connection=4a2ff765" />
             </handle>
           </Target>
         </DropdownSelection>

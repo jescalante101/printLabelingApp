@@ -9,7 +9,7 @@ import com.example.fibra_labeling.data.model.OitmResponse
 import com.example.fibra_labeling.data.model.PesajeRequest
 import com.example.fibra_labeling.data.model.PesajeResponse
 import com.example.fibra_labeling.data.model.PrintResponse
-import com.example.fibra_labeling.data.model.ProductoDetalleUi
+import com.example.fibra_labeling.data.model.fibrafil.ProductoDetalleUi
 import com.example.fibra_labeling.data.model.ProveedorResponse
 import com.example.fibra_labeling.data.model.fibrafil.FilPrintResponse
 import com.example.fibra_labeling.data.model.fibrafil.FillPrintRequest

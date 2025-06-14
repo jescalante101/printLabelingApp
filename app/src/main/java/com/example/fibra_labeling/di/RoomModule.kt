@@ -14,5 +14,6 @@ val roomModule = module {
     }
 
     single { get<AppDatabase>().etiquetaDetalleDao() }
+    single { get<AppDatabase>().fMaquinaDao() }
 
 }

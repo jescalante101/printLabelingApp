@@ -1,7 +1,7 @@
 package com.example.fibra_labeling.data.local.mapper
 
 import com.example.fibra_labeling.data.local.entity.fibrafil.EtiquetaDetalleEntity
-import com.example.fibra_labeling.data.model.ProductoDetalleUi
+import com.example.fibra_labeling.data.model.fibrafil.ProductoDetalleUi
 
 fun ProductoDetalleUi.toEtiquetaDetalleEntity(
     cantidad: Double, // pásalo explícito porque no está en tu modelo UI

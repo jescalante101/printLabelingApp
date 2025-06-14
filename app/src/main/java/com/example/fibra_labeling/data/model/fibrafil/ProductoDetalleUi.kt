@@ -1,4 +1,4 @@
-package com.example.fibra_labeling.data.model
+package com.example.fibra_labeling.data.model.fibrafil
 
 import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.SerialName

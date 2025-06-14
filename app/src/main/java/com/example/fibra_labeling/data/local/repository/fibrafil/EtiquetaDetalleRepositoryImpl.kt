@@ -1,4 +1,4 @@
-package com.example.fibra_labeling.data.local.repository
+package com.example.fibra_labeling.data.local.repository.fibrafil
 
 import com.example.fibra_labeling.data.local.dao.EtiquetaDetalleDao
 import com.example.fibra_labeling.data.local.entity.fibrafil.EtiquetaDetalleEntity

@@ -6,13 +6,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.fibra_labeling.data.local.mapper.toApiData
 import com.example.fibra_labeling.data.local.mapper.toEtiquetaDetalleEntity
-import com.example.fibra_labeling.data.local.repository.EtiquetaDetalleRepository
+import com.example.fibra_labeling.data.local.repository.fibrafil.EtiquetaDetalleRepository
+import com.example.fibra_labeling.data.local.repository.fibrafil.maquina.FMaquinaRepository
 import com.example.fibra_labeling.data.model.AlmacenResponse
-import com.example.fibra_labeling.data.model.CodeBarRequest
 import com.example.fibra_labeling.data.model.MaquinaData
-import com.example.fibra_labeling.data.model.PesajeResponse
-import com.example.fibra_labeling.data.model.ProductoDetalleUi
+import com.example.fibra_labeling.data.model.fibrafil.ProductoDetalleUi
 import com.example.fibra_labeling.data.model.fibrafil.FilPrintResponse
 import com.example.fibra_labeling.data.model.fibrafil.FillPrintRequest
 import com.example.fibra_labeling.data.remote.FillRepository
@@ -23,6 +23,7 @@ import com.example.fibra_labeling.ui.screen.fibrafil.inventario.etiquetanueva.fo
 import com.example.fibra_labeling.ui.screen.fibrafil.inventario.etiquetanueva.form.validateAddEtiquetaForm
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
@@ -33,6 +34,7 @@ class FillEtiquetaViewModel(
     private val repository: FillRepository,
     private val impresoraPrefs: ImpresoraPreferences,
     private val etiquetaDetalleRepository: EtiquetaDetalleRepository,
+    private val localRepository: FMaquinaRepository
 ): ViewModel() {
 
     var formState by mutableStateOf(AddEtiquetaFormState())
@@ -75,7 +77,7 @@ class FillEtiquetaViewModel(
     private val _maquinas= MutableStateFlow<List<MaquinaData>>(
         listOf()
     )
-    val maquinas: MutableStateFlow<List<MaquinaData>> = _maquinas
+    val maquinas: StateFlow<List<MaquinaData>> = _maquinas
 
     private val _eventoNavegacion = MutableSharedFlow<String>() // O usa un sealed class para destinos
     val eventoNavegacion = _eventoNavegacion.asSharedFlow()
@@ -153,57 +155,20 @@ class FillEtiquetaViewModel(
                 }
         }
     }
-    fun getMaquinas(){
+
+
+    fun searchMaquina(code: String,name:String){
         viewModelScope.launch {
-            _loading.value = true
-            repository.getMaquinas("",1,200)
-                .catch { e ->
-                    Log.e("Error Almacen", e.message.toString())
-                    _maquinas.value = listOf()
-                    _loading.value = false
-                }
-                .collect {
-                    Log.e("Success Almacen", it.data?.map { it?.name }.toString())
-                    _maquinas.value = it.data as List<MaquinaData>
-                    _loading.value = false
-                }
+            localRepository.searchByNameAndCode(name,code).collect{result->
+                _maquinas.value=result.map { it.toApiData() }
+            }
+
+            //_maquinas.value=result.map { it.toApiData() }
         }
     }
 
-    fun updateOitw(){
-//        viewModelScope.launch {
-//            _loading.value=true
-//
-//            val oitm= ProductoDetalleUi(
-//                codigo = formState.codigo,
-//                productoName = formState.producto,
-//                lote = formState.lote,
-//                referencia = formState.codigoReferencia,
-//                maquina = formState.maquina?.code,
-//                ubicacion = formState.ubicacion,
-//                whsCode = "CH3-RE",
-//                codBar = "", //TODO: implementar codigo de barras
-//            )
-//            repository.updateOitwInfo(oitm)
-//                .catch { e ->
-//                    Log.e("Error Almacen", e.message.toString())
-//                    _updateResponse.value = FilPrintResponse(data = null, message = e.message.toString(), success = false)
-//                    _loading.value = false
-//                }
-//                .collect {insert->
-////                    _updateResponse.value = insert
-////                    _loading.value = false
-//                    repository.filPrintEtiqueta(CodeBarRequest(formState.codigo.toString(),ip,puerto.toInt())).catch {e->
-//                        Log.e("Error", e.message.toString());
-//                        _loading.value=false
-//                        _print.value=Result.failure(e)
-//                    }.collect {
-//                        _loading.value=false
-//                        _print.value=Result.success(insert)
-//                    }
-//                }
-//        }
 
+    fun updateOitw(){
         viewModelScope.launch {
             _loading.value = true
 

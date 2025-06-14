@@ -1,7 +1,7 @@
 package com.example.fibra_labeling.data.model.fibrafil
 
 
-import com.example.fibra_labeling.data.model.ProductoDetalleUi
+import com.example.fibra_labeling.data.model.fibrafil.ProductoDetalleUi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
