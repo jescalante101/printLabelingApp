@@ -6,12 +6,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.fibra_labeling.data.local.mapper.toEtiquetaDetalleEntity
+import com.example.fibra_labeling.data.local.repository.EtiquetaDetalleRepository
 import com.example.fibra_labeling.data.model.AlmacenResponse
 import com.example.fibra_labeling.data.model.CodeBarRequest
 import com.example.fibra_labeling.data.model.MaquinaData
 import com.example.fibra_labeling.data.model.PesajeResponse
 import com.example.fibra_labeling.data.model.ProductoDetalleUi
 import com.example.fibra_labeling.data.model.fibrafil.FilPrintResponse
+import com.example.fibra_labeling.data.model.fibrafil.FillPrintRequest
 import com.example.fibra_labeling.data.remote.FillRepository
 import com.example.fibra_labeling.datastore.ImpresoraPreferences
 import com.example.fibra_labeling.ui.screen.fibrafil.inventario.etiquetanueva.form.AddEtiquetaFormErrorState
@@ -26,7 +29,11 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlin.collections.map
 
-class FillEtiquetaViewModel(private val repository: FillRepository,  private val impresoraPrefs: ImpresoraPreferences): ViewModel() {
+class FillEtiquetaViewModel(
+    private val repository: FillRepository,
+    private val impresoraPrefs: ImpresoraPreferences,
+    private val etiquetaDetalleRepository: EtiquetaDetalleRepository,
+): ViewModel() {
 
     var formState by mutableStateOf(AddEtiquetaFormState())
         private set
@@ -164,6 +171,73 @@ class FillEtiquetaViewModel(private val repository: FillRepository,  private val
     }
 
     fun updateOitw(){
+//        viewModelScope.launch {
+//            _loading.value=true
+//
+//            val oitm= ProductoDetalleUi(
+//                codigo = formState.codigo,
+//                productoName = formState.producto,
+//                lote = formState.lote,
+//                referencia = formState.codigoReferencia,
+//                maquina = formState.maquina?.code,
+//                ubicacion = formState.ubicacion,
+//                whsCode = "CH3-RE",
+//                codBar = "", //TODO: implementar codigo de barras
+//            )
+//            repository.updateOitwInfo(oitm)
+//                .catch { e ->
+//                    Log.e("Error Almacen", e.message.toString())
+//                    _updateResponse.value = FilPrintResponse(data = null, message = e.message.toString(), success = false)
+//                    _loading.value = false
+//                }
+//                .collect {insert->
+////                    _updateResponse.value = insert
+////                    _loading.value = false
+//                    repository.filPrintEtiqueta(CodeBarRequest(formState.codigo.toString(),ip,puerto.toInt())).catch {e->
+//                        Log.e("Error", e.message.toString());
+//                        _loading.value=false
+//                        _print.value=Result.failure(e)
+//                    }.collect {
+//                        _loading.value=false
+//                        _print.value=Result.success(insert)
+//                    }
+//                }
+//        }
+
+        viewModelScope.launch {
+            _loading.value = true
+
+            // 1. Validar/convertir cantidad
+            val cantidad = formState.cantidad.toDoubleOrNull() ?: 0.0
+
+            // 2. Crear tu modelo UI (como ya hacías antes)
+            val oitm = ProductoDetalleUi(
+                codigo = formState.codigo,
+                productoName = formState.producto,
+                lote = formState.lote,
+                referencia = formState.codigoReferencia,
+                maquina = formState.maquina?.code,
+                ubicacion = formState.ubicacion,
+                whsCode = formState.almacen?.whsCode ?: "CH3-RE",
+                codBar = "" // TODO: Generar o asignar el código de barras real aquí si lo tienes
+            )
+
+            // 3. Mapear a la entidad Room
+            val entity = oitm.toEtiquetaDetalleEntity(
+                cantidad = cantidad,
+                isSynced = false // Siempre false al guardar local
+            )
+
+            // 4. Guardar localmente usando el repository local (Room)
+            etiquetaDetalleRepository.insert(entity)
+
+            // 5. Acciones post-guardado
+            _eventoNavegacion.emit("savedLocal") // Ejemplo: navega o muestra mensaje
+            _loading.value = false
+        }
+    }
+
+    fun printEtiqueta(){
         viewModelScope.launch {
             _loading.value=true
             val ip = impresoraPrefs.impresoraIp.first() // suspende hasta obtener el valor real
@@ -171,40 +245,37 @@ class FillEtiquetaViewModel(private val repository: FillRepository,  private val
 
             if (ip.isBlank() || puerto.isBlank()) {
                 _eventoNavegacion.emit("printSetting")
-                _loading.value=true
+                _loading.value=false
                 return@launch
             }
-            val oitm= ProductoDetalleUi(
-                codigo = formState.codigo,
-                productoName = formState.producto,
-                lote = formState.lote,
-                referencia = formState.codigoReferencia,
-                maquina = formState.maquina?.code,
-                ubicacion = formState.ubicacion,
-                whsCode = "CH3-RE",
-                codBar = "", //TODO: implementar codigo de barras
+
+            val data= FillPrintRequest(
+                data = ProductoDetalleUi(
+                    codigo = formState.codigo,
+                    productoName = formState.producto,
+                    lote = formState.lote,
+                    referencia = formState.codigoReferencia,
+                    maquina = formState.maquina?.code,
+                    ubicacion = formState.ubicacion,
+                    whsCode = formState.almacen?.whsCode ?: "CH3-RE",
+                    codBar = "" // TODO: Generar o asignar el código de barras real aquí si lo tienes
+                ),
+                ipPrinter = ip,
+                portPrinter = puerto.toInt()
+
             )
-            repository.updateOitwInfo(oitm)
-                .catch { e ->
-                    Log.e("Error Almacen", e.message.toString())
-                    _updateResponse.value = FilPrintResponse(data = null, message = e.message.toString(), success = false)
-                    _loading.value = false
-                }
-                .collect {insert->
-//                    _updateResponse.value = insert
-//                    _loading.value = false
-                    repository.filPrintEtiqueta(CodeBarRequest(formState.codigo.toString(),ip,puerto.toInt())).catch {e->
-                        Log.e("Error", e.message.toString());
-                        _loading.value=false
-                        _print.value=Result.failure(e)
-                    }.collect {
-                        _loading.value=false
-                        _print.value=Result.success(insert)
-                    }
-                }
+            repository.filPrintEtiqueta(data).catch {e->
+                Log.e("Error", e.message.toString());
+                _loading.value=false
+                _print.value=Result.failure(e)
+            }.collect {
+                _loading.value=false
+                _print.value=Result.success(it)
+                _eventoNavegacion.emit("successPrint")
+            }
         }
 
-
     }
+
 
 }

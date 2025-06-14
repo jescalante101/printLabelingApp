@@ -89,17 +89,17 @@ class ImpresionModelView(private val repository: FillRepository, private val imp
             }
             val codeBarValue = CodeBarRequest(codeBar,ip,puerto.toInt())
 
-            repository.filPrintEtiqueta(codeBarValue)
-                .catch { e ->
-                    _printResult.value = Result.failure(e)
-                    _isPrintLoading.value = false
-                }
-                .collect {
-
-                    Log.e("PRINT",it.toString())
-                    _printResult.value = Result.success(it)
-                    _isPrintLoading.value = false
-                }
+//            repository.filPrintEtiqueta(codeBarValue)
+//                .catch { e ->
+//                    _printResult.value = Result.failure(e)
+//                    _isPrintLoading.value = false
+//                }
+//                .collect {
+//
+//                    Log.e("PRINT",it.toString())
+//                    _printResult.value = Result.success(it)
+//                    _isPrintLoading.value = false
+//                }
         }
 
 

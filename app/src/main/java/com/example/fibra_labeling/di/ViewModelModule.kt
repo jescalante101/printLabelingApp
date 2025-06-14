@@ -31,9 +31,7 @@ val viewModelModule= module {
         ImpresionModelView(get(),get())
     }
     viewModel{
-        FillEtiquetaViewModel(get(),get())
+        FillEtiquetaViewModel(get(),get(),get())
     }
-    viewModel{
-        FillEtiquetaViewModel(get(),get())
-    }
+
 }

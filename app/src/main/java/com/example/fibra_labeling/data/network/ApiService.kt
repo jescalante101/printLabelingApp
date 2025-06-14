@@ -12,6 +12,7 @@ import com.example.fibra_labeling.data.model.PrintResponse
 import com.example.fibra_labeling.data.model.ProductoDetalleUi
 import com.example.fibra_labeling.data.model.ProveedorResponse
 import com.example.fibra_labeling.data.model.fibrafil.FilPrintResponse
+import com.example.fibra_labeling.data.model.fibrafil.FillPrintRequest
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -55,7 +56,7 @@ interface ApiService {
     suspend fun getMaquinas(@Query("filter") filter: String, @Query("page") page: Int, @Query("pageSize") pageSize: Int): MaquinasResponse
 
     @POST("fibrafil/print-etiqueta")
-    suspend fun filPrintEtiqueta(@Body codeBarValue: CodeBarRequest): FilPrintResponse
+    suspend fun filPrintEtiqueta(@Body codeBarValue: FillPrintRequest): FilPrintResponse
 
     @POST("fibrafil/update-etiqueta")
     suspend fun updateOitwInfo(@Body productoDetalleUi: ProductoDetalleUi): FilPrintResponse

@@ -6,6 +6,7 @@ import com.example.fibra_labeling.data.model.MaquinasResponse
 import com.example.fibra_labeling.data.model.OitmResponse
 import com.example.fibra_labeling.data.model.ProductoDetalleUi
 import com.example.fibra_labeling.data.model.fibrafil.FilPrintResponse
+import com.example.fibra_labeling.data.model.fibrafil.FillPrintRequest
 import com.example.fibra_labeling.data.network.ApiService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -63,7 +64,7 @@ class FillRepositoryImpl(private val apiService: ApiService): FillRepository {
     }
 
     override suspend fun filPrintEtiqueta(
-        body:CodeBarRequest
+        body: FillPrintRequest
     ): Flow<FilPrintResponse> =flow {
         emit(apiService.filPrintEtiqueta(body))
     }.catch {

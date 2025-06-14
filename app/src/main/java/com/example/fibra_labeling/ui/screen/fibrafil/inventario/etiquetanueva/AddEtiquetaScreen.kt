@@ -98,6 +98,8 @@ fun AddEtiquetaScreen(
         viewmodel.eventoNavegacion.collect { destino ->
             when (destino) {
                 "printSetting" -> navController.navigate(Screen.PrintSetting.route)
+                "savedLocal"->viewmodel.printEtiqueta()
+                "successPrint" ->navController.popBackStack()
             }
         }
     }
