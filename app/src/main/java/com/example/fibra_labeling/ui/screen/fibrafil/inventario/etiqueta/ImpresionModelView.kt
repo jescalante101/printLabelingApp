@@ -8,6 +8,7 @@ import com.example.fibra_labeling.data.model.ImobPasaje
 import com.example.fibra_labeling.data.model.PrintResponse
 import com.example.fibra_labeling.data.model.ProductoDetalleUi
 import com.example.fibra_labeling.data.model.fibrafil.FilPrintResponse
+import com.example.fibra_labeling.data.model.fibrafil.FillPrintRequest
 import com.example.fibra_labeling.data.remote.FillRepository
 import com.example.fibra_labeling.datastore.ImpresoraPreferences
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -87,19 +88,25 @@ class ImpresionModelView(private val repository: FillRepository, private val imp
                 _isPrintLoading.value=false
                 return@launch
             }
-            val codeBarValue = CodeBarRequest(codeBar,ip,puerto.toInt())
 
-//            repository.filPrintEtiqueta(codeBarValue)
-//                .catch { e ->
-//                    _printResult.value = Result.failure(e)
-//                    _isPrintLoading.value = false
-//                }
-//                .collect {
-//
-//                    Log.e("PRINT",it.toString())
-//                    _printResult.value = Result.success(it)
-//                    _isPrintLoading.value = false
-//                }
+//            val codeBarValue = CodeBarRequest(codeBar,ip,puerto.toInt())
+            val body= FillPrintRequest(
+                ipPrinter = ip,
+                portPrinter = puerto.toInt(),
+                data = _productDetailResult.value.getOrNull()
+            )
+            repository.filPrintEtiqueta(body)
+                .catch { e ->
+                    _printResult.value = Result.failure(e)
+                    _isPrintLoading.value = false
+                }
+
+                .collect {
+
+                    Log.e("PRINT",it.toString())
+                    _printResult.value = Result.success(it)
+                    _isPrintLoading.value = false
+                }
         }
 
 
