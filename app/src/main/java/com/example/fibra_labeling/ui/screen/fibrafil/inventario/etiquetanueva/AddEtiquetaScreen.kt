@@ -15,20 +15,26 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -47,9 +53,11 @@ import com.example.fibra_labeling.ui.component.CustomAppBar
 import com.example.fibra_labeling.ui.navigation.Screen
 import com.example.fibra_labeling.ui.screen.component.CustomTextFormField
 import com.example.fibra_labeling.ui.screen.component.FioriDropdownMaquina
+import com.example.fibra_labeling.ui.screen.inventory.ICountingScreen
 import com.example.fibra_labeling.ui.screen.print.register.component.FioriDropdownAlmacen
 import org.koin.androidx.compose.koinViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEtiquetaScreen(
     itemCode:String,
@@ -64,15 +72,20 @@ fun AddEtiquetaScreen(
     val loading by viewmodel.loading.collectAsState()
     val almacenes by viewmodel.almacenes.collectAsState()
     val maquinas by viewmodel.maquinas.collectAsState()
+    val user by viewmodel.user.collectAsState()
 
     val pesajeResult by viewmodel.print.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
+
+    var showSheet by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     LaunchedEffect(Unit) {
         viewmodel.onCodigoChange(itemCode)
         viewmodel.onProductoChange(productName)
         viewmodel.getAlmacens()
         viewmodel.searchMaquina("","")
+        viewmodel.getUserLogin()
     }
 
     LaunchedEffect(pesajeResult) {
@@ -183,8 +196,6 @@ fun AddEtiquetaScreen(
                 snackbarHost = { SnackbarHost(snackbarHostState) }
             ){
 
-
-
                 LazyColumn (
                     modifier = Modifier
                         .fillMaxWidth()
@@ -241,7 +252,7 @@ fun AddEtiquetaScreen(
                     }
 
                     item {
-                        Spacer(Modifier.height(16.dp))
+                        Spacer(Modifier.height(8.dp))
                     }
 
                     item {
@@ -259,7 +270,7 @@ fun AddEtiquetaScreen(
                     }
 
                     item {
-                        Spacer(Modifier.height(16.dp))
+                        Spacer(Modifier.height(8.dp))
                     }
 
                     // Fila 3: Ubicación, Piso, Metro Lineal, Equivalente
@@ -278,19 +289,9 @@ fun AddEtiquetaScreen(
                         )
                     }
                     item {
-                        Spacer(Modifier.height(16.dp))
+                        Spacer(Modifier.height(8.dp))
                     }
                     item {
-
-
-//                        FioriDropdownMaquina(
-//                            label = "Máquinas",
-//                            options = maquinas,
-//                            selected = formState.maquina,
-//                            onSelectedChange = { viewmodel.onMaquinaChange(it) },
-//                            isError = errorState.almacenError != null,
-//                            supportingText = { errorState.almacenError?.let { Text(it, color = Color.Red, fontSize = 12.sp) } }
-//                        )
 
                         FioriDropdownMaquina(
                             label = "Máquina",
@@ -303,9 +304,7 @@ fun AddEtiquetaScreen(
                         )
 
                     }
-
-                    item { Spacer(Modifier.height(16.dp)) }
-
+                    item { Spacer(Modifier.height(8.dp)) }
                     item {
                         CustomTextFormField(
                             label = "Ubicacion",
@@ -314,33 +313,55 @@ fun AddEtiquetaScreen(
                                 viewmodel.onUbicacionChange(it)
                             },
                             enabled = true,
-
 //                                isError = formErrorState.loteError != null,
 //                                supportingText = { formErrorState.loteError?.let { Text(it, color = Color.Red, fontSize = 12.sp) } }
-
                         )
                     }
                     item {
-                        Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(8.dp))
                     }
-
                     item {
-                        CustomTextFormField(
-                            label = "Cantidad",
-                            value = formState.cantidad,
-                            onValueChange = {
-                                viewmodel.onCantidadChange(it)
-                            },
-                            enabled = true,
-                            onlyNumbers = true
-//                                isError = formErrorState.loteError != null,
-//                                supportingText = { formErrorState.loteError?.let { Text(it, color = Color.Red, fontSize = 12.sp) } }
+                        if(user.isNotBlank()){
+                            Row {
+                                CustomTextFormField(
+                                    label = "Conteo",
+                                    value = formState.cantidad,
+                                    onValueChange = {
+                                        viewmodel.onCantidadChange(it)
+                                    },
+                                    enabled = false,
+                                    modifier = Modifier.weight(1f),
+                                    onlyNumbers = true
+                                )
+                                Spacer(Modifier.width(8.dp))
 
-                        )
+                                Button(
+                                    onClick = {
+                                        showSheet = true
+                                    }
+                                ) {
+                                    Text("Conteo")
+                                }
+                            }
+                        }
                     }
 
                 }
 
+            }
+        }
+
+        if (showSheet) {
+            ModalBottomSheet(
+                onDismissRequest = { showSheet = false },
+                sheetState = sheetState,
+            ) {
+                ICountingScreen(
+                    onSave = { cantidad ->
+                        viewmodel.onCantidadChange(cantidad) // ← Aquí obtienes el valor cuando el usuario confirma
+                        showSheet = false
+                    }
+                )
             }
         }
 

@@ -1,10 +1,9 @@
 package com.example.fibra_labeling.ui.screen.inventory.register.form
 
+import com.example.fibra_labeling.data.local.entity.fibrafil.FilUserEntity
+
 data class OncForm(
-    val usuario: String = "",
-    val countDate: String = "",
+    val usuario: FilUserEntity?=null,
     val referencia: String = "",
     val remarks: String = "",
-    val startTime: String = "",
-    val endTime: String = ""
 )

@@ -137,6 +137,7 @@ fun ImpresionScreen(
         }
     )
 
+
     LaunchedEffect(Unit) {
         viewModel.eventoNavegacion.collect { destino ->
             when (destino) {

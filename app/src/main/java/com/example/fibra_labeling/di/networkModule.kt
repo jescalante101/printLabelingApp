@@ -9,6 +9,8 @@ import com.example.fibra_labeling.data.remote.PesajeRepositoryImpl
 import com.example.fibra_labeling.data.remote.PesajeRepository
 import com.example.fibra_labeling.data.remote.SettingRepository
 import com.example.fibra_labeling.data.remote.SettingRepositoryImpl
+import com.example.fibra_labeling.data.remote.SyncRepository
+import com.example.fibra_labeling.data.remote.SyncRepositoryImpl
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
@@ -43,7 +45,7 @@ val networkModule = module {
     single {
         val contentType = "application/json".toMediaType()
         Retrofit.Builder()
-            .baseUrl("http://192.168.18.43:5000/")
+            .baseUrl(" https://89e7-167-250-206-8.ngrok-free.app")
             .addConverterFactory(get<Json>().asConverterFactory(contentType))
             .client(get())
             .build()

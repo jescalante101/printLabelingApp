@@ -17,6 +17,7 @@ import com.example.fibra_labeling.data.model.fibrafil.FilPrintResponse
 import com.example.fibra_labeling.data.model.fibrafil.FillPrintRequest
 import com.example.fibra_labeling.data.remote.FillRepository
 import com.example.fibra_labeling.datastore.ImpresoraPreferences
+import com.example.fibra_labeling.datastore.UserLoginPreference
 import com.example.fibra_labeling.ui.screen.fibrafil.inventario.etiquetanueva.form.AddEtiquetaFormErrorState
 import com.example.fibra_labeling.ui.screen.fibrafil.inventario.etiquetanueva.form.AddEtiquetaFormState
 import com.example.fibra_labeling.ui.screen.fibrafil.inventario.etiquetanueva.form.hasError
@@ -27,6 +28,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlin.collections.map
 
@@ -34,8 +36,12 @@ class FillEtiquetaViewModel(
     private val repository: FillRepository,
     private val impresoraPrefs: ImpresoraPreferences,
     private val etiquetaDetalleRepository: EtiquetaDetalleRepository,
-    private val localRepository: FMaquinaRepository
+    private val localRepository: FMaquinaRepository,
+    private val userLoginPreference: UserLoginPreference
 ): ViewModel() {
+
+
+
 
     var formState by mutableStateOf(AddEtiquetaFormState())
         private set
@@ -52,14 +58,6 @@ class FillEtiquetaViewModel(
 
     val almacenes: MutableStateFlow<List<AlmacenResponse>> = _almacens
 
-    private val _updateResponse= MutableStateFlow<FilPrintResponse>(
-        FilPrintResponse(
-           data = null,
-            message = "",
-            success = false
-        )
-    )
-    val updateResponse: MutableStateFlow<FilPrintResponse> = _updateResponse
 
     private val _print= MutableStateFlow<Result<FilPrintResponse>>(
         Result.success(
@@ -81,6 +79,9 @@ class FillEtiquetaViewModel(
 
     private val _eventoNavegacion = MutableSharedFlow<String>() // O usa un sealed class para destinos
     val eventoNavegacion = _eventoNavegacion.asSharedFlow()
+
+    private val _user= MutableStateFlow<String>("")
+    val user: MutableStateFlow<String> = _user
 
     // Funciones para cambiar cada campo
     fun onLoteChange(newLote: String) {
@@ -156,7 +157,6 @@ class FillEtiquetaViewModel(
         }
     }
 
-
     fun searchMaquina(code: String,name:String){
         viewModelScope.launch {
             localRepository.searchByNameAndCode(name,code).collect{result->
@@ -166,7 +166,6 @@ class FillEtiquetaViewModel(
             //_maquinas.value=result.map { it.toApiData() }
         }
     }
-
 
     fun updateOitw(){
         viewModelScope.launch {
@@ -240,6 +239,12 @@ class FillEtiquetaViewModel(
             }
         }
 
+    }
+
+    fun getUserLogin(){
+        viewModelScope.launch {
+            _user.value=userLoginPreference.userName.firstOrNull() ?: ""
+        }
     }
 
 

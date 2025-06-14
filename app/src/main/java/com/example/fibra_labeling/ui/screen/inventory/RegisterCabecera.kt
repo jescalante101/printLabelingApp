@@ -20,6 +20,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,21 +32,23 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.fibra_labeling.R
-import com.example.fibra_labeling.data.remote.FibOinResquet
 import com.example.fibra_labeling.ui.component.CustomAppBar
 import com.example.fibra_labeling.ui.screen.component.CustomSearch
 import com.example.fibra_labeling.ui.screen.inventory.register.OncRegisterScreen
-import com.example.fibra_labeling.ui.screen.inventory.register.form.OncForm
+import org.koin.androidx.compose.koinViewModel
 
 
 @Composable
 fun RegisterCabecera(
     onNavigateBack: () -> Unit,
-    onNavigateToInvetory: () -> Unit
+    onNavigateToFilEtiqueta: (isPrint: Boolean) -> Unit,
+    viewModel: RegisterCabeceraViewModel = koinViewModel()
 ){
 
     var showSheet by remember { mutableStateOf(false) }
-    var ultimoRegistro by remember { mutableStateOf<OncForm?>(null) }
+
+    val oincs by viewModel.oincs.collectAsState()
+
 
 
     Box {
@@ -104,24 +107,38 @@ fun RegisterCabecera(
                     )
                 }
 
-                items(
-                    count =10
-                ) {
+                items(oincs.size) { index ->
                     AnimatedVisibility(
                         visible = true,
                         enter = fadeIn(),
                         exit = fadeOut()
                     ) {
-                        FioriCardConteoCompact(
-                            dto = FibOinResquet(
-                                countDate = "2023-08-01",
-                                usuario = "Juan Pérez",
-                                startTime = "08:00:00",
-                                endTime = "16:00:00",
-                                referencia = "Ref123",
-                                remarks = "Observaciones adicionales"
+                        val oinc = oincs[index]
+                        oinc.let {
+                            FioriCardConteoCompact(
+                                dto = oinc,
+                                onClick = {
+                                    //Navegate to App
+                                    viewModel.saveUserLogin(
+                                        userLogin = oinc.u_UserNameCount ?: "",
+                                        code = oinc.u_Ref ?: ""
+                                    )
+
+                                    onNavigateToFilEtiqueta(false)
+                                }
                             )
-                        )
+                        }
+
+//                        FioriCardConteoCompact(
+//                            dto = FibOinResquet(
+//                                countDate = oinc.u_CountDate ?: "",
+//                                usuario = oinc.u_UserNameCount ?: "",
+//                                startTime = oinc.u_StartTime ?: "",
+//                                endTime = oinc.u_EndTime ?: "",
+//                                referencia = oinc.u_Ref ?: "",
+//                                remarks = oinc.u_Remarks ?: ""
+//                            )
+//                        )
                     }
                 }
 
@@ -169,8 +186,7 @@ fun RegisterCabecera(
         showSheet = showSheet,
         onDismiss = { showSheet = false },
         onSave = {
-            ultimoRegistro = it
-            // Aquí puedes guardar en BD, ViewModel, etc.
+
         }
     )
 
@@ -183,6 +199,6 @@ fun RegisterCabecera(
 fun PreviewRegisterCabecera() {
     RegisterCabecera(
         onNavigateBack = {},
-        onNavigateToInvetory = {}
+        onNavigateToFilEtiqueta = {}
     )
 }

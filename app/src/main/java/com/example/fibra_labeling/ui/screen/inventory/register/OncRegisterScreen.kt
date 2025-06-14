@@ -22,6 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,10 +32,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.fibra_labeling.ui.screen.component.DatePickerField
+import com.example.fibra_labeling.data.local.entity.fibrafil.FilUserEntity
+import com.example.fibra_labeling.ui.screen.inventory.component.FioriDropdownUser
 import com.example.fibra_labeling.ui.screen.inventory.register.form.OncForm
 import com.example.fibra_labeling.ui.theme.Fibra_labelingTheme
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 
 
 @SuppressLint("ConfigurationScreenWidthHeight")
@@ -43,8 +46,11 @@ import kotlinx.coroutines.launch
 fun OncRegisterScreen(
     showSheet: Boolean,
     onDismiss: () -> Unit,
-    onSave: (OncForm) -> Unit
+    onSave: (OncForm) -> Unit,
+    viewModel: OincRegisterViewModel = koinViewModel()
 ){
+    val formState by viewModel.formState
+    val errorMsg by viewModel.errorMsg
 
     val configuration = LocalConfiguration.current
     val isScreenSmall = configuration.screenHeightDp < 600
@@ -52,14 +58,19 @@ fun OncRegisterScreen(
     val scope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
-    var formState by remember { mutableStateOf(OncForm()) }
-    var errorMsg by remember { mutableStateOf<String?>(null) }
+    val usuarios by viewModel.usuarios.collectAsState()
 
     if (showSheet) {
+
         ModalBottomSheet(
-            onDismissRequest = onDismiss,
+            onDismissRequest = {
+                viewModel.reset()
+                onDismiss()
+            },
+
             sheetState = sheetState,
             modifier = if (isScreenSmall) Modifier.fillMaxSize() else Modifier
+
         ) {
             Column(
                 modifier = Modifier
@@ -74,32 +85,41 @@ fun OncRegisterScreen(
                     modifier = Modifier.padding(bottom = 18.dp)
                 )
 
-                OutlinedTextField(
-                    value = formState.usuario,
-                    onValueChange = { formState = formState.copy(usuario = it) },
-                    label = { Text("Usuario") },
-                    modifier = Modifier.fillMaxWidth()
+//                OutlinedTextField(
+//                    value = formState.usuario,
+//                    onValueChange = { viewModel.onUsuarioChange(it) },
+//                    label = { Text("Usuario") },
+//                    modifier = Modifier.fillMaxWidth()
+//                )
+
+                FioriDropdownUser(
+                    label = "Usuario",
+                    options = usuarios,
+                    selected = formState.usuario,
+                    onSelectedChange = {
+                        viewModel.onUsuarioChange(it)
+                    },
+                    onFilterChange = {
+                        filtro -> viewModel.buscarUsuarios(filtro)
+                    }
                 )
-                Spacer(Modifier.height(10.dp))
-                DatePickerField(
-                    label = "Fecha de conteo",
-                    value = formState.countDate,
-                    onValueChange = { formState = formState.copy(countDate = it) }
-                )
+
                 Spacer(Modifier.height(10.dp))
                 OutlinedTextField(
                     value = formState.referencia,
-                    onValueChange = { formState = formState.copy(referencia = it) },
+                    onValueChange = { viewModel.onReferenciaChange(it) },
                     label = { Text("Referencia") },
                     modifier = Modifier.fillMaxWidth()
                 )
+
                 Spacer(Modifier.height(10.dp))
                 OutlinedTextField(
                     value = formState.remarks,
-                    onValueChange = { formState = formState.copy(remarks = it) },
+                    onValueChange = { viewModel.onRemarksChange(it) },
                     label = { Text("Observaciones") },
                     modifier = Modifier.fillMaxWidth()
                 )
+
                 Spacer(Modifier.height(18.dp))
                 errorMsg?.let {
                     Text(
@@ -115,17 +135,23 @@ fun OncRegisterScreen(
                     horizontalArrangement = Arrangement.End
                 ) {
                     TextButton(onClick = {
-                        scope.launch { sheetState.hide(); onDismiss() }
+                        scope.launch {
+                            sheetState.hide()
+                            viewModel.reset()
+                            onDismiss()
+                        }
                     }) { Text("Cancelar") }
                     Spacer(Modifier.width(10.dp))
                     Button(onClick = {
-                        // Validación simple
-                        if (formState.usuario.isBlank() || formState.countDate.isBlank()) {
-                            errorMsg = "Usuario y fecha de conteo son obligatorios."
-                        } else {
-                            errorMsg = null
+                        if (viewModel.validate()) {
+                            viewModel.insertOinc()
                             onSave(formState)
-                            scope.launch { sheetState.hide(); onDismiss() }
+                            scope.launch {
+                                sheetState.hide()
+                                viewModel.reset()
+                                onDismiss()
+                            }
+
                         }
                     }) {
                         Text("Guardar")
@@ -134,8 +160,6 @@ fun OncRegisterScreen(
             }
         }
     }
-
-
 }
 
 @Preview(showBackground = true)

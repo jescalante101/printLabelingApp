@@ -28,7 +28,8 @@ fun PrintRegisterScreen(
     onNavigateToNewPrint: (code: String, name: String) -> Unit,
     onNavigateToFillPrint: (itemCode:String,productName:String) -> Unit,
     viewModel: RegisterViewModel= koinViewModel(),
-    isPrint: Boolean=true
+    isPrint: Boolean=true,
+
 ) {
 
     val oitmResult by viewModel.oitmResponse.collectAsState()
@@ -167,6 +168,7 @@ fun PrintRegisterScreen(
                 leadingIcon = {
                     IconButton(
                         onClick = {
+                            viewModel.updateUser()
                             onBack()
                         }
                     ) {

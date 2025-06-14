@@ -18,14 +18,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.fibra_labeling.data.local.entity.fibrafil.FibOincEntity
 import com.example.fibra_labeling.data.remote.FibOinResquet
 import com.example.fibra_labeling.ui.theme.Fibra_labelingTheme
 
 @Composable
 fun FioriCardConteoCompact(
-    dto: FibOinResquet,
+    dto: FibOincEntity,
     modifier: Modifier = Modifier,
-    onClick: (dto: FibOinResquet) -> Unit = {}
+    onClick: (dto: FibOincEntity) -> Unit = {}
 ) {
     Card(
         modifier = modifier
@@ -44,17 +45,17 @@ fun FioriCardConteoCompact(
                 Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Absolute.SpaceBetween
             ) {
-                FioriBadge(text = dto.countDate)
-                FioriBadge(text = "${dto.startTime} - ${dto.endTime}")
+                FioriBadge(text = dto.u_CountDate.toString())
+                FioriBadge(text = "${dto.u_StartTime} - ${dto.u_EndTime ?:""}")
 
             }
             Spacer(Modifier.height(8.dp))
             // 2. Usuario
-            LabelAndValueFiori("Usuario", dto.usuario)
+            LabelAndValueFiori("Usuario", dto.u_UserNameCount?:"")
             // 3. Referencia
-            LabelAndValueFiori("Referencia", dto.referencia)
+            LabelAndValueFiori("Referencia", dto.u_Ref ?:"")
             // 4. Observaciones
-            LabelAndValueFiori("Observaciones", dto.remarks)
+            LabelAndValueFiori("Observaciones", dto.u_Remarks ?: "")
         }
     }
 }
@@ -96,13 +97,14 @@ private fun LabelAndValueFiori(label: String, value: String) {
 fun previewCard(){
     Fibra_labelingTheme{
         FioriCardConteoCompact(
-            dto = FibOinResquet(
-                countDate = "2023-08-01",
-                usuario = "Juan Pérez",
-                startTime = "08:00:00",
-                endTime = "16:00:00",
-                referencia = "Ref123",
-                remarks = "Observaciones adicionales"
+            dto = FibOincEntity(
+                u_CountDate = "2023-08-01",
+                u_userCodeCount = "Juan Pérez",
+                u_StartTime = "08:00:00",
+                u_EndTime = "16:00:00",
+                u_UserNameCount = "Ref123",
+                u_Remarks = "Observaciones adicionales",
+                u_Ref = ""
             )
         )
     }

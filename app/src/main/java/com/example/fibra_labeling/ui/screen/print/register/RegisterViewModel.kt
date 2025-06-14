@@ -5,11 +5,16 @@ import androidx.lifecycle.viewModelScope
 import com.example.fibra_labeling.data.model.OitmResponse
 import com.example.fibra_labeling.data.remote.FillRepository
 import com.example.fibra_labeling.data.remote.OitmRepository
+import com.example.fibra_labeling.datastore.UserLoginPreference
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
-class RegisterViewModel(private val repository: OitmRepository,private val fillRepository: FillRepository): ViewModel() {
+class RegisterViewModel(
+    private val repository: OitmRepository,
+    private val fillRepository: FillRepository,
+    private val userLoginPreference: UserLoginPreference
+): ViewModel() {
     private val _oitmResponse = MutableStateFlow<Result<OitmResponse>>(
         Result.success(
             OitmResponse(
@@ -63,6 +68,13 @@ class RegisterViewModel(private val repository: OitmRepository,private val fillR
                         _loading.value = false
                     }
             }
+        }
+
+    }
+
+    fun updateUser(){
+        viewModelScope.launch {
+            userLoginPreference.saveUserLogin("","")
         }
 
     }

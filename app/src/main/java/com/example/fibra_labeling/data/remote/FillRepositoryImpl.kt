@@ -7,6 +7,10 @@ import com.example.fibra_labeling.data.model.OitmResponse
 import com.example.fibra_labeling.data.model.fibrafil.ProductoDetalleUi
 import com.example.fibra_labeling.data.model.fibrafil.FilPrintResponse
 import com.example.fibra_labeling.data.model.fibrafil.FillPrintRequest
+import com.example.fibra_labeling.data.model.fibrafil.StockResponse
+import com.example.fibra_labeling.data.model.fibrafil.oinc.OincApiResponse
+import com.example.fibra_labeling.data.model.fibrafil.oinc.OincInsertApiResponse
+import com.example.fibra_labeling.data.model.fibrafil.users.FilUserResponse
 import com.example.fibra_labeling.data.network.ApiService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -77,6 +81,49 @@ class FillRepositoryImpl(private val apiService: ApiService): FillRepository {
 
     override suspend fun updateOitwInfo(productoDetalleUi: ProductoDetalleUi): Flow<FilPrintResponse> = flow {
         emit(apiService.updateOitwInfo(productoDetalleUi))
+    }.catch {
+        if(it is UnknownServiceException){
+            throw Exception("No se permite conexión HTTP. Revisa la configuración de seguridad de red.");
+        }else {
+            throw it
+        }
+    }
+
+    override suspend fun getOincs(): Flow<List<OincApiResponse>> =flow {
+        emit(apiService.getOinc())
+    }.catch {
+        if(it is UnknownServiceException){
+            throw Exception("No se permite conexión HTTP. Revisa la configuración de seguridad de red.");
+        }else {
+            throw it
+        }
+    }
+
+    override suspend fun insertOinc(oinc: OincApiResponse): Flow<OincInsertApiResponse> =flow {
+        emit(apiService.insertOinc(oinc))
+    }.catch {
+        if(it is UnknownServiceException){
+            throw Exception("No se permite conexión HTTP. Revisa la configuración de seguridad de red.");
+        }else {
+            throw it
+        }
+    }
+
+    override suspend fun getStockAlmacen(
+        itemCode: String,
+        whsCode: String
+    ): Flow<StockResponse> =flow {
+        emit(apiService.getStockAlmacen(itemCode, whsCode))
+    }.catch {
+        if(it is UnknownServiceException){
+            throw Exception("No se permite conexión HTTP. Revisa la configuración de seguridad de red.");
+        }else {
+            throw it
+        }
+    }
+
+    override suspend fun getUsers(): Flow<List<FilUserResponse>> = flow{
+        emit(apiService.getUsers())
     }.catch {
         if(it is UnknownServiceException){
             throw Exception("No se permite conexión HTTP. Revisa la configuración de seguridad de red.");

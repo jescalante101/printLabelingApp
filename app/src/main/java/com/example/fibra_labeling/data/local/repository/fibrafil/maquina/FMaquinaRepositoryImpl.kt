@@ -1,5 +1,6 @@
 package com.example.fibra_labeling.data.local.repository.fibrafil.maquina
 
+import android.util.Log
 import com.example.fibra_labeling.data.local.dao.FMaquinaDao
 import com.example.fibra_labeling.data.local.entity.fibrafil.FMaquinaEntity
 import com.example.fibra_labeling.data.local.mapper.toEntity
@@ -20,10 +21,16 @@ class FMaquinaRepositoryImpl(
 
 
     override suspend fun syncMaquinas() {
-        val maquinas = apiService.getMaquinas("",1,500).data
-        if (!maquinas.isNullOrEmpty()){
-            dao.insertAll(maquinas.map { it!!.toEntity() })
+        try {
+            val maquinas = apiService.getMaquinas("",1,500).data
+            if (!maquinas.isNullOrEmpty()){
+                dao.insertAll(maquinas.map { it!!.toEntity() })
+            }
+        }catch (e: Exception){
+            // TODO: MOSTAR LOS MENSAJES DE ERROR
+            Log.e("Sync", "No hay conexión: ${e.message}")
         }
+
     }
 
 }

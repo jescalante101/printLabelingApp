@@ -1,6 +1,5 @@
 package com.example.fibra_labeling.ui.screen.inventory
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -16,13 +15,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,12 +35,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.fibra_labeling.R
-import com.example.fibra_labeling.ui.component.CustomAppBar
 import com.example.fibra_labeling.ui.util.gradientBrush
 
 @Composable
 fun ICountingScreen(
-    onNavigateBack: () -> Unit
+    onSave: (value:String) -> Unit = {},
+    product:String = "Pernos",
 ){
 
     var cantidad by remember { mutableStateOf("0") }
@@ -57,40 +53,19 @@ fun ICountingScreen(
 
         Scaffold(
             containerColor = Color.Transparent,
-//            floatingActionButton = {
-//                FloatingActionButton(
-//                    onClick = {
-//
-//                    },
-//                    containerColor = MaterialTheme.colorScheme.surfaceTint,
-//                    shape = CircleShape
-//                ) {
-//                    Row(
-//                        modifier = Modifier.padding(horizontal = 16.dp),
-//                    ) {
-//                        Text("Guardar", color = Color.White, fontSize = 16.sp)
-//                        Spacer(Modifier.width(4.dp))
-//                        Icon(
-//                            painter = painterResource(R.drawable.ic_save),
-//                            contentDescription = "Carrito",
-//                            tint = Color.White
-//                        )
-//                    }
-//                }
-//            }
         ) {
             Column (
                 modifier = Modifier
                     .fillMaxSize()
                     .background(Color.White)
                     .padding(it)
-                    .padding(top = 65.dp, start = 16.dp, end = 16.dp)
+                    .padding(top = 10.dp, start = 16.dp, end = 16.dp)
             ) {
                 // Título
-                Text("Esencias vegetales", fontWeight = FontWeight.Bold, fontSize = 20.sp)
+                Text(product, fontWeight = FontWeight.Bold,)
                 Spacer(Modifier.height(4.dp))
                 // Subtítulo o ID
-                Text("1", fontSize = 16.sp, color = Color.Gray)
+
                 Spacer(Modifier.height(16.dp))
 
                 // Indicadores de stock y cantidad contada
@@ -191,7 +166,7 @@ fun ICountingScreen(
                         listOf("1", "2", "3"),
                         listOf("4", "5", "6"),
                         listOf("7", "8", "9"),
-                        listOf("x", "0", "«")
+                        listOf("x", "0", "\uD83D\uDCBE")
                     )
                     numbers.forEach { row ->
                         Row(
@@ -216,8 +191,8 @@ fun ICountingScreen(
                                             }else{
                                                 cantidad.dropLast(1)
                                             }
-                                        }else if(label == "«"){
-                                            Log.d("TAG", "ICountingScreen: $cantidad")
+                                        }else if(label == "\uD83D\uDCBE"){
+                                            onSave(cantidad)
                                         }else{
                                             if(cantidad == "0"){
                                                 cantidad = label
@@ -248,40 +223,41 @@ fun ICountingScreen(
         }
 
 
-        Box(
-            modifier = Modifier.padding(top= 32.dp)
-        ){
-            CustomAppBar(
-                title = { Text("Toma de Inventario", color = Color.Black, style = MaterialTheme.typography.titleMedium) },
-                leadingIcon = {
-                    IconButton(
-                        onClick = {
-                            onNavigateBack()
-                        }
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_arrow_left),
-                            contentDescription = "Back",
-                            tint = Color.Black
-                        )
-                    }
-                },
-                trailingIcon ={
-                    IconButton(
-                        onClick = {
-
-                        }
-                    ){
-                        Icon(
-                            imageVector = Icons.Default.AccountCircle,
-                            contentDescription = "user",
-                            tint = Color.Black
-                        )
-                    }
-                }
-            )
-
-        }
+//        Box(
+//            modifier = Modifier.padding(top= 32.dp)
+//        ){
+//            CustomAppBar(
+//                title = { Text("Toma de Inventario", color = Color.Black, style = MaterialTheme.typography.titleMedium) },
+//                leadingIcon = {
+//                    IconButton(
+//                        onClick = {
+//                            onNavigateBack()
+//                        }
+//                    ) {
+//                        Icon(
+//                            painter = painterResource(R.drawable.ic_arrow_left),
+//                            contentDescription = "Back",
+//                            tint = Color.Black
+//                        )
+//                    }
+//                },
+//                trailingIcon ={
+//                    IconButton(
+//                        onClick = {
+//
+//                        }
+//                    ){
+//                        Icon(
+//                            imageVector = Icons.Default.AccountCircle,
+//                            contentDescription = "user",
+//                            tint = Color.Black
+//                        )
+//                    }
+//                }
+//            )
+//
+//        }
+//
     }
 }
 
@@ -289,6 +265,6 @@ fun ICountingScreen(
 @Composable
 fun PreviewIcounterScreen(){
     ICountingScreen(
-        onNavigateBack = {}
+        onSave = {}
     )
 }

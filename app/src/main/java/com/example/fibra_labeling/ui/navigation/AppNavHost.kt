@@ -101,7 +101,8 @@ fun AppNavHost(navController: NavHostController = rememberNavController(), start
                 isPrint = isPrint == true,
                 onNavigateToFillPrint = {itemCode,productName->
                     navController.navigate("${Screen.FillImpresionNew.route}/$itemCode/$productName")
-                }
+                },
+
             )
         }
 
@@ -161,20 +162,22 @@ fun AppNavHost(navController: NavHostController = rememberNavController(), start
                 navController.popBackStack()
             }
         }
-        composable(
-            Screen.ICounting.route
-        ){
-            ICountingScreen {
-                navController.popBackStack()
-            }
-        }
+//        composable(
+//            Screen.ICounting.route
+//        ){
+//            ICountingScreen {
+//                navController.popBackStack()
+//            }
+//        }
 
         composable(
             Screen.InventarioOnc.route
         ) {
             RegisterCabecera (
                 onNavigateBack = { navController.popBackStack() },
-                onNavigateToInvetory = { navController.navigate(Screen.Inventory.route) }
+                onNavigateToFilEtiqueta = {
+                    navController.navigate("${Screen.PrintRegister.route}/$it")
+                }
             )
         }
         composable(
@@ -204,7 +207,6 @@ fun AppNavHost(navController: NavHostController = rememberNavController(), start
                 navController = navController
             )
         }
-
 
         ///SETTIG SCREEN
          composable(

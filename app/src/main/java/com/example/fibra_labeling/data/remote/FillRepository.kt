@@ -7,6 +7,10 @@ import com.example.fibra_labeling.data.model.OitmResponse
 import com.example.fibra_labeling.data.model.fibrafil.ProductoDetalleUi
 import com.example.fibra_labeling.data.model.fibrafil.FilPrintResponse
 import com.example.fibra_labeling.data.model.fibrafil.FillPrintRequest
+import com.example.fibra_labeling.data.model.fibrafil.StockResponse
+import com.example.fibra_labeling.data.model.fibrafil.oinc.OincApiResponse
+import com.example.fibra_labeling.data.model.fibrafil.oinc.OincInsertApiResponse
+import com.example.fibra_labeling.data.model.fibrafil.users.FilUserResponse
 import kotlinx.coroutines.flow.Flow
 
 interface FillRepository {
@@ -17,4 +21,11 @@ interface FillRepository {
     suspend fun filPrintEtiqueta(body: FillPrintRequest): Flow<FilPrintResponse>
 
     suspend fun updateOitwInfo(productoDetalleUi: ProductoDetalleUi): Flow<FilPrintResponse>
+    suspend fun getOincs(): Flow<List<OincApiResponse>>
+    suspend fun insertOinc(oinc: OincApiResponse): Flow<OincInsertApiResponse>
+
+    suspend fun getStockAlmacen(itemCode: String, whsCode: String): Flow<StockResponse>
+
+    //
+    suspend fun getUsers(): Flow<List<FilUserResponse>>
 }

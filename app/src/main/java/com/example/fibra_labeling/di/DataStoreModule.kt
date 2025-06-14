@@ -4,6 +4,7 @@ package com.example.fibra_labeling.di
 import android.content.Context
 import androidx.datastore.preferences.preferencesDataStore
 import com.example.fibra_labeling.datastore.ImpresoraPreferences
+import com.example.fibra_labeling.datastore.UserLoginPreference
 import org.koin.dsl.module
 
 val Context.dataStore by preferencesDataStore(name = "impresora_prefs")
@@ -11,4 +12,5 @@ val Context.dataStore by preferencesDataStore(name = "impresora_prefs")
 val dataStoreModule = module {
     single { get<Context>().dataStore }
     single { ImpresoraPreferences(get()) }
+    single { UserLoginPreference(get()) }
 }
