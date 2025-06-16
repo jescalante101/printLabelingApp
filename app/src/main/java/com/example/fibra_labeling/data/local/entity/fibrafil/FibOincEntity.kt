@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "fib_oinc")
 data class FibOincEntity(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    @PrimaryKey(autoGenerate = true) val docEntry: Long = 0,
     val u_CountDate: String?,
     val u_EndTime: String?=null,
     val u_Ref: String?,
