@@ -2,17 +2,23 @@ package com.example.fibra_labeling.ui.screen.print.register
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.fibra_labeling.data.local.entity.fibrafil.FibOITMEntity
+import com.example.fibra_labeling.data.local.repository.fibrafil.oitm.FibOitmRepository
 import com.example.fibra_labeling.data.model.OitmResponse
-import com.example.fibra_labeling.data.remote.FillRepository
 import com.example.fibra_labeling.data.remote.OitmRepository
 import com.example.fibra_labeling.datastore.UserLoginPreference
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class RegisterViewModel(
     private val repository: OitmRepository,
-    private val fillRepository: FillRepository,
+    private val fibOitmRepository: FibOitmRepository,
     private val userLoginPreference: UserLoginPreference
 ): ViewModel() {
     private val _oitmResponse = MutableStateFlow<Result<OitmResponse>>(
@@ -36,8 +42,29 @@ class RegisterViewModel(
     private val _isPrint= MutableStateFlow(true)
     val isPrint: MutableStateFlow<Boolean> = _isPrint
 
+    private val _filtro = MutableStateFlow("")
+
     fun changeIsPrint(isPrint: Boolean){
         _isPrint.value=isPrint
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val productos: StateFlow<List<FibOITMEntity>> = _filtro
+        .flatMapLatest { filtroRaw ->
+            val filtro = when {
+                filtroRaw.isBlank() -> "%"
+                filtroRaw.contains("*") -> filtroRaw.replace("*", "%")
+                else -> "%${filtroRaw}%" // <<-- Esto lo hace "contiene"
+            }
+            fibOitmRepository.search(filtro,filtro)
+                .catch { e ->
+                    _totalResult.value = 0
+                }
+        }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    fun setFiltro(filtro: String) {
+        _filtro.value = filtro
     }
 
     fun getOitm(filter: String="", page: Int=1, pageSize: Int=20,isFill: Boolean=false){
@@ -56,18 +83,8 @@ class RegisterViewModel(
                         _totalResult.value = it.data?.size!!
                         _loading.value = false
                     }
-            }else{
-                fillRepository.getOitms(filter, page, pageSize)
-                    .catch { e ->
-                        _oitmResponse.value = Result.failure(e)
-                        _loading.value = false
-                        _totalResult.value = 0;
-                    }.collect {
-                        _oitmResponse.value = Result.success(it)
-                        _totalResult.value = it.data?.size!!
-                        _loading.value = false
-                    }
             }
+
         }
 
     }

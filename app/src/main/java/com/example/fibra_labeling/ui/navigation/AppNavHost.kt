@@ -1,7 +1,6 @@
 package com.example.fibra_labeling.ui.navigation
 
 import BarcodeScannerScreen
-import android.R.attr.type
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -17,9 +16,9 @@ import androidx.navigation.navArgument
 import com.example.fibra_labeling.ui.screen.fibrafil.inventario.etiqueta.ImpresionScreen
 import com.example.fibra_labeling.ui.screen.fibrafil.inventario.etiquetanueva.AddEtiquetaScreen
 import com.example.fibra_labeling.ui.screen.home.HomeScreen
-import com.example.fibra_labeling.ui.screen.inventory.ICountingScreen
 import com.example.fibra_labeling.ui.screen.inventory.InventoryScreen
 import com.example.fibra_labeling.ui.screen.inventory.RegisterCabecera
+import com.example.fibra_labeling.ui.screen.inventory.details.IncScreen
 import com.example.fibra_labeling.ui.screen.packing.PackingScreen
 import com.example.fibra_labeling.ui.screen.print.PrintScreen
 import com.example.fibra_labeling.ui.screen.print.register.NewPrintScreen
@@ -156,6 +155,14 @@ fun AppNavHost(navController: NavHostController = rememberNavController(), start
         }
 
         composable(
+            Screen.IncDetail.route
+        ) {
+            IncScreen(
+                onNavigateBack = {navController.popBackStack()}
+            )
+        }
+
+        composable(
             Screen.Production.route,
         ) {
             ProductionScreen {
@@ -177,7 +184,8 @@ fun AppNavHost(navController: NavHostController = rememberNavController(), start
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToFilEtiqueta = {
                     navController.navigate("${Screen.PrintRegister.route}/$it")
-                }
+                },
+                onNavigateToDetails = {navController.navigate(Screen.IncDetail.route)}
             )
         }
         composable(
@@ -207,6 +215,8 @@ fun AppNavHost(navController: NavHostController = rememberNavController(), start
                 navController = navController
             )
         }
+
+
 
         ///SETTIG SCREEN
          composable(

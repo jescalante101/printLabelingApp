@@ -6,15 +6,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.fibra_labeling.data.local.entity.fibrafil.FibIncEntity
 import com.example.fibra_labeling.data.local.mapper.toApiData
 import com.example.fibra_labeling.data.local.mapper.toEtiquetaDetalleEntity
 import com.example.fibra_labeling.data.local.repository.fibrafil.EtiquetaDetalleRepository
+import com.example.fibra_labeling.data.local.repository.fibrafil.fibinc.FibIncRepository
 import com.example.fibra_labeling.data.local.repository.fibrafil.maquina.FMaquinaRepository
 import com.example.fibra_labeling.data.model.AlmacenResponse
 import com.example.fibra_labeling.data.model.MaquinaData
 import com.example.fibra_labeling.data.model.fibrafil.ProductoDetalleUi
 import com.example.fibra_labeling.data.model.fibrafil.FilPrintResponse
 import com.example.fibra_labeling.data.model.fibrafil.FillPrintRequest
+import com.example.fibra_labeling.data.model.fibrafil.StockResponse
 import com.example.fibra_labeling.data.remote.FillRepository
 import com.example.fibra_labeling.datastore.ImpresoraPreferences
 import com.example.fibra_labeling.datastore.UserLoginPreference
@@ -37,7 +40,8 @@ class FillEtiquetaViewModel(
     private val impresoraPrefs: ImpresoraPreferences,
     private val etiquetaDetalleRepository: EtiquetaDetalleRepository,
     private val localRepository: FMaquinaRepository,
-    private val userLoginPreference: UserLoginPreference
+    private val userLoginPreference: UserLoginPreference,
+    private val fibIncRepository: FibIncRepository
 ): ViewModel() {
 
 
@@ -83,6 +87,11 @@ class FillEtiquetaViewModel(
     private val _user= MutableStateFlow<String>("")
     val user: MutableStateFlow<String> = _user
 
+
+
+
+
+
     // Funciones para cambiar cada campo
     fun onLoteChange(newLote: String) {
         formState = formState.copy(lote = newLote)
@@ -121,6 +130,12 @@ class FillEtiquetaViewModel(
         validate()
     }
 
+    fun onStockChange(newStock: String) {
+        formState = formState.copy(conteo = newStock)
+        validate()
+    }
+
+
     private fun validate() {
         errorState = validateAddEtiquetaForm(formState)
     }
@@ -128,11 +143,9 @@ class FillEtiquetaViewModel(
     fun isFormValid(): Boolean =
         !errorState.hasError() &&
                 listOf(
-                    formState.lote,
                     formState.almacen?.whsCode ?:"",
                     formState.codigoReferencia,
-                    formState.maquina?.code ?:"",
-                    formState.ubicacion
+                    formState.cantidad,
                 ).all { it.isNotBlank()  }
 
     fun getAlmacens(){
@@ -188,12 +201,19 @@ class FillEtiquetaViewModel(
 
             // 3. Mapear a la entidad Room
             val entity = oitm.toEtiquetaDetalleEntity(
-                cantidad = cantidad,
+                cantidad = formState.cantidad,
                 isSynced = false // Siempre false al guardar local
             )
 
             // 4. Guardar localmente usando el repository local (Room)
             etiquetaDetalleRepository.insert(entity)
+            var stock=0.0
+            if (formState.conteo.isEmpty()){
+                stock=formState.conteo.toDoubleOrNull() ?: 0.0
+            }
+            Log.e("ASKJDHKASJHDJKAS",stock.toString())
+
+            saveInc(stock)
 
             // 5. Acciones post-guardado
             _eventoNavegacion.emit("savedLocal") // Ejemplo: navega o muestra mensaje
@@ -219,7 +239,7 @@ class FillEtiquetaViewModel(
                     productoName = formState.producto,
                     lote = formState.lote,
                     referencia = formState.codigoReferencia,
-                    maquina = formState.maquina?.code,
+                    maquina = formState.maquina?.name,
                     ubicacion = formState.ubicacion,
                     whsCode = formState.almacen?.whsCode ?: "CH3-RE",
                     codBar = "" // TODO: Generar o asignar el código de barras real aquí si lo tienes
@@ -244,6 +264,25 @@ class FillEtiquetaViewModel(
     fun getUserLogin(){
         viewModelScope.launch {
             _user.value=userLoginPreference.userName.firstOrNull() ?: ""
+        }
+    }
+
+
+    private fun saveInc(stock: Double){
+        viewModelScope.launch {
+            val cantidad=formState.cantidad.toDoubleOrNull()?:0.0
+            val diference= stock - cantidad
+            val entity= FibIncEntity(
+                U_Difference = diference,
+                U_WhsCode = formState.almacen?.whsCode,
+                U_CountQty = formState.cantidad.toDoubleOrNull(),
+                U_InWhsQty = stock,
+                U_ItemCode = formState.codigo,
+                U_ItemName = formState.producto,
+                isSynced = false,
+            )
+
+            fibIncRepository.insert(entity)
         }
     }
 

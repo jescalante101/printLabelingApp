@@ -21,5 +21,6 @@ sealed class Screen(val route:String) {
     object  FillImpresion: Screen("fillImpresion")
     object FillImpresionNew: Screen("fillImpresionNew")
 
+     object IncDetail: Screen("incDetail")
 
 }

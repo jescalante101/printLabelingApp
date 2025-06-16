@@ -1,5 +1,6 @@
 package com.example.fibra_labeling.data.local.entity.fibrafil
 
+import android.R
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -14,6 +15,6 @@ data class EtiquetaDetalleEntity(
     val u_FIB_BinLocation: String?,
     val codeBars: String,
     val whsCode: String,
-    val Cantidad: Double,
+    val Cantidad: String?,
     val isSynced: Boolean = false
 )

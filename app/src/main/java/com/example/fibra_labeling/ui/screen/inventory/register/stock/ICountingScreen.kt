@@ -1,4 +1,4 @@
-package com.example.fibra_labeling.ui.screen.inventory
+package com.example.fibra_labeling.ui.screen.inventory.register.stock
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -22,6 +22,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,19 +33,31 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.fibra_labeling.R
 import com.example.fibra_labeling.ui.util.gradientBrush
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun ICountingScreen(
-    onSave: (value:String) -> Unit = {},
+    onSave: (value:String,stock: Double) -> Unit = {_,_ ->},
+    viewModel:StockViewModel = koinViewModel(),
     product:String = "Pernos",
+    itemCode:String = "123456789",
+    whsCode:String = "CH3-RE",
 ){
 
     var cantidad by remember { mutableStateOf("0") }
+    val stock by viewModel.stock.collectAsState()
+
+    LaunchedEffect (Unit){
+        viewModel.getStock()
+        viewModel.setCodigo(itemCode)
+        viewModel.setWhsCode(whsCode)
+    }
 
     Box(
         modifier = Modifier
@@ -74,7 +88,7 @@ fun ICountingScreen(
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text("1 850 ", fontWeight = FontWeight.Bold, fontSize = 32.sp, color = Color(0xFF2E7D32))
+                        Text(stock.onHand.toString(), fontWeight = FontWeight.Bold, fontSize = 32.sp, color = Color(0xFF2E7D32))
                         Text("Stock", color = Color.Gray)
                     }
                     Box(
@@ -146,8 +160,8 @@ fun ICountingScreen(
                             onClick = {}
                         ) {
                             Icon(
-                                painter = painterResource(R.drawable.ic_store),
-                                contentDescription = "Tienda",
+                                painter = painterResource(R.drawable.ic_print),
+                                contentDescription = "print",
                                 tint = Color(0xFF2196F3),
                                 modifier = Modifier.size(28.dp)
                             )
@@ -192,7 +206,7 @@ fun ICountingScreen(
                                                 cantidad.dropLast(1)
                                             }
                                         }else if(label == "\uD83D\uDCBE"){
-                                            onSave(cantidad)
+                                            onSave(cantidad, stock.onHand?.toDouble() ?: 00.0)
                                         }else{
                                             if(cantidad == "0"){
                                                 cantidad = label
@@ -209,7 +223,7 @@ fun ICountingScreen(
                                         Text(
                                             label,
                                             fontSize = 24.sp,
-                                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                                            textAlign = TextAlign.Center
                                         )
                                     }
                                 }
@@ -265,6 +279,6 @@ fun ICountingScreen(
 @Composable
 fun PreviewIcounterScreen(){
     ICountingScreen(
-        onSave = {}
+        onSave = {_,_->}
     )
 }

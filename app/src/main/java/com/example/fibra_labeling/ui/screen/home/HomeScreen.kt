@@ -93,8 +93,10 @@ fun HomeScreen(
         HomeCategories(R.drawable.ic_transfer, "Tranferencias",Screen.Transfer.route),
         HomeCategories(R.drawable.ic_inventory, "Toma de inventario",Screen.Inventory.route),
         HomeCategories(R.drawable.ic_packing, "PackingList",Screen.PackingList.route),
-        HomeCategories(R.drawable.ic_report, "Recibo Producción",Screen.Production.route)
+        HomeCategories(R.drawable.ic_report, "Recibo Producción",Screen.Production.route),
+        HomeCategories(R.drawable.sync_svgrepo_com,"Sincronizar","sync")
     )
+
 
 
 
@@ -173,7 +175,6 @@ fun HomeScreen(
                 LazyVerticalStaggeredGrid(
                     columns = StaggeredGridCells.Adaptive(160.dp),
                     verticalItemSpacing = 16.dp,
-//                horizontalArrangement = Arrangement.spacedBy(24.dp),
                     modifier = Modifier.padding(padding).padding(top = 24.dp)
                 ) {
                     item(span = StaggeredGridItemSpan.FullLine) {
@@ -204,6 +205,7 @@ fun HomeScreen(
                                     "inventory" -> onNavigateToInventory()
                                     "packingList"-> onNavigateToPackingList()
                                     "production"-> onNavigateToProduction()
+                                    "sync"->{viewModel.getDataFromApi()}
                                 }
                             },
                         )
@@ -257,13 +259,9 @@ fun HomeScreen(
                             )
                         }
                     },
-
                     )
             }
-
-
         }
-
 
         CustomBottomSheetMenu (
             onFibraFilClick = { onNavigateToFill() },

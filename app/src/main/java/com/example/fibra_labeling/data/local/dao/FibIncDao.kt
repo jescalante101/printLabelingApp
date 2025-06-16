@@ -2,6 +2,7 @@ package com.example.fibra_labeling.data.local.dao
 
 import androidx.room.*
 import com.example.fibra_labeling.data.local.entity.fibrafil.FibIncEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface FibIncDao {
@@ -13,7 +14,7 @@ interface FibIncDao {
     suspend fun insertAll(items: List<FibIncEntity>): List<Long>
 
     @Query("SELECT * FROM fib_inc")
-    suspend fun getAll(): List<FibIncEntity>
+    fun getAll(): Flow<List<FibIncEntity>>
 
     @Query("SELECT * FROM fib_inc WHERE id = :id")
     suspend fun getById(id: Int): FibIncEntity?

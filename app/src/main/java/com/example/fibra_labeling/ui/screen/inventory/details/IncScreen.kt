@@ -1,4 +1,4 @@
-package com.example.fibra_labeling.ui.screen.inventory
+package com.example.fibra_labeling.ui.screen.inventory.details
 
 import FioriCardConteoCompact
 import androidx.compose.animation.AnimatedVisibility
@@ -21,50 +21,29 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.fibra_labeling.R
+import com.example.fibra_labeling.data.local.entity.fibrafil.FibIncEntity
 import com.example.fibra_labeling.ui.component.CustomAppBar
 import com.example.fibra_labeling.ui.screen.component.CustomSearch
-import com.example.fibra_labeling.ui.screen.inventory.register.OncRegisterScreen
+import com.example.fibra_labeling.ui.screen.inventory.details.component.FioriCardIncCompact
 import org.koin.androidx.compose.koinViewModel
-
+import androidx.compose.runtime.getValue
 
 @Composable
-fun RegisterCabecera(
+fun IncScreen(
     onNavigateBack: () -> Unit,
-    onNavigateToFilEtiqueta: (isPrint: Boolean) -> Unit,
-    viewModel: RegisterCabeceraViewModel = koinViewModel(),
-    onNavigateToDetails: ()-> Unit
+    viewModel: IncViewModel = koinViewModel()
 ){
 
-    var showSheet by remember { mutableStateOf(false) }
-
-    val oincs by viewModel.oincs.collectAsState()
+    val incData by viewModel.incData.collectAsState()
 
     Box {
-        Scaffold (
-            floatingActionButton = {
-                Column {
-                    ExtendedFloatingActionButton (
-                        onClick = {
-                            showSheet = true
-                        },
-                        containerColor = Color(0xFF2C3E50),
-                    ) {
-                        Text("Nuevo",color = Color.White)
-                    }
-                }
-            }
-        ){
+        Scaffold {
             LazyColumn (
                 modifier = Modifier
                     .fillMaxSize().padding(it).padding(top = 56.dp)
@@ -105,30 +84,41 @@ fun RegisterCabecera(
                         modifier = Modifier.height(8.dp)
                     )
                 }
-
-                items(oincs.size) { index ->
+                items(incData.size) {index->
                     AnimatedVisibility(
                         visible = true,
                         enter = fadeIn(),
                         exit = fadeOut()
                     ) {
-                        val oinc = oincs[index]
-                        FioriCardConteoCompact(
-                            dto = oinc,
-                            onClick = {
-                                //Navegate to App
-                                viewModel.saveUserLogin(
-                                    userLogin = oinc.u_UserNameCount ?: "",
-                                    code = oinc.u_Ref ?: ""
-                                )
-                                onNavigateToFilEtiqueta(false)
-                            },
-                            onDetailsClick = {onNavigateToDetails()}
+                        val inc = incData[index]
+                        FioriCardIncCompact(
+                            dto = inc
                         )
-
                     }
                 }
 
+//                items(oincs.size) { index ->
+//                    AnimatedVisibility(
+//                        visible = true,
+//                        enter = fadeIn(),
+//                        exit = fadeOut()
+//                    ) {
+//                        val oinc = oincs[index]
+//                        FioriCardConteoCompact(
+//                            dto = oinc,
+//                            onClick = {
+//                                //Navegate to App
+//                                viewModel.saveUserLogin(
+//                                    userLogin = oinc.u_UserNameCount ?: "",
+//                                    code = oinc.u_Ref ?: ""
+//                                )
+//
+//                                onNavigateToFilEtiqueta(false)
+//                            }
+//                        )
+//
+//                    }
+//                }
             }
         }
         Box(
@@ -163,29 +153,6 @@ fun RegisterCabecera(
                     }
                 }
             )
-
         }
     }
-
-    OncRegisterScreen (
-        showSheet = showSheet,
-        onDismiss = { showSheet = false },
-        onSave = {
-
-        }
-    )
-
-
-
-}
-
-@Preview
-@Composable
-fun PreviewRegisterCabecera() {
-    RegisterCabecera(
-        onNavigateBack = {},
-        onNavigateToFilEtiqueta = {},
-        onNavigateToDetails = {}
-
-    )
 }

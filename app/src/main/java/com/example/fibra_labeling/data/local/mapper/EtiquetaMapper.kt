@@ -4,7 +4,7 @@ import com.example.fibra_labeling.data.local.entity.fibrafil.EtiquetaDetalleEnti
 import com.example.fibra_labeling.data.model.fibrafil.ProductoDetalleUi
 
 fun ProductoDetalleUi.toEtiquetaDetalleEntity(
-    cantidad: Double, // pásalo explícito porque no está en tu modelo UI
+    cantidad: String?, // pásalo explícito porque no está en tu modelo UI
     isSynced: Boolean = false
 ): EtiquetaDetalleEntity = EtiquetaDetalleEntity(
     itemCode = codigo,

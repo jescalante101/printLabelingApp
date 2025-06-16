@@ -18,5 +18,8 @@ val roomModule = module {
     single { get<AppDatabase>().fMaquinaDao() }
     single { get<AppDatabase>().filUserDao() }
     single { get<AppDatabase>().oincDao() }
+    single { get<AppDatabase>().incDao() }
+    single { get<AppDatabase>().almacenDao() }
+    single { get<AppDatabase>().oitmDao() }
 
 }

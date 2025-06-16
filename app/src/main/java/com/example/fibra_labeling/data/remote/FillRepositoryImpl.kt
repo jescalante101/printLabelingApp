@@ -3,6 +3,7 @@ package com.example.fibra_labeling.data.remote
 import com.example.fibra_labeling.data.model.AlmacenResponse
 import com.example.fibra_labeling.data.model.CodeBarRequest
 import com.example.fibra_labeling.data.model.MaquinasResponse
+import com.example.fibra_labeling.data.model.OITMData
 import com.example.fibra_labeling.data.model.OitmResponse
 import com.example.fibra_labeling.data.model.fibrafil.ProductoDetalleUi
 import com.example.fibra_labeling.data.model.fibrafil.FilPrintResponse
@@ -124,6 +125,16 @@ class FillRepositoryImpl(private val apiService: ApiService): FillRepository {
 
     override suspend fun getUsers(): Flow<List<FilUserResponse>> = flow{
         emit(apiService.getUsers())
+    }.catch {
+        if(it is UnknownServiceException){
+            throw Exception("No se permite conexión HTTP. Revisa la configuración de seguridad de red.");
+        }else {
+            throw it
+        }
+    }
+
+    override suspend fun getAllOitms(): Flow<List<OITMData>> = flow {
+        emit(apiService.getallOitmsFill())
     }.catch {
         if(it is UnknownServiceException){
             throw Exception("No se permite conexión HTTP. Revisa la configuración de seguridad de red.");

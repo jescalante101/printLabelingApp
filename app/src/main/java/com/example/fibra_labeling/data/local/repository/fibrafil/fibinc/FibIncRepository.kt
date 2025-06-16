@@ -1,13 +1,14 @@
 package com.example.fibra_labeling.data.local.repository.fibrafil.fibinc
 
 import com.example.fibra_labeling.data.local.entity.fibrafil.FibIncEntity
+import kotlinx.coroutines.flow.Flow
 
 interface FibIncRepository {
     suspend fun insert(entity: FibIncEntity): Long
 
     suspend fun insertAll(items: List<FibIncEntity>): List<Long>
 
-    suspend fun getAll(): List<FibIncEntity>
+    fun getAll(): Flow<List<FibIncEntity>>
 
     suspend fun getById(id: Int): FibIncEntity?
 

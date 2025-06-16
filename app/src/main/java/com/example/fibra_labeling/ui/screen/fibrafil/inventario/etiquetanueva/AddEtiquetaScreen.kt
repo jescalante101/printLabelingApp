@@ -53,7 +53,7 @@ import com.example.fibra_labeling.ui.component.CustomAppBar
 import com.example.fibra_labeling.ui.navigation.Screen
 import com.example.fibra_labeling.ui.screen.component.CustomTextFormField
 import com.example.fibra_labeling.ui.screen.component.FioriDropdownMaquina
-import com.example.fibra_labeling.ui.screen.inventory.ICountingScreen
+import com.example.fibra_labeling.ui.screen.inventory.register.stock.ICountingScreen
 import com.example.fibra_labeling.ui.screen.print.register.component.FioriDropdownAlmacen
 import org.koin.androidx.compose.koinViewModel
 
@@ -131,7 +131,7 @@ fun AddEtiquetaScreen(
                     Column {
                         FloatingActionButton(
                             containerColor = Color(0xFF2C3E50),
-                            onClick = {
+                            onClick =  {
                                 Log.e("click", "SI HACE CLICK")
                                 viewmodel.updateOitw()
                             }
@@ -215,7 +215,6 @@ fun AddEtiquetaScreen(
                                 }
                                 withStyle(style= SpanStyle(color = Color.Black.copy(0.8f))) {
                                      append(formState.codigo)
-                                    "FFC"
                                 }
                             },
                             style = MaterialTheme.typography.labelLarge,
@@ -313,9 +312,8 @@ fun AddEtiquetaScreen(
                                 viewmodel.onUbicacionChange(it)
                             },
                             enabled = true,
-//                                isError = formErrorState.loteError != null,
-//                                supportingText = { formErrorState.loteError?.let { Text(it, color = Color.Red, fontSize = 12.sp) } }
-                        )
+
+                            )
                     }
                     item {
                         Spacer(modifier = Modifier.height(8.dp))
@@ -345,6 +343,11 @@ fun AddEtiquetaScreen(
                             }
                         }
                     }
+                    item {
+                        if (user.isNotBlank()){
+                            errorState.cantidadError?.let { Text(it, color = Color.Red, fontSize = 12.sp) }
+                        }
+                    }
 
                 }
 
@@ -357,10 +360,14 @@ fun AddEtiquetaScreen(
                 sheetState = sheetState,
             ) {
                 ICountingScreen(
-                    onSave = { cantidad ->
+                    onSave = { cantidad, stock ->
                         viewmodel.onCantidadChange(cantidad) // ← Aquí obtienes el valor cuando el usuario confirma
+                        viewmodel.onStockChange(stock.toString())
                         showSheet = false
-                    }
+                    },
+                    product = formState.producto,
+                    itemCode = formState.codigo,
+                    whsCode = formState.almacen?.whsCode ?: "CH3-RE"
                 )
             }
         }

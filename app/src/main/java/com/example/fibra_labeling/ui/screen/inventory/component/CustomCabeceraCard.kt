@@ -1,3 +1,4 @@
+import android.widget.Button
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -8,8 +9,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FilledIconButton
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,7 +31,8 @@ import com.example.fibra_labeling.ui.theme.Fibra_labelingTheme
 fun FioriCardConteoCompact(
     dto: FibOincEntity,
     modifier: Modifier = Modifier,
-    onClick: (dto: FibOincEntity) -> Unit = {}
+    onClick: (dto: FibOincEntity) -> Unit = {},
+    onDetailsClick: () -> Unit = {}
 ) {
     Card(
         modifier = modifier
@@ -36,7 +42,9 @@ fun FioriCardConteoCompact(
         colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F8FA)),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
         onClick = {
-            onClick(dto)
+            if (dto.u_EndTime == null) {
+                onClick(dto)
+            }
         }
     ) {
         Column(Modifier.padding(18.dp)) {
@@ -46,7 +54,11 @@ fun FioriCardConteoCompact(
                 horizontalArrangement = Arrangement.Absolute.SpaceBetween
             ) {
                 FioriBadge(text = dto.u_CountDate.toString())
-                FioriBadge(text = "${dto.u_StartTime} - ${dto.u_EndTime ?:""}")
+                if (dto.u_EndTime == null) {
+                    FioriBadge(text = "${dto.u_StartTime} - Abierto")
+                }else{
+                    FioriBadge(text = "${dto.u_StartTime} - ${dto.u_EndTime}")
+                }
 
             }
             Spacer(Modifier.height(8.dp))
@@ -56,6 +68,21 @@ fun FioriCardConteoCompact(
             LabelAndValueFiori("Referencia", dto.u_Ref ?:"")
             // 4. Observaciones
             LabelAndValueFiori("Observaciones", dto.u_Remarks ?: "")
+            //
+            Row {
+                Spacer(Modifier.weight(1f))
+                FilledTonalButton(
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF004990).copy(alpha = 0.5f)
+                    ),
+                    onClick = {
+                        onDetailsClick()
+                    },
+                    modifier = Modifier.padding(end = 8.dp)
+                ) {
+                    Text("Detalle")
+                }
+            }
         }
     }
 }

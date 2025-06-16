@@ -15,7 +15,7 @@ class HomeViewModel(private val fillRespository: FMaquinaRepository,private val 
         getDataFromApi()
     }
 
-    private fun getDataFromApi(){
+    fun getDataFromApi(){
         viewModelScope.launch {
             try {
                 awaitAll(
@@ -24,6 +24,9 @@ class HomeViewModel(private val fillRespository: FMaquinaRepository,private val 
                     },
                     async {
                         syncRepository.syncUsers()
+                    },
+                    async {
+                        syncRepository.syncOitms()
                     }
                 )
             }catch (e: Exception){

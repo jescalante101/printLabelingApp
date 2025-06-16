@@ -5,6 +5,7 @@ import com.example.fibra_labeling.data.model.CodeBarRequest
 import com.example.fibra_labeling.data.model.ImobPasaje
 import com.example.fibra_labeling.data.model.IsPrintOnlineResponse
 import com.example.fibra_labeling.data.model.MaquinasResponse
+import com.example.fibra_labeling.data.model.OITMData
 import com.example.fibra_labeling.data.model.OitmResponse
 import com.example.fibra_labeling.data.model.PesajeRequest
 import com.example.fibra_labeling.data.model.PesajeResponse
@@ -76,6 +77,10 @@ interface ApiService {
 
     @GET("fibrafil/stock?")
     suspend fun getStockAlmacen(@Query("itemCode") itemCode: String, @Query("whsCode") whsCode: String): StockResponse
+
+    @GET("fibrafil/oitmfills-all")
+    suspend fun getallOitmsFill(): List<OITMData>
+
 
 
 }

@@ -81,8 +81,8 @@ class OincRegisterViewModel(private val fUserRepository: FUserRepository,private
 
     fun insertOinc(){
         viewModelScope.launch {
-            val hoursFormatter= DateTimeFormatter.ofPattern("HHmm")
-            val dateFormate= DateTimeFormatter.ofPattern("yyyy-MM-dd")
+            val hoursFormatter= DateTimeFormatter.ofPattern("HH:mm")
+            val dateFormate= DateTimeFormatter.ofPattern("dd-MM-yyyy")
             val now= LocalDateTime.now()
             val oinc = FibOincEntity(
                 u_CountDate = now.format(dateFormate),

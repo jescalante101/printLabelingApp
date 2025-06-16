@@ -2,6 +2,7 @@ package com.example.fibra_labeling.data.local.repository.fibrafil.fibinc
 
 import com.example.fibra_labeling.data.local.dao.FibIncDao
 import com.example.fibra_labeling.data.local.entity.fibrafil.FibIncEntity
+import kotlinx.coroutines.flow.Flow
 
 class FibIncRepositoryImpl(private val dao: FibIncDao): FibIncRepository {
 
@@ -9,7 +10,7 @@ class FibIncRepositoryImpl(private val dao: FibIncDao): FibIncRepository {
 
     override suspend fun insertAll(items: List<FibIncEntity>) =dao.insertAll(items)
 
-    override suspend fun getAll(): List<FibIncEntity> =dao.getAll()
+    override fun getAll(): Flow<List<FibIncEntity>> =dao.getAll()
 
     override suspend fun getById(id: Int): FibIncEntity? =dao.getById(id)
     override suspend fun getNotSynced(): List<FibIncEntity> =dao.getNotSynced()

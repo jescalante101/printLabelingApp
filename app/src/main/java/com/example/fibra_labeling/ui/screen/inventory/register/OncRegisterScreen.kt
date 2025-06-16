@@ -85,13 +85,6 @@ fun OncRegisterScreen(
                     modifier = Modifier.padding(bottom = 18.dp)
                 )
 
-//                OutlinedTextField(
-//                    value = formState.usuario,
-//                    onValueChange = { viewModel.onUsuarioChange(it) },
-//                    label = { Text("Usuario") },
-//                    modifier = Modifier.fillMaxWidth()
-//                )
-
                 FioriDropdownUser(
                     label = "Usuario",
                     options = usuarios,

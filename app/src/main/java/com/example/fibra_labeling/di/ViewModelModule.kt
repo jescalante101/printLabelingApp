@@ -5,7 +5,9 @@ import com.example.fibra_labeling.ui.screen.fibrafil.inventario.etiqueta.Impresi
 import com.example.fibra_labeling.ui.screen.fibrafil.inventario.etiquetanueva.FillEtiquetaViewModel
 import com.example.fibra_labeling.ui.screen.home.HomeViewModel
 import com.example.fibra_labeling.ui.screen.inventory.RegisterCabeceraViewModel
+import com.example.fibra_labeling.ui.screen.inventory.details.IncViewModel
 import com.example.fibra_labeling.ui.screen.inventory.register.OincRegisterViewModel
+import com.example.fibra_labeling.ui.screen.inventory.register.stock.StockViewModel
 import com.example.fibra_labeling.ui.screen.print.PrintViewModel
 import com.example.fibra_labeling.ui.screen.print.register.NewPrintViewModel
 import com.example.fibra_labeling.ui.screen.print.register.RegisterViewModel
@@ -33,7 +35,7 @@ val viewModelModule= module {
         ImpresionModelView(get(),get())
     }
     viewModel{
-        FillEtiquetaViewModel(get(),get(),get(),get(),get())
+        FillEtiquetaViewModel(get(),get(),get(),get(),get(),get())
     }
     viewModel{
         OincRegisterViewModel(get(),get())
@@ -41,5 +43,13 @@ val viewModelModule= module {
     viewModel{
         RegisterCabeceraViewModel(get(),get())
     }
+
+    viewModel{
+        StockViewModel(get())
+    }
+    viewModel{
+        IncViewModel(get())
+    }
+
 
 }

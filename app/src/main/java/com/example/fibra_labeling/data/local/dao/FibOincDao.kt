@@ -13,7 +13,7 @@ interface FibOincDao {
     suspend fun insertAll(items: List<FibOincEntity>): List<Long>
 
     // Aquí está el cambio: ahora es Flow, no suspend
-    @Query("SELECT * FROM fib_oinc")
+    @Query("SELECT * FROM fib_oinc order by id desc ")
     fun getAllFlow(): kotlinx.coroutines.flow.Flow<List<FibOincEntity>>
 
     @Query("SELECT * FROM fib_oinc WHERE id = :id")

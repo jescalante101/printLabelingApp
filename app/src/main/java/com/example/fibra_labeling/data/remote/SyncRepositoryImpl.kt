@@ -1,10 +1,11 @@
 package com.example.fibra_labeling.data.remote
 
+import com.example.fibra_labeling.data.local.dao.FibOitmDao
 import com.example.fibra_labeling.data.local.dao.FilUserDao
 import com.example.fibra_labeling.data.local.mapper.toEntity
 import com.example.fibra_labeling.data.network.ApiService
 
-class SyncRepositoryImpl(private val api: ApiService,private val dao: FilUserDao): SyncRepository {
+class SyncRepositoryImpl(private val api: ApiService,private val dao: FilUserDao,private val oitmDao: FibOitmDao): SyncRepository {
     override suspend fun syncUsers() {
         try {
             val users = api.getUsers()
@@ -12,6 +13,16 @@ class SyncRepositoryImpl(private val api: ApiService,private val dao: FilUserDao
             dao.insertAll(users.mapNotNull {
                 it.toEntity()
             })
+        }catch (e:Exception){
+            e.printStackTrace()
+        }
+    }
+
+    override suspend fun syncOitms() {
+        try {
+            val oitms = api.getallOitmsFill()
+            if (oitms.isNotEmpty()) oitmDao.deleteAll()
+            oitmDao.insertAll(oitms.mapNotNull { it.toEntity() })
         }catch (e:Exception){
             e.printStackTrace()
         }

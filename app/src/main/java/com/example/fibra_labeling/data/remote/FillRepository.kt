@@ -3,6 +3,7 @@ package com.example.fibra_labeling.data.remote
 import com.example.fibra_labeling.data.model.AlmacenResponse
 import com.example.fibra_labeling.data.model.CodeBarRequest
 import com.example.fibra_labeling.data.model.MaquinasResponse
+import com.example.fibra_labeling.data.model.OITMData
 import com.example.fibra_labeling.data.model.OitmResponse
 import com.example.fibra_labeling.data.model.fibrafil.ProductoDetalleUi
 import com.example.fibra_labeling.data.model.fibrafil.FilPrintResponse
@@ -28,4 +29,5 @@ interface FillRepository {
 
     //
     suspend fun getUsers(): Flow<List<FilUserResponse>>
+    suspend fun getAllOitms(): Flow<List<OITMData>>
 }

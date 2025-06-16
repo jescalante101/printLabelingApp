@@ -6,5 +6,6 @@ data class AddEtiquetaFormErrorState(
     val almacenError: String? = null,
     val codigoReferenciaError: String? = null,
     val maquinaError: String? = null,
-    val ubicacionError: String? = null
+    val ubicacionError: String? = null,
+    val cantidadError: String?=null
 )
