@@ -132,7 +132,7 @@ fun AddEtiquetaScreen(
                         FloatingActionButton(
                             containerColor = Color(0xFF2C3E50),
                             onClick =  {
-                                Log.e("click", "SI HACE CLICK")
+
                                 viewmodel.updateOitw()
                             }
                         ) {
@@ -159,35 +159,6 @@ fun AddEtiquetaScreen(
                             }
                         }
 
-//                        Spacer(modifier = Modifier.height(16.dp))
-//                        FloatingActionButton(
-//                            containerColor = Color(0xFF2C3E50),
-//                            onClick = {
-//                                viewmodel.updateOitw()
-//                            }
-//                        ) {
-//                            Row(
-//                                modifier = Modifier.padding(horizontal = 16.dp),
-//                                horizontalArrangement = Arrangement.Center,
-//                                verticalAlignment = Alignment.CenterVertically
-//                            ) {
-//
-//                                Text(
-//                                    "Guardar",
-//
-//                                    style = MaterialTheme.typography.bodyMedium,
-//                                    color = Color.White
-//                                )
-//
-//                                Spacer(Modifier.width(8.dp))
-//
-//                                Icon(
-//                                    painter = painterResource(R.drawable.ic_save),
-//                                    contentDescription = "Print",
-//                                    tint = Color.White
-//                                )
-//                            }
-//                        }
 
                     }
 

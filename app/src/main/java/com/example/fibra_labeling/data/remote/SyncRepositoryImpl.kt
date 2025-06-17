@@ -1,5 +1,6 @@
 package com.example.fibra_labeling.data.remote
 
+import android.util.Log
 import com.example.fibra_labeling.data.local.dao.FibOitmDao
 import com.example.fibra_labeling.data.local.dao.FilUserDao
 import com.example.fibra_labeling.data.local.mapper.toEntity
@@ -40,6 +41,7 @@ class SyncRepositoryImpl(
     override suspend fun syncEtiquetaDetalle() {
         try {
             val etiquetaDetalle = etiquetaDetalleRepository.getNoSynced()
+            Log.e("Error",etiquetaDetalle.toString())
             if (etiquetaDetalle.isNotEmpty()){
                 val response = api.updateOitwInfo(etiquetaDetalle.map { it.toProductoDetalleUi() })
                 if (response.success){
@@ -51,6 +53,7 @@ class SyncRepositoryImpl(
             }
         }catch (e:Exception){
             e.printStackTrace()
+            Log.e("Error",e.message.toString())
         }
     }
 

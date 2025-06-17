@@ -185,8 +185,15 @@ class FillEtiquetaViewModel(
 
     fun updateOitw(){
         viewModelScope.launch {
-            _loading.value = true
+            _loading.value=true
+            val ip = impresoraPrefs.impresoraIp.first() // suspende hasta obtener el valor real
+            val puerto = impresoraPrefs.impresoraPuerto.first()
 
+            if (ip.isBlank() || puerto.isBlank()) {
+                _eventoNavegacion.emit("printSetting")
+                _loading.value=false
+                return@launch
+            }
             // 1. Validar/convertir cantidad
             val cantidad = formState.cantidad.toDoubleOrNull() ?: 0.0
 

@@ -43,7 +43,7 @@ fun RegisterCabecera(
     onNavigateBack: () -> Unit,
     onNavigateToFilEtiqueta: (isPrint: Boolean) -> Unit,
     viewModel: RegisterCabeceraViewModel = koinViewModel(),
-    onNavigateToDetails: ()-> Unit
+    onNavigateToDetails: (docEntry: Int)-> Unit
 ){
 
     var showSheet by remember { mutableStateOf(false) }
@@ -124,7 +124,9 @@ fun RegisterCabecera(
                                 )
                                 onNavigateToFilEtiqueta(false)
                             },
-                            onDetailsClick = {onNavigateToDetails()}
+                            onDetailsClick = {docEntry->
+                                onNavigateToDetails(docEntry)
+                            }
                         )
 
                     }

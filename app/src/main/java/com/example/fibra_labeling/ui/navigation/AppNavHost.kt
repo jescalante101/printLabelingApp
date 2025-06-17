@@ -174,13 +174,7 @@ fun AppNavHost(navController: NavHostController = rememberNavController(), start
                 navController.popBackStack()
             }
         }
-//        composable(
-//            Screen.ICounting.route
-//        ){
-//            ICountingScreen {
-//                navController.popBackStack()
-//            }
-//        }
+
 
         composable(
             Screen.InventarioOnc.route
@@ -190,7 +184,9 @@ fun AppNavHost(navController: NavHostController = rememberNavController(), start
                 onNavigateToFilEtiqueta = {
                     navController.navigate("${Screen.PrintRegister.route}/$it")
                 },
-                onNavigateToDetails = {navController.navigate(Screen.IncDetail.route)}
+                onNavigateToDetails = {
+                    navController.navigate("${Screen.IncDetail.route}/$it")
+                }
             )
         }
         composable(

@@ -232,7 +232,7 @@ fun HomeScreen(
                                     "inventory" -> onNavigateToInventory()
                                     "packingList"-> onNavigateToPackingList()
                                     "production"-> onNavigateToProduction()
-                                    "sync"->{viewModel.getDataFromApi()}
+                                    "sync"->{viewModel.getDataFromApiManual()}
                                 }
                             },
                         )

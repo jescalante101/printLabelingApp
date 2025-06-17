@@ -45,7 +45,7 @@ val networkModule = module {
     single {
         val contentType = "application/json".toMediaType()
         Retrofit.Builder()
-            .baseUrl(" http://192.168.20.234:5000/")
+            .baseUrl(" http://192.168.18.43:5000/")
             .addConverterFactory(get<Json>().asConverterFactory(contentType))
             .client(get())
             .build()

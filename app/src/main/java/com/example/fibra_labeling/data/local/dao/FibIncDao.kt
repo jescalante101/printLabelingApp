@@ -22,8 +22,16 @@ interface FibIncDao {
     @Query("SELECT * FROM fib_inc WHERE isSynced = 0")
     suspend fun getNotSynced(): List<FibIncEntity>
 
-    @Query("SELECT * FROM fib_inc WHERE docEntry = :docEntry")
-    fun getByDocEntry(docEntry: Int): Flow<List<FibIncEntity>>
+    @Query("""
+    SELECT * FROM fib_inc 
+    WHERE docEntry = :docEntry
+      AND (U_ItemName LIKE '%' || :filter || '%' OR U_ItemCode LIKE '%' || :filter || '%')
+    ORDER BY U_ItemCode
+""")
+    fun getByDocEntry(
+        docEntry: Int,
+        filter: String
+    ): Flow<List<FibIncEntity>>
 
     @Update
     suspend fun update(entity: FibIncEntity)

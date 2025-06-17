@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -48,6 +49,7 @@ fun ICountingScreen(
     product:String = "Pernos",
     itemCode:String = "123456789",
     whsCode:String = "CH3-RE",
+    conteo: Int = 0
 ){
 
     var cantidad by remember { mutableStateOf("0") }
@@ -57,185 +59,179 @@ fun ICountingScreen(
         viewModel.getStock()
         viewModel.setCodigo(itemCode)
         viewModel.setWhsCode(whsCode)
+        cantidad=conteo.toString()
     }
 
     Box(
         modifier = Modifier
-            .fillMaxSize()
-            .background(gradientBrush)
+            .wrapContentHeight()
     ) {
 
-        Scaffold(
-            containerColor = Color.Transparent,
+        Column (
+            modifier = Modifier
+
+                .background(Color.White)
+                .padding(top = 10.dp, start = 16.dp, end = 16.dp)
         ) {
-            Column (
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.White)
-                    .padding(it)
-                    .padding(top = 10.dp, start = 16.dp, end = 16.dp)
+            // Título
+            Text(product, fontWeight = FontWeight.Bold,)
+            Spacer(Modifier.height(4.dp))
+            // Subtítulo o ID
+
+            Spacer(Modifier.height(16.dp))
+
+            // Indicadores de stock y cantidad contada
+            Row (
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                // Título
-                Text(product, fontWeight = FontWeight.Bold,)
-                Spacer(Modifier.height(4.dp))
-                // Subtítulo o ID
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(stock.onHand.toString(), fontWeight = FontWeight.Bold, fontSize = 32.sp, color = Color(0xFF2E7D32))
+                    Text("Stock", color = Color.Gray)
+                }
+                Box(
+                    Modifier
+                        .height(50.dp)
+                        .width(1.dp)
+                        .background(Color(0xFFE0E0E0))
+                )
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text("${cantidad} ", fontWeight = FontWeight.Bold, fontSize = 32.sp, color = Color(0xFFD84315))
+                    Text("Cantidad contada", color = Color.Gray)
+                }
+            }
 
-                Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(24.dp))
 
-                // Indicadores de stock y cantidad contada
-                Row (
-                    Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(stock.onHand.toString(), fontWeight = FontWeight.Bold, fontSize = 32.sp, color = Color(0xFF2E7D32))
-                        Text("Stock", color = Color.Gray)
+            // Fila de iconos circulares
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .background(Color(0xFFE3F2FD))
+                    .padding(vertical = 8.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Icono "#"
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .size(48.dp)
+                            .background(Color(0xFF2196F3), CircleShape)
+                    ) {
+                        IconButton(
+                            onClick = {}
+                        ) {
+                            Text("#", color = Color.White, fontSize = 28.sp, fontWeight = FontWeight.Bold)
+                        }
                     }
+                    Spacer(Modifier.height(2.dp))
                     Box(
                         Modifier
-                            .height(50.dp)
-                            .width(1.dp)
-                            .background(Color(0xFFE0E0E0))
+                            .height(3.dp)
+                            .width(32.dp)
+                            .background(Color(0xFF2196F3), RoundedCornerShape(2.dp))
                     )
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text("${cantidad} ", fontWeight = FontWeight.Bold, fontSize = 32.sp, color = Color(0xFFD84315))
-                        Text("Cantidad contada", color = Color.Gray)
+                }
+                // Icono "i"
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .size(48.dp)
+                        .border(2.dp, Color(0xFF2196F3), CircleShape)
+                ) {
+                    IconButton(
+                        onClick = {}
+                    ) {
+                        Text("i", color = Color(0xFF2196F3), fontSize = 28.sp, fontWeight = FontWeight.Bold)
                     }
                 }
 
-                Spacer(Modifier.height(24.dp))
-
-                // Fila de iconos circulares
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .background(Color(0xFFE3F2FD))
-                        .padding(vertical = 8.dp),
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    verticalAlignment = Alignment.CenterVertically
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .size(48.dp)
+                        .border(2.dp, Color(0xFF2196F3), CircleShape)
                 ) {
-                    // Icono "#"
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier
-                                .size(48.dp)
-                                .background(Color(0xFF2196F3), CircleShape)
-                        ) {
-                            IconButton(
-                                onClick = {}
-                            ) {
-                                Text("#", color = Color.White, fontSize = 28.sp, fontWeight = FontWeight.Bold)
-                            }
-                        }
-                        Spacer(Modifier.height(2.dp))
-                        Box(
-                            Modifier
-                                .height(3.dp)
-                                .width(32.dp)
-                                .background(Color(0xFF2196F3), RoundedCornerShape(2.dp))
+                    IconButton(
+                        onClick = {}
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_print),
+                            contentDescription = "print",
+                            tint = Color(0xFF2196F3),
+                            modifier = Modifier.size(28.dp)
                         )
-                    }
-                    // Icono "i"
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier
-                            .size(48.dp)
-                            .border(2.dp, Color(0xFF2196F3), CircleShape)
-                    ) {
-                        IconButton(
-                            onClick = {}
-                        ) {
-                            Text("i", color = Color(0xFF2196F3), fontSize = 28.sp, fontWeight = FontWeight.Bold)
-                        }
-                    }
-
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier
-                            .size(48.dp)
-                            .border(2.dp, Color(0xFF2196F3), CircleShape)
-                    ) {
-                        IconButton(
-                            onClick = {}
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_print),
-                                contentDescription = "print",
-                                tint = Color(0xFF2196F3),
-                                modifier = Modifier.size(28.dp)
-                            )
-                        }
-                    }
-                }
-
-                Spacer(Modifier.height(24.dp))
-
-                // Teclado numérico 3x4
-                Column(
-                    Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    val numbers = listOf(
-                        listOf("1", "2", "3"),
-                        listOf("4", "5", "6"),
-                        listOf("7", "8", "9"),
-                        listOf("x", "0", "\uD83D\uDCBE")
-                    )
-                    numbers.forEach { row ->
-                        Row(
-                            Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceEvenly
-                        ) {
-                            row.forEach { label ->
-                                Card(
-                                    modifier = Modifier
-                                        .size(56.dp)
-                                        ,
-                                    colors = CardDefaults.cardColors(
-                                        containerColor = if(label=="«") Color.Green else Color.White
-                                    ),
-                                    elevation = CardDefaults.cardElevation(
-                                        defaultElevation = 4.dp
-                                    ),
-                                    onClick = {
-                                        if(label == "x"){
-                                            cantidad = if (cantidad.length == 1){
-                                                "0"
-                                            }else{
-                                                cantidad.dropLast(1)
-                                            }
-                                        }else if(label == "\uD83D\uDCBE"){
-                                            onSave(cantidad, stock.onHand?.toDouble() ?: 00.0)
-                                        }else{
-                                            if(cantidad == "0"){
-                                                cantidad = label
-                                            }else{
-                                                cantidad += label
-                                            }
-                                        }
-                                    }
-                                ) {
-                                    Box(
-                                        modifier = Modifier.fillMaxSize(),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Text(
-                                            label,
-                                            fontSize = 24.sp,
-                                            textAlign = TextAlign.Center
-                                        )
-                                    }
-                                }
-
-                            }
-                        }
-                        Spacer(Modifier.height(8.dp))
                     }
                 }
             }
-        }
 
+            Spacer(Modifier.height(24.dp))
+
+            // Teclado numérico 3x4
+            Column(
+                Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                val numbers = listOf(
+                    listOf("1", "2", "3"),
+                    listOf("4", "5", "6"),
+                    listOf("7", "8", "9"),
+                    listOf("x", "0", "\uD83D\uDCBE")
+                )
+                numbers.forEach { row ->
+                    Row(
+                        Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        row.forEach { label ->
+                            Card(
+                                modifier = Modifier
+                                    .size(56.dp)
+                                ,
+                                colors = CardDefaults.cardColors(
+                                    containerColor = if(label=="«") Color.Green else Color.White
+                                ),
+                                elevation = CardDefaults.cardElevation(
+                                    defaultElevation = 4.dp
+                                ),
+                                onClick = {
+                                    if(label == "x"){
+                                        cantidad = if (cantidad.length == 1){
+                                            "0"
+                                        }else{
+                                            cantidad.dropLast(1)
+                                        }
+                                    }else if(label == "\uD83D\uDCBE"){
+                                        onSave(cantidad, stock.onHand?.toDouble() ?: 00.0)
+                                    }else{
+                                        if(cantidad == "0"){
+                                            cantidad = label
+                                        }else{
+                                            cantidad += label
+                                        }
+                                    }
+                                }
+                            ) {
+                                Box(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        label,
+                                        fontSize = 24.sp,
+                                        textAlign = TextAlign.Center
+                                    )
+                                }
+                            }
+
+                        }
+                    }
+                    Spacer(Modifier.height(8.dp))
+                }
+            }
+        }
 
 //        Box(
 //            modifier = Modifier.padding(top= 32.dp)

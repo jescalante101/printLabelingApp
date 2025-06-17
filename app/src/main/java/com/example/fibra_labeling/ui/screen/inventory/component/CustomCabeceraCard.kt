@@ -32,7 +32,7 @@ fun FioriCardConteoCompact(
     dto: FibOincEntity,
     modifier: Modifier = Modifier,
     onClick: (dto: FibOincEntity) -> Unit = {},
-    onDetailsClick: () -> Unit = {}
+    onDetailsClick: (docEntry: Int) -> Unit = {}
 ) {
     Card(
         modifier = modifier
@@ -76,7 +76,7 @@ fun FioriCardConteoCompact(
                         containerColor = Color(0xFF004990).copy(alpha = 0.5f)
                     ),
                     onClick = {
-                        onDetailsClick()
+                        onDetailsClick(dto.docEntry.toInt())
                     },
                     modifier = Modifier.padding(end = 8.dp)
                 ) {

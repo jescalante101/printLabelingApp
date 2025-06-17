@@ -10,28 +10,29 @@ import kotlinx.coroutines.flow.stateIn
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 
 class IncViewModel(private val fibIncRepository: FibIncRepository): ViewModel() {
 
-//    val incData: StateFlow<List<FibIncEntity>> = fibIncRepository.getAll()
-//        .stateIn(
-//            viewModelScope,
-//            SharingStarted.Eagerly,
-//            emptyList()
-//        )
-
     // Estado para el docEntry actualmente consultado (puede ser un parámetro mutable)
-    private val _docEntry = MutableStateFlow<Int?>(null)
+    private val _docEntry = MutableStateFlow<Int>(0)
+    private val _search = MutableStateFlow<String?>(null)
 
+    // Método para cambiar el docEntry que deseas consultar
+    fun setDocEntry(docEntry: Int) {
+        _docEntry.value = docEntry
+    }
+    fun setSearch(query: String?) {
+        _search.value = query
+    }
     // Expón el Flow de los detalles según el docEntry seleccionado
     @OptIn(ExperimentalCoroutinesApi::class)
-    val incData: StateFlow<List<FibIncEntity>> = _docEntry
-        .filterNotNull()
-        .flatMapLatest { docEntry ->
-            fibIncRepository.getByDocEntry(docEntry)
+    val incData: StateFlow<List<FibIncEntity>> = _search
+        .flatMapLatest { filter ->
+            fibIncRepository.getByDocEntry(_docEntry.value, _search.value ?: "")
         }
         .stateIn(
             viewModelScope,
@@ -39,10 +40,6 @@ class IncViewModel(private val fibIncRepository: FibIncRepository): ViewModel() 
             emptyList()
         )
 
-    // Método para cambiar el docEntry que deseas consultar
-    fun setDocEntry(docEntry: Int) {
-        _docEntry.value = docEntry
-    }
 
 
     private val _productCode= MutableStateFlow<String>("")
@@ -81,6 +78,24 @@ class IncViewModel(private val fibIncRepository: FibIncRepository): ViewModel() 
             fibIncRepository.update(_itemSelected.value)
         }
     }
+    var ultimoEliminado: FibIncEntity? = null
+    fun deleteItem(item: FibIncEntity){
+        viewModelScope.launch {
+            ultimoEliminado = item
+            fibIncRepository.delete(item)
+        }
+
+    }
+
+    fun restaurarUltimoEliminado() {
+        ultimoEliminado?.let { inc ->
+            viewModelScope.launch {
+                fibIncRepository.insert(inc)
+                ultimoEliminado = null
+            }
+        }
+    }
+
 
 
 }

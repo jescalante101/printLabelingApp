@@ -17,7 +17,7 @@ class FibIncRepositoryImpl(private val dao: FibIncDao): FibIncRepository {
 
     override suspend fun update(entity: FibIncEntity) =dao.update(entity)
 
-    override fun getByDocEntry(docEntry: Int): Flow<List<FibIncEntity>> = dao.getByDocEntry(docEntry)
+    override fun getByDocEntry(docEntry: Int,filter: String): Flow<List<FibIncEntity>> = dao.getByDocEntry(docEntry,filter)
 
     override suspend fun delete(entity: FibIncEntity) =dao.delete(entity)
 
