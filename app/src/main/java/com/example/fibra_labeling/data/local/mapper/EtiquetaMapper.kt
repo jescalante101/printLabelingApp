@@ -18,3 +18,14 @@ fun ProductoDetalleUi.toEtiquetaDetalleEntity(
     Cantidad = cantidad,
     isSynced = isSynced
 )
+
+fun EtiquetaDetalleEntity.toProductoDetalleUi(): ProductoDetalleUi = ProductoDetalleUi(
+    codigo = itemCode,
+    productoName = itemName,
+    lote = u_FIB_Ref1 ?: "",
+    referencia = u_FIB_Ref2 ?: "",
+    maquina = u_FIB_MachineCode ?: "",
+    ubicacion = u_FIB_BinLocation ?: "",
+    codBar = codeBars,
+    whsCode = whsCode,
+)

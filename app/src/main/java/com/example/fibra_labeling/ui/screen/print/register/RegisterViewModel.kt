@@ -3,6 +3,7 @@ package com.example.fibra_labeling.ui.screen.print.register
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fibra_labeling.data.local.entity.fibrafil.FibOITMEntity
+import com.example.fibra_labeling.data.local.repository.fibrafil.EtiquetaDetalleRepository
 import com.example.fibra_labeling.data.local.repository.fibrafil.oitm.FibOitmRepository
 import com.example.fibra_labeling.data.model.OitmResponse
 import com.example.fibra_labeling.data.remote.OitmRepository
@@ -51,12 +52,11 @@ class RegisterViewModel(
     @OptIn(ExperimentalCoroutinesApi::class)
     val productos: StateFlow<List<FibOITMEntity>> = _filtro
         .flatMapLatest { filtroRaw ->
-            val filtro = when {
-                filtroRaw.isBlank() -> "%"
-                filtroRaw.contains("*") -> filtroRaw.replace("*", "%")
-                else -> "%${filtroRaw}%" // <<-- Esto lo hace "contiene"
-            }
-            fibOitmRepository.search(filtro,filtro)
+            val terms = filtroRaw.split("\\s+".toRegex()).filter { it.isNotBlank() }
+            val term1 = terms.getOrNull(0)?.replace("*", "%")?.let { "%$it%" }
+            val term2 = terms.getOrNull(1)?.replace("*", "%")?.let { "%$it%" }
+            val term3 = terms.getOrNull(2)?.replace("*", "%")?.let { "%$it%" }
+            fibOitmRepository.search(term1,term2,term3)
                 .catch { e ->
                     _totalResult.value = 0
                 }
@@ -84,14 +84,13 @@ class RegisterViewModel(
                         _loading.value = false
                     }
             }
-
         }
 
     }
 
     fun updateUser(){
         viewModelScope.launch {
-            userLoginPreference.saveUserLogin("","")
+            userLoginPreference.saveUserLogin("","","")
         }
 
     }

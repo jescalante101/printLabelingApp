@@ -1,6 +1,5 @@
 package com.example.fibra_labeling.data.local.entity.fibrafil
 
-import android.R
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -16,5 +15,5 @@ data class EtiquetaDetalleEntity(
     val codeBars: String,
     val whsCode: String,
     val Cantidad: String?,
-    val isSynced: Boolean = false
+    var isSynced: Boolean = false
 )

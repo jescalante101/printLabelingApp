@@ -64,7 +64,7 @@ interface ApiService {
     suspend fun filPrintEtiqueta(@Body codeBarValue: FillPrintRequest): FilPrintResponse
 
     @POST("fibrafil/update-etiqueta")
-    suspend fun updateOitwInfo(@Body productoDetalleUi: ProductoDetalleUi): FilPrintResponse
+    suspend fun updateOitwInfo(@Body productoDetalleUi: List<ProductoDetalleUi>): FilPrintResponse
 
     @GET("fibrafil/list-oinc")
     suspend fun getOinc(): List<OincApiResponse>

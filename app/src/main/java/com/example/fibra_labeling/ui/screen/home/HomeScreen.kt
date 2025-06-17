@@ -30,8 +30,10 @@ import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerDefaults
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -50,6 +52,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -97,13 +100,37 @@ fun HomeScreen(
         HomeCategories(R.drawable.sync_svgrepo_com,"Sincronizar","sync")
     )
 
-
-
+    val isSyncing by viewModel.isSyncing.collectAsState()
+    val syncMessage by viewModel.syncMessage.collectAsState()
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
     var showSheet by remember { mutableStateOf(false) }
+
+    //Dialog
+    if (isSyncing) {
+        AlertDialog(
+            onDismissRequest = {}, // Así no se puede cerrar tocando fuera ni con back
+            title = {
+                Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    Text("Sincronización")
+                }
+            },
+            text = {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    CircularProgressIndicator()
+                    Spacer(Modifier.height(16.dp))
+                    Text(syncMessage)
+                }
+            },
+            confirmButton = {} // Sin botón de cierre
+        )
+    }
 
     ModalNavigationDrawer(
         drawerContent = {

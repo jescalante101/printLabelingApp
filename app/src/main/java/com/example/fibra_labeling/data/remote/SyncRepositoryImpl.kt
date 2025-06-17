@@ -3,9 +3,16 @@ package com.example.fibra_labeling.data.remote
 import com.example.fibra_labeling.data.local.dao.FibOitmDao
 import com.example.fibra_labeling.data.local.dao.FilUserDao
 import com.example.fibra_labeling.data.local.mapper.toEntity
+import com.example.fibra_labeling.data.local.mapper.toProductoDetalleUi
+import com.example.fibra_labeling.data.local.repository.fibrafil.EtiquetaDetalleRepository
 import com.example.fibra_labeling.data.network.ApiService
 
-class SyncRepositoryImpl(private val api: ApiService,private val dao: FilUserDao,private val oitmDao: FibOitmDao): SyncRepository {
+class SyncRepositoryImpl(
+    private val api: ApiService,
+    private val dao: FilUserDao,
+    private val oitmDao: FibOitmDao,
+    private val etiquetaDetalleRepository: EtiquetaDetalleRepository
+): SyncRepository {
     override suspend fun syncUsers() {
         try {
             val users = api.getUsers()
@@ -18,6 +25,7 @@ class SyncRepositoryImpl(private val api: ApiService,private val dao: FilUserDao
         }
     }
 
+
     override suspend fun syncOitms() {
         try {
             val oitms = api.getallOitmsFill()
@@ -27,4 +35,25 @@ class SyncRepositoryImpl(private val api: ApiService,private val dao: FilUserDao
             e.printStackTrace()
         }
     }
+
+
+    override suspend fun syncEtiquetaDetalle() {
+        try {
+            val etiquetaDetalle = etiquetaDetalleRepository.getNoSynced()
+            if (etiquetaDetalle.isNotEmpty()){
+                val response = api.updateOitwInfo(etiquetaDetalle.map { it.toProductoDetalleUi() })
+                if (response.success){
+                    etiquetaDetalle.forEach {
+                        it.isSynced = true
+                        etiquetaDetalleRepository.update(it)
+                    }
+                }
+            }
+        }catch (e:Exception){
+            e.printStackTrace()
+        }
+    }
+
+
+
 }

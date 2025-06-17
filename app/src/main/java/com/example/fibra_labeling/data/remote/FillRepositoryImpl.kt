@@ -80,7 +80,7 @@ class FillRepositoryImpl(private val apiService: ApiService): FillRepository {
         }
     }
 
-    override suspend fun updateOitwInfo(productoDetalleUi: ProductoDetalleUi): Flow<FilPrintResponse> = flow {
+    override suspend fun updateOitwInfo(productoDetalleUi: List<ProductoDetalleUi>): Flow<FilPrintResponse> = flow {
         emit(apiService.updateOitwInfo(productoDetalleUi))
     }.catch {
         if(it is UnknownServiceException){

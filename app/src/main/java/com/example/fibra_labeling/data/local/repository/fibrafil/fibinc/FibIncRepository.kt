@@ -16,6 +16,8 @@ interface FibIncRepository {
 
     suspend fun update(entity: FibIncEntity)
 
+    fun getByDocEntry(docEntry: Int): Flow<List<FibIncEntity>>
+
     suspend fun delete(entity: FibIncEntity)
 
     suspend fun deleteAll()

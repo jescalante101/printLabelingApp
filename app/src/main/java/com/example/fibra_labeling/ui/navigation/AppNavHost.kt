@@ -155,10 +155,15 @@ fun AppNavHost(navController: NavHostController = rememberNavController(), start
         }
 
         composable(
-            Screen.IncDetail.route
-        ) {
+            route = "${Screen.IncDetail.route}/{docEntry}",
+            arguments = listOf(
+                navArgument("docEntry"){type= NavType.IntType}
+            )
+        ) {backStackEntry ->
+            val docEntry = backStackEntry.arguments?.getInt("docEntry")
             IncScreen(
-                onNavigateBack = {navController.popBackStack()}
+                onNavigateBack = {navController.popBackStack()},
+                docEntry = docEntry ?: 0
             )
         }
 

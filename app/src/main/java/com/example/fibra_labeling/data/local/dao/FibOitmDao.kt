@@ -24,21 +24,16 @@ interface FibOitmDao {
     suspend fun getByCode(codesap: String): FibOITMEntity?
 
     // Búsqueda por desc, codebars o codesap (LIKE)
-    @Query("SELECT * FROM fib_oitm WHERE codesap LIKE :first OR fib_oitm.`desc` LIKE :second ")
-//    @Query("""
-//    SELECT * FROM fib_oitm
-//    WHERE
-//        (
-//            (:first IS NULL OR codesap LIKE :first)
-//            AND (:second IS NULL OR `desc` LIKE :second)
-//        )
-//        OR
-//        (
-//            (:first IS NULL OR `desc` LIKE :first)
-//            AND (:second IS NULL OR codesap LIKE :second)
-//        )
-//""")
-    fun searchFlow(first: String?, second: String?): Flow<List<FibOITMEntity>>
+//    @Query("SELECT * FROM fib_oitm WHERE codesap LIKE :first OR fib_oitm.`desc` LIKE :second ")
+
+    @Query("""
+    SELECT * FROM fib_oitm
+    WHERE 
+        (:first IS NULL OR codesap LIKE :first OR `desc` LIKE :first)
+    AND (:second IS NULL OR codesap LIKE :second OR `desc` LIKE :second)
+    AND (:tercero IS NULL OR codesap LIKE :tercero OR `desc` LIKE :tercero)
+    """)
+    fun searchFlow(first: String?, second: String?,tercero: String?): Flow<List<FibOITMEntity>>
 
     @Delete
     suspend fun delete(entity: FibOITMEntity)

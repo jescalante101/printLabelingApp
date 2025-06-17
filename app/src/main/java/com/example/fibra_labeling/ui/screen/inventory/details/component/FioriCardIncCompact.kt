@@ -123,7 +123,8 @@ fun PreviewFioriCardIncCompact() {
             U_ItemCode = "ARE01",
             U_ItemName = "Abrazadera Plana",
             U_WhsCode = "ALM-01",
-            isSynced = false
+            isSynced = false,
+            docEntry = 123
         )
     )
 }

@@ -87,6 +87,9 @@ class FillEtiquetaViewModel(
     private val _user= MutableStateFlow<String>("")
     val user: MutableStateFlow<String> = _user
 
+    private val _docEntry= MutableStateFlow<String>("")
+    val docEntry: MutableStateFlow<String> = _docEntry
+
 
 
 
@@ -213,7 +216,9 @@ class FillEtiquetaViewModel(
             }
             Log.e("ASKJDHKASJHDJKAS",stock.toString())
 
-            saveInc(stock)
+            if (_docEntry.value.isNotEmpty()){
+                saveInc(stock,_docEntry.value.toInt())
+            }
 
             // 5. Acciones post-guardado
             _eventoNavegacion.emit("savedLocal") // Ejemplo: navega o muestra mensaje
@@ -264,14 +269,15 @@ class FillEtiquetaViewModel(
     fun getUserLogin(){
         viewModelScope.launch {
             _user.value=userLoginPreference.userName.firstOrNull() ?: ""
+            _docEntry.value=userLoginPreference.docEntry.firstOrNull() ?: ""
         }
     }
 
-
-    private fun saveInc(stock: Double){
+    private fun saveInc(stock: Double,docEntry:Int){
         viewModelScope.launch {
             val cantidad=formState.cantidad.toDoubleOrNull()?:0.0
             val diference= stock - cantidad
+
             val entity= FibIncEntity(
                 U_Difference = diference,
                 U_WhsCode = formState.almacen?.whsCode,
@@ -280,8 +286,8 @@ class FillEtiquetaViewModel(
                 U_ItemCode = formState.codigo,
                 U_ItemName = formState.producto,
                 isSynced = false,
+                docEntry = docEntry
             )
-
             fibIncRepository.insert(entity)
         }
     }

@@ -18,7 +18,7 @@ import androidx.room.PrimaryKey
 data class FibIncEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
-    val docEntry: Int,
+    val docEntry: Int?,
     val U_CountQty: Double?,
     val U_Difference: Double?,
     val U_InWhsQty: Double?,

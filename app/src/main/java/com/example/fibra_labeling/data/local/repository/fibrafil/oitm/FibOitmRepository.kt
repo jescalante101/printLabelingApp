@@ -8,7 +8,7 @@ interface FibOitmRepository {
     suspend fun insert(entity: FibOITMEntity)
     suspend fun getAll(): List<FibOITMEntity>
     suspend fun getByCode(codesap: String): FibOITMEntity?
-    suspend fun search(first: String?, second: String?): Flow<List<FibOITMEntity>>
+    suspend fun search(first: String?, second: String?,tercero: String?): Flow<List<FibOITMEntity>>
     suspend fun delete(entity: FibOITMEntity)
     suspend fun deleteAll()
 }

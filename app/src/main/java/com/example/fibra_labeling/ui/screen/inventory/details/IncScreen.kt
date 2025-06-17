@@ -13,12 +13,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
@@ -33,14 +36,26 @@ import com.example.fibra_labeling.ui.screen.component.CustomSearch
 import com.example.fibra_labeling.ui.screen.inventory.details.component.FioriCardIncCompact
 import org.koin.androidx.compose.koinViewModel
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import com.example.fibra_labeling.ui.screen.inventory.register.stock.ICountingScreen
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun IncScreen(
     onNavigateBack: () -> Unit,
-    viewModel: IncViewModel = koinViewModel()
+    viewModel: IncViewModel = koinViewModel(),
+    docEntry: Int
 ){
 
     val incData by viewModel.incData.collectAsState()
+
+    var showSheet by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
+    val itemSelected by viewModel.itemSelected.collectAsState()
+
 
     Box {
         Scaffold {
@@ -92,33 +107,16 @@ fun IncScreen(
                     ) {
                         val inc = incData[index]
                         FioriCardIncCompact(
-                            dto = inc
+                            dto = inc,
+                            onClick = {item->
+                                viewModel.onItemSelectedChange(inc)
+
+                                showSheet = true
+                            }
                         )
                     }
                 }
 
-//                items(oincs.size) { index ->
-//                    AnimatedVisibility(
-//                        visible = true,
-//                        enter = fadeIn(),
-//                        exit = fadeOut()
-//                    ) {
-//                        val oinc = oincs[index]
-//                        FioriCardConteoCompact(
-//                            dto = oinc,
-//                            onClick = {
-//                                //Navegate to App
-//                                viewModel.saveUserLogin(
-//                                    userLogin = oinc.u_UserNameCount ?: "",
-//                                    code = oinc.u_Ref ?: ""
-//                                )
-//
-//                                onNavigateToFilEtiqueta(false)
-//                            }
-//                        )
-//
-//                    }
-//                }
             }
         }
         Box(
@@ -152,6 +150,24 @@ fun IncScreen(
                         )
                     }
                 }
+            )
+        }
+    }
+
+    if (showSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showSheet = false },
+            sheetState = sheetState,
+        ) {
+            ICountingScreen(
+                onSave = { cantidad, stock ->
+                    viewModel.onConteoChange(cantidad.toString()) // ← Aquí obtienes el valor cuando el usuario confirma
+                    viewModel.updateConteo()
+                    showSheet = false
+                },
+                product = itemSelected.U_ItemName.toString(),
+                itemCode = itemSelected.U_ItemCode.toString(),
+                whsCode = "CH3-RE"
             )
         }
     }

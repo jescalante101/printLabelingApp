@@ -21,7 +21,7 @@ interface FillRepository {
     suspend fun getMaquinas(filter: String, page: Int, pageSize: Int): Flow<MaquinasResponse>
     suspend fun filPrintEtiqueta(body: FillPrintRequest): Flow<FilPrintResponse>
 
-    suspend fun updateOitwInfo(productoDetalleUi: ProductoDetalleUi): Flow<FilPrintResponse>
+    suspend fun updateOitwInfo(productoDetalleUi: List<ProductoDetalleUi>): Flow<FilPrintResponse>
     suspend fun getOincs(): Flow<List<OincApiResponse>>
     suspend fun insertOinc(oinc: OincApiResponse): Flow<OincInsertApiResponse>
 

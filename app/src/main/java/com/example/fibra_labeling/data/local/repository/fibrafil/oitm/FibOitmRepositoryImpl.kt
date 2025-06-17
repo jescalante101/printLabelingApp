@@ -16,7 +16,7 @@ class FibOITMRepositoryImpl(
 
     override suspend fun getByCode(codesap: String): FibOITMEntity? = dao.getByCode(codesap)
 
-    override suspend fun search(first: String?, second: String?): Flow<List<FibOITMEntity>> = dao.searchFlow(first,second)
+    override suspend fun search(first: String?, second: String?, tercero: String?): Flow<List<FibOITMEntity>> = dao.searchFlow(first,second,tercero)
 
     override suspend fun delete(entity: FibOITMEntity) = dao.delete(entity)
 

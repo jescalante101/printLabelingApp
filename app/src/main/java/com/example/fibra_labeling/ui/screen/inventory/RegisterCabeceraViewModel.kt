@@ -18,9 +18,9 @@ class RegisterCabeceraViewModel(fibrOincRepository: FibOincRepository,private va
             SharingStarted.Eagerly,
             emptyList()
         )
-    fun saveUserLogin(userLogin: String,code: String){
+    fun saveUserLogin(userLogin: String,code: String,docEntry: String){
         viewModelScope.launch {
-            userLoginPreference.saveUserLogin(code,userLogin)
+            userLoginPreference.saveUserLogin(code,userLogin,docEntry)
         }
 
     }

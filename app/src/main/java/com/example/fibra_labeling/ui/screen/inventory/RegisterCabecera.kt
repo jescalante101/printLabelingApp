@@ -119,7 +119,8 @@ fun RegisterCabecera(
                                 //Navegate to App
                                 viewModel.saveUserLogin(
                                     userLogin = oinc.u_UserNameCount ?: "",
-                                    code = oinc.u_Ref ?: ""
+                                    code = oinc.u_Ref ?: "",
+                                    docEntry = oinc.docEntry.toString()
                                 )
                                 onNavigateToFilEtiqueta(false)
                             },
