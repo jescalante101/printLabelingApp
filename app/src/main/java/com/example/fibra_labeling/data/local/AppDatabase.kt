@@ -18,6 +18,7 @@ import com.example.fibra_labeling.data.local.entity.fibrafil.FibIncEntity
 import com.example.fibra_labeling.data.local.entity.fibrafil.FibOITMEntity
 import com.example.fibra_labeling.data.local.entity.fibrafil.FibOincEntity
 import com.example.fibra_labeling.data.local.entity.fibrafil.FilUserEntity
+import com.example.fibra_labeling.data.migration.MIGRATION_2_3
 
 @Database(
     entities = [EtiquetaDetalleEntity::class,
@@ -26,8 +27,9 @@ import com.example.fibra_labeling.data.local.entity.fibrafil.FilUserEntity
         FibIncEntity::class,
         FibAlmacenEntity::class,
         FibOITMEntity::class
-    ], // agrega otras entidades si tienes
-    version = 3
+    ],
+    version = 4,
+    exportSchema = false
 )
 abstract class AppDatabase: RoomDatabase()  {
 
@@ -48,7 +50,10 @@ abstract class AppDatabase: RoomDatabase()  {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "fibra_labeling_db"
-                ).build().also { INSTANCE = it }
+                )
+                    .addMigrations(MIGRATION_2_3)  // Agregar la migración
+                    .build().also { INSTANCE = it }
             }
     }
 }
+

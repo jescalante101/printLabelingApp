@@ -16,5 +16,12 @@ data class OincApiResponse(
     @SerialName("u_Remarks")
     val uRemarks: String?,
     @SerialName("u_StartTime")
-    val uStartTime: String?
+    val uStartTime: String?,
+    @SerialName("u_UserNameCount")
+    val uUserNameCount: String?,
+    @SerialName("u_UserCodeCount")
+    val uUserCodeCount: String?,
+    @SerialName("detalle")
+    val detalles: List<IncApiResponse>?
+
 )

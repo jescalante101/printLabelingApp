@@ -151,7 +151,8 @@ fun IncScreen(
                                     viewModel.onItemSelectedChange(inc)
 
                                     showSheet = true
-                                }
+                                },
+                                enabled = !inc.isSynced
                             )
                         }
 

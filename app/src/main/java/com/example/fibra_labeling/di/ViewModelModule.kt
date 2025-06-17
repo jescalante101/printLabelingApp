@@ -41,7 +41,7 @@ val viewModelModule= module {
         OincRegisterViewModel(get(),get())
     }
     viewModel{
-        RegisterCabeceraViewModel(get(),get())
+        RegisterCabeceraViewModel(get(),get(),get())
     }
 
     viewModel{

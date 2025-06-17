@@ -36,16 +36,16 @@ val networkModule = module {
             .addInterceptor(HttpLoggingInterceptor().apply {
                 level = HttpLoggingInterceptor.Level.BODY
             })
-            .connectTimeout(30, TimeUnit.SECONDS)    // Tiempo máximo para conectar al servidor
-            .readTimeout(60, TimeUnit.SECONDS)       // Tiempo máximo esperando respuesta
-            .writeTimeout(60, TimeUnit.SECONDS)
+            .connectTimeout(60, TimeUnit.SECONDS)    // Tiempo máximo para conectar al servidor
+            .readTimeout(400, TimeUnit.SECONDS)       // Tiempo máximo esperando respuesta
+            .writeTimeout(400, TimeUnit.SECONDS)
             .build()
     }
 
     single {
         val contentType = "application/json".toMediaType()
         Retrofit.Builder()
-            .baseUrl(" http://192.168.18.43:5000/")
+            .baseUrl(" http://192.168.20.245:5000/")
             .addConverterFactory(get<Json>().asConverterFactory(contentType))
             .client(get())
             .build()

@@ -14,7 +14,9 @@ import com.example.fibra_labeling.data.model.fibrafil.ProductoDetalleUi
 import com.example.fibra_labeling.data.model.ProveedorResponse
 import com.example.fibra_labeling.data.model.fibrafil.FilPrintResponse
 import com.example.fibra_labeling.data.model.fibrafil.FillPrintRequest
+import com.example.fibra_labeling.data.model.fibrafil.OncInsertResponse
 import com.example.fibra_labeling.data.model.fibrafil.StockResponse
+import com.example.fibra_labeling.data.model.fibrafil.UpdateITWResponse
 import com.example.fibra_labeling.data.model.fibrafil.oinc.OincApiResponse
 import com.example.fibra_labeling.data.model.fibrafil.oinc.OincInsertApiResponse
 import com.example.fibra_labeling.data.model.fibrafil.users.FilUserResponse
@@ -64,13 +66,13 @@ interface ApiService {
     suspend fun filPrintEtiqueta(@Body codeBarValue: FillPrintRequest): FilPrintResponse
 
     @POST("fibrafil/update-etiqueta")
-    suspend fun updateOitwInfo(@Body productoDetalleUi: List<ProductoDetalleUi>): FilPrintResponse
+    suspend fun updateOitwInfo(@Body productoDetalleUi: List<ProductoDetalleUi>): List<UpdateITWResponse>
 
     @GET("fibrafil/list-oinc")
     suspend fun getOinc(): List<OincApiResponse>
 
     @POST("fibrafil/insertar-cabecera-oinc")
-    suspend fun insertOinc(@Body oinc: OincApiResponse): OincInsertApiResponse
+    suspend fun insertOinc(@Body oinc: OincApiResponse): OncInsertResponse
 
     @GET("fibrafil/get-users")
     suspend fun getUsers() : List<FilUserResponse>

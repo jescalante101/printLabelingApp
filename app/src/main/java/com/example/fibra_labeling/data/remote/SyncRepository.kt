@@ -1,5 +1,7 @@
 package com.example.fibra_labeling.data.remote
 
+import com.example.fibra_labeling.data.model.fibrafil.OncInsertResponse
+
 interface SyncRepository {
     //Get
     suspend fun syncUsers()
@@ -7,4 +9,6 @@ interface SyncRepository {
 
     //Send
     suspend fun syncEtiquetaDetalle()
+
+    suspend fun sycOinc(docEntry: Long):OncInsertResponse
 }

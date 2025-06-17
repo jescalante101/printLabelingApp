@@ -13,5 +13,10 @@ data class FibOincEntity(
     val u_StartTime: String?,
     val u_UserNameCount: String?,
     val u_userCodeCount: String?,
-    val isSynced: Boolean = false
+    val isSynced: Boolean = false,
+
+    //Nuevos Columnas
+    val docNum: String? = null, // Nuevo campo
+    val fechaSync: String? = null // Nuevo campo
+
 )

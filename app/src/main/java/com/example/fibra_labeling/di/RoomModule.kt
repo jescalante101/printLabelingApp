@@ -2,6 +2,7 @@ package com.example.fibra_labeling.di
 
 import androidx.room.Room
 import com.example.fibra_labeling.data.local.AppDatabase
+import com.example.fibra_labeling.data.migration.MIGRATION_2_3
 import org.koin.dsl.module
 import kotlin.math.sin
 
@@ -11,7 +12,9 @@ val roomModule = module {
                 get(), // contexto de Android inyectado por Koin
                 AppDatabase::class.java,
                 "fibra_labeling_db"
-            ).fallbackToDestructiveMigration(false).build()
+            )
+            .addMigrations(MIGRATION_2_3)
+            .build()
     }
 
     single { get<AppDatabase>().etiquetaDetalleDao() }

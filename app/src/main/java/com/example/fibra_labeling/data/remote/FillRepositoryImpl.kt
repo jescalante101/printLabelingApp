@@ -9,6 +9,7 @@ import com.example.fibra_labeling.data.model.fibrafil.ProductoDetalleUi
 import com.example.fibra_labeling.data.model.fibrafil.FilPrintResponse
 import com.example.fibra_labeling.data.model.fibrafil.FillPrintRequest
 import com.example.fibra_labeling.data.model.fibrafil.StockResponse
+import com.example.fibra_labeling.data.model.fibrafil.UpdateITWResponse
 import com.example.fibra_labeling.data.model.fibrafil.oinc.OincApiResponse
 import com.example.fibra_labeling.data.model.fibrafil.oinc.OincInsertApiResponse
 import com.example.fibra_labeling.data.model.fibrafil.users.FilUserResponse
@@ -80,7 +81,7 @@ class FillRepositoryImpl(private val apiService: ApiService): FillRepository {
         }
     }
 
-    override suspend fun updateOitwInfo(productoDetalleUi: List<ProductoDetalleUi>): Flow<FilPrintResponse> = flow {
+    override suspend fun updateOitwInfo(productoDetalleUi: List<ProductoDetalleUi>): Flow<List<UpdateITWResponse>> = flow {
         emit(apiService.updateOitwInfo(productoDetalleUi))
     }.catch {
         if(it is UnknownServiceException){
@@ -100,15 +101,15 @@ class FillRepositoryImpl(private val apiService: ApiService): FillRepository {
         }
     }
 
-    override suspend fun insertOinc(oinc: OincApiResponse): Flow<OincInsertApiResponse> =flow {
-        emit(apiService.insertOinc(oinc))
-    }.catch {
-        if(it is UnknownServiceException){
-            throw Exception("No se permite conexión HTTP. Revisa la configuración de seguridad de red.");
-        }else {
-            throw it
-        }
-    }
+//    override suspend fun insertOinc(oinc: List<OincApiResponse>): Flow<FilPrintResponse> =flow {
+//        emit(apiService.insertOinc(oinc))
+//    }.catch {
+//        if(it is UnknownServiceException){
+//            throw Exception("No se permite conexión HTTP. Revisa la configuración de seguridad de red.");
+//        }else {
+//            throw it
+//        }
+//    }
 
     override suspend fun getStockAlmacen(
         itemCode: String,

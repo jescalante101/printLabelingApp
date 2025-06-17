@@ -3,6 +3,9 @@ package com.example.fibra_labeling.ui.screen.inventory.details.component
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -16,9 +19,11 @@ import com.example.fibra_labeling.data.local.entity.fibrafil.FibIncEntity
 fun FioriCardIncCompact(
     dto: FibIncEntity,
     modifier: Modifier = Modifier,
-    onClick: (dto: FibIncEntity) -> Unit = {}
+    onClick: (dto: FibIncEntity) -> Unit = {},
+    enabled: Boolean = true
 ) {
     Card(
+        enabled=enabled,
         modifier = modifier
             .padding(horizontal = 16.dp, vertical = 10.dp)
             .fillMaxWidth(),
@@ -28,7 +33,7 @@ fun FioriCardIncCompact(
         onClick = { onClick(dto) }
     ) {
         Column(Modifier.padding(18.dp)) {
-            // Badges (Código a la izquierda, almacén a la derecha)
+            // 1. Header con badges
             Row(
                 Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -38,7 +43,7 @@ fun FioriCardIncCompact(
             }
             Spacer(Modifier.height(10.dp))
 
-            // Descripción del producto, en negrita y mayor tamaño
+            // 2. Descripción del producto
             Text(
                 text = dto.U_ItemName ?: "",
                 style = MaterialTheme.typography.titleMedium,
@@ -47,7 +52,7 @@ fun FioriCardIncCompact(
                 modifier = Modifier.padding(bottom = 10.dp)
             )
 
-            // Stock y diferencia en una sola fila visual
+            // 3. Stock y diferencia
             Row(
                 Modifier
                     .fillMaxWidth()
@@ -73,6 +78,28 @@ fun FioriCardIncCompact(
                             dto.U_Difference < 0.0 -> Color(0xFFD32F2F) // Rojo si es negativa
                             else -> Color.Black
                         }
+                    )
+                }
+            }
+
+            // 4. Ícono de sincronización (Check o Warning)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                if (dto.isSynced) {
+                    Icon(
+                        imageVector = Icons.Default.CheckCircle, // Ícono de verificación
+                        contentDescription = "Sincronizado",
+                        tint = Color(0xBE214CEF), // Verde
+                        modifier = Modifier.size(24.dp)
+                    )
+                } else {
+                    Icon(
+                        imageVector = Icons.Default.Warning, // Ícono de advertencia
+                        contentDescription = "No sincronizado",
+                        tint = Color(0xFFE74E4E), // Rojo
+                        modifier = Modifier.size(24.dp)
                     )
                 }
             }
@@ -128,3 +155,4 @@ fun PreviewFioriCardIncCompact() {
         )
     )
 }
+

@@ -41,4 +41,8 @@ interface FibIncDao {
 
     @Query("DELETE FROM fib_inc")
     suspend fun deleteAll()
+
+    @Query("UPDATE fib_inc SET isSynced = 1  WHERE docEntry = :docEntry")
+    suspend fun markIncAsSyncedByDocEntry(docEntry: Long)
+
 }

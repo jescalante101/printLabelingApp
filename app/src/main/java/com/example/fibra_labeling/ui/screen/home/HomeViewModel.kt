@@ -59,17 +59,14 @@ class HomeViewModel(
         }
     }
 
+
+
     fun getDataFromApiManual() {
         viewModelScope.launch {
             _isSyncing.value = true
             _syncMessage.value = "Sincronizando datos con el servidor..."
             try {
                 awaitAll(
-
-                    async {
-                        _syncMessage.value="Enviando datos al servidor..."
-                        syncRepository.syncEtiquetaDetalle()
-                    },
 
                     //recuperando Datos
                     async {
@@ -80,12 +77,15 @@ class HomeViewModel(
                         _syncMessage.value = "Recuperando usuarios..."
                         syncRepository.syncUsers()
                     },
+
                     async {
                         _syncMessage.value = "Recuperando artículos..."
                         syncRepository.syncOitms()
+                    } ,
+                    async {
+                        _syncMessage.value="Terminando sincronización..."
+                        syncRepository.syncEtiquetaDetalle()
                     }
-
-
                 )
                 _syncMessage.value = "Sincronización completada."
             } catch (e: Exception) {

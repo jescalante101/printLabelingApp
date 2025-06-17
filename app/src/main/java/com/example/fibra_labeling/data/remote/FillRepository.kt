@@ -9,6 +9,7 @@ import com.example.fibra_labeling.data.model.fibrafil.ProductoDetalleUi
 import com.example.fibra_labeling.data.model.fibrafil.FilPrintResponse
 import com.example.fibra_labeling.data.model.fibrafil.FillPrintRequest
 import com.example.fibra_labeling.data.model.fibrafil.StockResponse
+import com.example.fibra_labeling.data.model.fibrafil.UpdateITWResponse
 import com.example.fibra_labeling.data.model.fibrafil.oinc.OincApiResponse
 import com.example.fibra_labeling.data.model.fibrafil.oinc.OincInsertApiResponse
 import com.example.fibra_labeling.data.model.fibrafil.users.FilUserResponse
@@ -21,9 +22,9 @@ interface FillRepository {
     suspend fun getMaquinas(filter: String, page: Int, pageSize: Int): Flow<MaquinasResponse>
     suspend fun filPrintEtiqueta(body: FillPrintRequest): Flow<FilPrintResponse>
 
-    suspend fun updateOitwInfo(productoDetalleUi: List<ProductoDetalleUi>): Flow<FilPrintResponse>
+    suspend fun updateOitwInfo(productoDetalleUi: List<ProductoDetalleUi>): Flow<List<UpdateITWResponse>>
     suspend fun getOincs(): Flow<List<OincApiResponse>>
-    suspend fun insertOinc(oinc: OincApiResponse): Flow<OincInsertApiResponse>
+//    suspend fun insertOinc(oinc: List<OincApiResponse>): Flow<FilPrintResponse>
 
     suspend fun getStockAlmacen(itemCode: String, whsCode: String): Flow<StockResponse>
 
