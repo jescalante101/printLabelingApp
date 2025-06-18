@@ -68,6 +68,8 @@ fun RegisterCabecera(
 
     val snackbarHostState = remember { SnackbarHostState() }
 
+    val scope = rememberCoroutineScope()
+
     // Confirmación de sincronización (cuando el usuario acepta)
     fun onConfirmSync(dto: FibOincEntity) {
         viewModel.syncEtiquetaEncabezado(dto.docEntry)
@@ -90,6 +92,7 @@ fun RegisterCabecera(
 
     Box {
         Scaffold(
+
             snackbarHost = { SnackbarHost(snackbarHostState) },
             floatingActionButton = {
                 // Floating button para crear un nuevo registro
@@ -102,6 +105,7 @@ fun RegisterCabecera(
                     Text("Nuevo", color = Color.White)
                 }
             }
+
         ) {
             Column(
                 modifier = Modifier

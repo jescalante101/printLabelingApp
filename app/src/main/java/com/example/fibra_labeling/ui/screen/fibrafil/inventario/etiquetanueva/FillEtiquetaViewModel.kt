@@ -81,7 +81,8 @@ class FillEtiquetaViewModel(
     )
     val maquinas: StateFlow<List<MaquinaData>> = _maquinas
 
-    private val _eventoNavegacion = MutableSharedFlow<String>() // O usa un sealed class para destinos
+    private val _eventoNavegacion = MutableSharedFlow<String>()
+    // O usa un sealed class para destinos
     val eventoNavegacion = _eventoNavegacion.asSharedFlow()
 
     private val _user= MutableStateFlow<String>("")

@@ -48,10 +48,13 @@ import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -62,6 +65,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.LayoutCoordinates
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -73,6 +78,7 @@ import com.example.fibra_labeling.ui.screen.home.component.CustomBottomSheetMenu
 import com.example.fibra_labeling.ui.screen.home.component.CustomButtonCard
 import com.example.fibra_labeling.ui.screen.home.component.HomeCategories
 import com.example.fibra_labeling.ui.screen.home.component.HomeHeader
+import com.example.fibra_labeling.ui.screen.home.component.TopSnackbar
 import com.example.fibra_labeling.ui.util.gradientBrush
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
@@ -107,6 +113,10 @@ fun HomeScreen(
     val scope = rememberCoroutineScope()
 
     var showSheet by remember { mutableStateOf(false) }
+    var showTopSnackbar by remember { mutableStateOf(false) }
+
+    val snackbarHostState = remember { SnackbarHostState() }
+
 
     //Dialog
     if (isSyncing) {
@@ -131,6 +141,31 @@ fun HomeScreen(
             confirmButton = {} // Sin botón de cierre
         )
     }
+
+    LaunchedEffect(Unit) {
+        viewModel.syncError.collect { error->
+           when (error){
+               "errorSync"->{
+                   scope.launch {
+                       snackbarHostState.showSnackbar(
+                           "No pudimos conectarnos a SAP y, por lo tanto, no se pudieron cargar los datos necesarios. Por favor, revisa tu conexión a internet o inténtalo nuevamente en unos minutos."
+                       )
+                   }
+               }
+               "success"->{
+                   scope.launch {
+                       snackbarHostState.showSnackbar(
+                           "Datos obtenidos con éxito de SAP"
+                       )
+                   }
+               }
+           }
+        }
+    }
+
+
+
+
 
     ModalNavigationDrawer(
         drawerContent = {
@@ -198,6 +233,10 @@ fun HomeScreen(
 
             Scaffold(
                 containerColor = Color.Transparent,
+                snackbarHost = { SnackbarHost(
+                    snackbarHostState,
+                    modifier = Modifier.align(alignment = Alignment.TopCenter)
+                ) },
             ) { padding ->
                 LazyVerticalStaggeredGrid(
                     columns = StaggeredGridCells.Adaptive(160.dp),

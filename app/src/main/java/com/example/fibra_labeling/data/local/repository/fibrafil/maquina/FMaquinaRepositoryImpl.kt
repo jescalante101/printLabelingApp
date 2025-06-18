@@ -29,6 +29,7 @@ class FMaquinaRepositoryImpl(
         }catch (e: Exception){
             // TODO: MOSTAR LOS MENSAJES DE ERROR
             Log.e("Sync", "No hay conexión: ${e.message}")
+            throw e
         }
 
     }

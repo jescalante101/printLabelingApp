@@ -116,7 +116,7 @@ fun FioriCardConteoCompact(
                             },
                             enabled = !isSyncing
                         ) {
-                            if (isSyncPress.value) {
+                            if (isSyncing) {
                                 CircularProgressIndicator(
                                     modifier = Modifier.size(18.dp),
                                     strokeWidth = 2.dp

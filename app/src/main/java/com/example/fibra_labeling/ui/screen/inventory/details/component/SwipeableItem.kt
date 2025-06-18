@@ -43,7 +43,12 @@ fun SwipeableItem(
         val state = rememberSwipeToDismissBoxState(
             positionalThreshold = { it * 0.3f },
             confirmValueChange = { value ->
-                value == SwipeToDismissBoxValue.EndToStart
+                // Solo permitimos swipe si NO está sincronizado y el swipe es EndToStart
+                if (!item.isSynced && value == SwipeToDismissBoxValue.EndToStart) {
+                    true
+                } else {
+                    false
+                }
             }
         )
         val scope = rememberCoroutineScope()
@@ -51,7 +56,7 @@ fun SwipeableItem(
         SwipeToDismissBox(
             state = state,
             backgroundContent = {
-                if (state.targetValue == SwipeToDismissBoxValue.EndToStart) {
+                if (state.targetValue == SwipeToDismissBoxValue.EndToStart && !item.isSynced) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier

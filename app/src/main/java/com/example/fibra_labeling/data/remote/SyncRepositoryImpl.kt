@@ -34,6 +34,7 @@ class SyncRepositoryImpl(
             })
         }catch (e:Exception){
             e.printStackTrace()
+            throw e
         }
     }
 
@@ -45,6 +46,7 @@ class SyncRepositoryImpl(
             oitmDao.insertAll(oitms.mapNotNull { it.toEntity() })
         }catch (e:Exception){
             e.printStackTrace()
+            throw e
         }
     }
 
@@ -65,6 +67,7 @@ class SyncRepositoryImpl(
         }catch (e:Exception){
             e.printStackTrace()
             Log.e("Error",e.message.toString())
+            throw e
         }
     }
 
