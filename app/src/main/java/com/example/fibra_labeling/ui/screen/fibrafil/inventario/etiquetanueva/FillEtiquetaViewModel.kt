@@ -184,13 +184,13 @@ class FillEtiquetaViewModel(
         }
     }
 
-    fun updateOitw(){
+    fun updateOitw(withPrinter:Boolean=false){
         viewModelScope.launch {
             _loading.value=true
             val ip = impresoraPrefs.impresoraIp.first() // suspende hasta obtener el valor real
             val puerto = impresoraPrefs.impresoraPuerto.first()
 
-            if (ip.isBlank() || puerto.isBlank()) {
+            if ((ip.isBlank() || puerto.isBlank() )&& withPrinter) {
                 _eventoNavegacion.emit("printSetting")
                 _loading.value=false
                 return@launch
@@ -229,13 +229,19 @@ class FillEtiquetaViewModel(
             }
 
             // 5. Acciones post-guardado
-            _eventoNavegacion.emit("savedLocal") // Ejemplo: navega o muestra mensaje
+           if (withPrinter){
+               _eventoNavegacion.emit("savedLocal") // Ejemplo: navega o muestra mensaje
+           }else{
+               _eventoNavegacion.emit("savedLocalNoPrint") // Ejemplo: navega o muestra mensaje
+           }
+
             _loading.value = false
         }
     }
 
     fun printEtiqueta(){
         viewModelScope.launch {
+
             _loading.value=true
             val ip = impresoraPrefs.impresoraIp.first() // suspende hasta obtener el valor real
             val puerto = impresoraPrefs.impresoraPuerto.first()
@@ -258,7 +264,8 @@ class FillEtiquetaViewModel(
                     codBar = "" // TODO: Generar o asignar el código de barras real aquí si lo tienes
                 ),
                 ipPrinter = ip,
-                portPrinter = puerto.toInt()
+                portPrinter = puerto.toInt(),
+                nroCopias = 1
 
             )
             repository.filPrintEtiqueta(data).catch {e->

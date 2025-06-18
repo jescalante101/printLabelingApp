@@ -16,6 +16,9 @@ interface EtiquetaDetalleDao {
     @Query("SELECT * FROM etiqueta_detalle WHERE isSynced = 0")
     suspend fun getNoSynced(): List<EtiquetaDetalleEntity>
 
+    @Query("SELECT * FROM etiqueta_detalle WHERE whsCode = :whsCode AND itemCode = :itemCode")
+    suspend fun getDetailsByWhsAndItemCode(whsCode: String, itemCode: String): EtiquetaDetalleEntity
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(etiqueta: EtiquetaDetalleEntity)
 

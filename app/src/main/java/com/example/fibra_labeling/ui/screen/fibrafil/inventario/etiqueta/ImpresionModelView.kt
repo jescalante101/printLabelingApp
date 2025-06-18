@@ -3,6 +3,9 @@ package com.example.fibra_labeling.ui.screen.fibrafil.inventario.etiqueta
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.fibra_labeling.data.local.mapper.toProductoDetalleUi
+import com.example.fibra_labeling.data.local.repository.fibrafil.EtiquetaDetalleRepository
+import com.example.fibra_labeling.data.local.repository.fibrafil.maquina.FMaquinaRepository
 import com.example.fibra_labeling.data.model.CodeBarRequest
 import com.example.fibra_labeling.data.model.ImobPasaje
 import com.example.fibra_labeling.data.model.PrintResponse
@@ -19,7 +22,14 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
-class ImpresionModelView(private val repository: FillRepository, private val impresoraPrefs: ImpresoraPreferences): ViewModel() {
+class ImpresionModelView(
+    private val repository: FillRepository,
+    private val impresoraPrefs: ImpresoraPreferences,
+    private val etiquetaDetalleRepository: EtiquetaDetalleRepository,
+    private val fMaquinaRepository: FMaquinaRepository
+): ViewModel() {
+
+
     private val _productDetailResult = MutableStateFlow<Result<ProductoDetalleUi>>(
         Result.success(ProductoDetalleUi(
             codigo = "",
@@ -61,20 +71,30 @@ class ImpresionModelView(private val repository: FillRepository, private val imp
         viewModelScope.launch {
             _loading.value = true
             _isPrint.value=false
-            repository.getOitwInfo(codeBar)
-                .catch { e ->
-                    _productDetailResult.value = Result.failure(e)
-                    _loading.value = false
-                    _isPrint.value=false
-                }.collect { imobPasaje ->
-                    _productDetailResult.value = Result.success(imobPasaje)
-                    _loading.value = false
-                    _isPrint.value=true
-                }
+            val etiqueta= etiquetaDetalleRepository.getDetailsByWhsAndItemCode("CH3-RE",codeBar)
+            val maquina= fMaquinaRepository.getByCode(etiqueta.u_FIB_MachineCode.toString())
+            val data=etiqueta.toProductoDetalleUi().copy(
+                maquina = maquina?.name ?:"",
+                codBar = etiqueta.itemCode
+            )
+            _productDetailResult.value = Result.success(data)
+            _loading.value = false
+            _isPrint.value=true
+
+//            repository.getOitwInfo(codeBar)
+//                .catch { e ->
+//                    _productDetailResult.value = Result.failure(e)
+//                    _loading.value = false
+//                    _isPrint.value=false
+//                }.collect { imobPasaje ->
+//                    _productDetailResult.value = Result.success(imobPasaje)
+//                    _loading.value = false
+//                    _isPrint.value=true
+//                }
         }
     }
 
-    fun filPrintEtiqueta(codeBar: String) {
+    fun filPrintEtiqueta(copies: Int) {
         viewModelScope.launch {
 
             _isPrintLoading.value = true
@@ -93,7 +113,8 @@ class ImpresionModelView(private val repository: FillRepository, private val imp
             val body= FillPrintRequest(
                 ipPrinter = ip,
                 portPrinter = puerto.toInt(),
-                data = _productDetailResult.value.getOrNull()
+                data = _productDetailResult.value.getOrNull(),
+                nroCopias = copies
             )
             repository.filPrintEtiqueta(body)
                 .catch { e ->

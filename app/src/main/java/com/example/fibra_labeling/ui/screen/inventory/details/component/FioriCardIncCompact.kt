@@ -8,11 +8,14 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.fibra_labeling.R
 import com.example.fibra_labeling.data.local.entity.fibrafil.FibIncEntity
 
 @Composable
@@ -20,10 +23,11 @@ fun FioriCardIncCompact(
     dto: FibIncEntity,
     modifier: Modifier = Modifier,
     onClick: (dto: FibIncEntity) -> Unit = {},
-    enabled: Boolean = true
+    enabled: Boolean = true,
+    onPrintClick: (dto: FibIncEntity) -> Unit = {} // <-- Nuevo parámetro
 ) {
     Card(
-        enabled=enabled,
+        enabled = enabled,
         modifier = modifier
             .padding(horizontal = 16.dp, vertical = 10.dp)
             .fillMaxWidth(),
@@ -74,31 +78,47 @@ fun FioriCardIncCompact(
                         fontWeight = FontWeight.Bold,
                         color = when {
                             dto.U_Difference == null -> Color.Gray
-                            dto.U_Difference > 0.0 -> Color(0xFF388E3C) // Verde si es positiva
-                            dto.U_Difference < 0.0 -> Color(0xFFD32F2F) // Rojo si es negativa
+                            dto.U_Difference > 0.0 -> Color(0xFF388E3C)
+                            dto.U_Difference < 0.0 -> Color(0xFFD32F2F)
                             else -> Color.Black
                         }
                     )
                 }
             }
 
-            // 4. Ícono de sincronización (Check o Warning)
+            // 4. Sincronización + Botón de impresión
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 if (dto.isSynced) {
                     Icon(
-                        imageVector = Icons.Default.CheckCircle, // Ícono de verificación
+                        imageVector = Icons.Default.CheckCircle,
                         contentDescription = "Sincronizado",
-                        tint = Color(0xBE214CEF), // Verde
+                        tint = Color(0xBE214CEF),
                         modifier = Modifier.size(24.dp)
                     )
                 } else {
                     Icon(
-                        imageVector = Icons.Default.Warning, // Ícono de advertencia
+                        imageVector = Icons.Default.Warning,
                         contentDescription = "No sincronizado",
-                        tint = Color(0xFFE74E4E), // Rojo
+                        tint = Color(0xFFE74E4E),
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+
+                // Espacio pequeño entre ícono de sincronización y botón
+                Spacer(modifier = Modifier.width(14.dp))
+
+                // Botón de impresión con icono personalizado
+                IconButton(
+                    onClick = { onPrintClick(dto) },
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_print),
+                        contentDescription = "Imprimir",
+                        tint = Color(0xFF004990),
                         modifier = Modifier.size(24.dp)
                     )
                 }

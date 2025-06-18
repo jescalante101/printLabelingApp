@@ -82,7 +82,7 @@ fun FioriCardConteoCompact(
             if (dto.isSynced) {
                 Spacer(Modifier.height(8.dp))
                 LabelAndValueFiori(
-                    label = "N° Doc:",
+                    label = "N° Doc SAP:",
                     value = dto.docNum.toString()
                 )
             }

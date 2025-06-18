@@ -118,7 +118,7 @@ class NewPrintViewModel(
     }
 
 
-    fun insertPesaje(){
+    fun insertPesaje(isPrint:Boolean=true){
         viewModelScope.launch {
             _loading.value=true
 
@@ -156,14 +156,21 @@ class NewPrintViewModel(
                        Log.e("Success", insert.toString())
                         val codeBar= insert.data?.codeBar
 
-                       pesajeRepository.printPesaje(CodeBarRequest(codeBar.toString(),ip,puerto.toInt())).catch {e->
-                           Log.e("Error", e.message.toString());
-                           _loading.value=false
-                           _print.value=Result.failure(e)
-                       }.collect {
-                           _loading.value=false
-                           _print.value=Result.success(insert)
+                       if (isPrint){
+                           pesajeRepository.printPesaje(CodeBarRequest(codeBar.toString(),ip,puerto.toInt())).catch {e->
+                               Log.e("Error", e.message.toString());
+                               _loading.value=false
+                               _print.value=Result.failure(e)
+                           }.collect {
+                               _loading.value=false
+                               _print.value=Result.success(insert)
+                           }
                        }
+                       else {
+                           _loading.value = false
+                           _print.value = Result.success(insert)
+                       }
+
                    }
            }else{
                _loading.value=false

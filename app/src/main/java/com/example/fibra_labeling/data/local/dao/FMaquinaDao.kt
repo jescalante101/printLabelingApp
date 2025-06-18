@@ -21,4 +21,8 @@ interface FMaquinaDao {
           OR (:code IS NULL OR code LIKE '%' || :code || '%')
     """)
     fun searchByNameAndCode(name: String?, code: String?): Flow<List<FMaquinaEntity>>
+
+    // get by code
+    @Query("SELECT * FROM f_maquina WHERE code = :code")
+    suspend fun getByCode(code: String): FMaquinaEntity?
 }

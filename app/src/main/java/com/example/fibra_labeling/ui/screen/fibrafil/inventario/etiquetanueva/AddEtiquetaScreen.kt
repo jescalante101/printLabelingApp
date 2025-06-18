@@ -1,6 +1,7 @@
 package com.example.fibra_labeling.ui.screen.fibrafil.inventario.etiquetanueva
 
 import android.util.Log
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -86,7 +87,11 @@ fun AddEtiquetaScreen(
         viewmodel.getAlmacens()
         viewmodel.searchMaquina("","")
         viewmodel.getUserLogin()
+
+
     }
+
+
 
     LaunchedEffect(pesajeResult) {
         when {
@@ -113,6 +118,9 @@ fun AddEtiquetaScreen(
                 "printSetting" -> navController.navigate(Screen.PrintSetting.route)
                 "savedLocal"->viewmodel.printEtiqueta()
                 "successPrint" ->navController.popBackStack()
+                "savedLocalNoPrint"->{
+                    snackbarHostState.showSnackbar("Etiqueta guardada localmente, ahora puede imprimir")
+                }
             }
         }
     }
@@ -128,12 +136,43 @@ fun AddEtiquetaScreen(
         }else{
             Scaffold(
                 floatingActionButton = {
-                    Column {
+                    Column (
+                        horizontalAlignment = Alignment.End,
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ){
+
                         FloatingActionButton(
                             containerColor = Color(0xFF2C3E50),
                             onClick =  {
 
-                                viewmodel.updateOitw()
+                                viewmodel.updateOitw(false)
+                            }
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(horizontal = 16.dp),
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    "Guardar",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = Color.White
+                                )
+
+                                Spacer(Modifier.width(8.dp))
+
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_save),
+                                    contentDescription = "save",
+                                    tint = Color.White
+                                )
+                            }
+                        }
+                        Spacer(Modifier.height(8.dp))
+                        FloatingActionButton(
+                            containerColor = Color(0xFF2C3E50),
+                            onClick =  {
+                                viewmodel.updateOitw(true)
                             }
                         ) {
                             Row(
@@ -143,7 +182,7 @@ fun AddEtiquetaScreen(
                             ) {
 
                                 Text(
-                                    "Imprimir",
+                                    "Guardar e Imprimir",
 
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = Color.White
@@ -158,8 +197,6 @@ fun AddEtiquetaScreen(
                                 )
                             }
                         }
-
-
                     }
 
 
@@ -291,19 +328,9 @@ fun AddEtiquetaScreen(
                     }
                     item {
                         if(user.isNotBlank()){
-                            Row {
-                                CustomTextFormField(
-                                    label = "Conteo",
-                                    value = formState.cantidad,
-                                    onValueChange = {
-                                        viewmodel.onCantidadChange(it)
-                                    },
-                                    enabled = false,
-                                    modifier = Modifier.weight(1f),
-                                    onlyNumbers = true
-                                )
-                                Spacer(Modifier.width(8.dp))
-
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
                                 Button(
                                     onClick = {
                                         showSheet = true
@@ -311,6 +338,24 @@ fun AddEtiquetaScreen(
                                 ) {
                                     Text("Conteo")
                                 }
+                                Spacer(Modifier.width(8.dp))
+                                CustomTextFormField(
+                                    label = "Conteo",
+                                    value = formState.cantidad,
+                                    onValueChange = {
+                                        viewmodel.onCantidadChange(it)
+                                    },
+                                    enabled = false,
+                                    modifier = Modifier.weight(1f).clickable(
+                                        onClick = {
+                                            showSheet = true
+                                        }
+                                    ),
+                                    onlyNumbers = true
+                                )
+                                Spacer(Modifier.width(8.dp))
+
+
                             }
                         }
                     }

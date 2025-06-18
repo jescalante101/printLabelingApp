@@ -52,6 +52,7 @@ import com.example.fibra_labeling.data.model.fibrafil.ProductoDetalleUi
 import com.example.fibra_labeling.ui.BarcodeViewModel
 import com.example.fibra_labeling.ui.component.CustomAppBar
 import com.example.fibra_labeling.ui.navigation.Screen
+import com.example.fibra_labeling.ui.screen.fibrafil.inventario.component.CopiesInputDialog
 import com.example.fibra_labeling.ui.screen.fibrafil.inventario.component.ProductoDetalleCard
 import com.example.fibra_labeling.ui.screen.print.component.LoadingDialog
 import com.example.fibra_labeling.ui.screen.print.component.MessageDialog
@@ -83,6 +84,8 @@ fun ImpresionScreen(
     val barcodeViewModel: BarcodeViewModel = koinViewModel(
         viewModelStoreOwner = activity
     )
+
+    var showDialogCopies by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         barcodeViewModel.barcode.collect { scannedCode ->
@@ -146,6 +149,17 @@ fun ImpresionScreen(
         }
     }
 
+    CopiesInputDialog(
+        show = showDialogCopies,
+        onDismiss = { showDialogCopies = false },
+        onConfirm = { nroCopias ->
+            Log.e("Nro Copias",nroCopias.toString())
+            viewModel.filPrintEtiqueta(
+                nroCopias
+            )
+            showDialogCopies = false
+        }
+    )
 
     Box{
         Scaffold(
@@ -159,9 +173,7 @@ fun ImpresionScreen(
                         FloatingActionButton(
                             onClick = {
                                 if(lastBarcode!=null){
-                                    viewModel.filPrintEtiqueta(
-                                        lastBarcode.toString().trim()
-                                    )
+                                    showDialogCopies=true
                                 }
 
                             },
@@ -169,7 +181,7 @@ fun ImpresionScreen(
                         ) {
                             Icon(
                                 painter = painterResource(R.drawable.ic_print),
-                                contentDescription = "Menu",
+                                contentDescription = "Print",
                                 tint = Color.White
                             )
                         }
@@ -237,7 +249,6 @@ fun ImpresionScreen(
                         trailingIcon = {
                             IconButton(
                                 onClick = {
-                                    //TODO: ABRIR LA PANTALLA PARA ESCANEAR POR CAMARA
                                     onNavigateToScan()
                                 }
                             ) {
@@ -332,20 +343,6 @@ fun ImpresionScreen(
                     }
                 }
 
-//                item {
-//                    ProductoDetalleCard(
-//                        item = ProductoDetalleUi(
-//                            codigo = "12345",
-//                            productoName = "Lámina PVC",
-//                            lote = "L20240612",
-//                            referencia = "REF-ABC-01",
-//                            maquina = "Cortadora A",
-//                            codBar = "1234567890123",
-//                            ubicacion = "Estante A"
-//                        )
-//                    )
-//                }
-
 
             }
             LaunchedEffect (Unit) { focusRequester.requestFocus() }
@@ -387,7 +384,6 @@ fun ImpresionScreen(
             )
         }
     }
-
 
 }
 

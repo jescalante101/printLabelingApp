@@ -12,4 +12,8 @@ class EtiquetaDetalleRepositoryImpl(
     override suspend fun delete(etiqueta: EtiquetaDetalleEntity) = dao.delete(etiqueta)
     override suspend fun getNoSynced() = dao.getNoSynced()
     override suspend fun deleteAll() = dao.deleteAll()
+    override suspend fun getDetailsByWhsAndItemCode(
+        whsCode: String,
+        itemCode: String
+    ): EtiquetaDetalleEntity =dao.getDetailsByWhsAndItemCode(whsCode, itemCode)
 }

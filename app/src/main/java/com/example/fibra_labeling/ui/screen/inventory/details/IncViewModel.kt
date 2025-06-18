@@ -1,6 +1,7 @@
 package com.example.fibra_labeling.ui.screen.inventory.details
 
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.example.fibra_labeling.data.local.entity.fibrafil.FibIncEntity
 import com.example.fibra_labeling.data.local.repository.fibrafil.fibinc.FibIncRepository
@@ -8,18 +9,45 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import androidx.lifecycle.viewModelScope
+import com.example.fibra_labeling.data.local.mapper.toProductoDetalleUi
+import com.example.fibra_labeling.data.local.repository.fibrafil.EtiquetaDetalleRepository
+import com.example.fibra_labeling.data.local.repository.fibrafil.maquina.FMaquinaRepository
+import com.example.fibra_labeling.data.model.fibrafil.FillPrintRequest
+import com.example.fibra_labeling.data.model.fibrafil.ProductoDetalleUi
+import com.example.fibra_labeling.data.remote.FillRepository
+import com.example.fibra_labeling.datastore.ImpresoraPreferences
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 
-class IncViewModel(private val fibIncRepository: FibIncRepository): ViewModel() {
+class IncViewModel(
+    private val fibIncRepository: FibIncRepository,
+    private val etiquetaDetalleRepository: EtiquetaDetalleRepository,
+    private val impresoraPrefs: ImpresoraPreferences,
+    private val fillRepository: FillRepository,
+    private val fMaquinaRepository: FMaquinaRepository
+): ViewModel() {
 
     // Estado para el docEntry actualmente consultado (puede ser un parámetro mutable)
     private val _docEntry = MutableStateFlow<Int>(0)
     private val _search = MutableStateFlow<String?>(null)
+
+    private val _loading = MutableStateFlow(false)
+    val loading: MutableStateFlow<Boolean> = _loading
+
+
+    private val _eventoNavegacion = MutableSharedFlow<String>()
+    val eventoNavegacion = _eventoNavegacion.asSharedFlow()
+
+    private val _message = MutableSharedFlow<String>()
+    val message = _message.asSharedFlow()
 
     // Método para cambiar el docEntry que deseas consultar
     fun setDocEntry(docEntry: Int) {
@@ -39,8 +67,6 @@ class IncViewModel(private val fibIncRepository: FibIncRepository): ViewModel() 
             SharingStarted.WhileSubscribed(5000),
             emptyList()
         )
-
-
 
     private val _productCode= MutableStateFlow<String>("")
     val productCode: MutableStateFlow<String> = _productCode
@@ -93,6 +119,42 @@ class IncViewModel(private val fibIncRepository: FibIncRepository): ViewModel() 
                 fibIncRepository.insert(inc)
                 ultimoEliminado = null
             }
+        }
+    }
+
+    fun getEtiquetaBYWhsAndItemCode(whsCode: String, itemCode: String){
+        viewModelScope.launch {
+            _loading.value=true
+            val ip = impresoraPrefs.impresoraIp.first() // suspende hasta obtener el valor real
+            val puerto = impresoraPrefs.impresoraPuerto.first()
+
+            if (ip.isBlank() || puerto.isBlank()) {
+                _eventoNavegacion.emit("printSetting")
+                _loading.value=false
+                return@launch
+            }
+            val etiqueta = etiquetaDetalleRepository.getDetailsByWhsAndItemCode(whsCode, itemCode)
+            val maquina = fMaquinaRepository.getByCode(etiqueta.u_FIB_MachineCode.toString())
+            val data=  etiqueta.toProductoDetalleUi()
+            fillRepository.filPrintEtiqueta(
+                FillPrintRequest(
+                    data = data.copy(
+                        maquina = maquina?.name ?: ""
+                    ),
+                    ipPrinter = ip,
+                    portPrinter = puerto.toInt()
+
+                )
+            ).catch {e->
+                Log.e("Error", e.message.toString());
+                _loading.value=false
+                _message.emit("Error al imprimir ${e.message}")
+            }.collect {
+                _loading.value=false
+                _eventoNavegacion.emit("successPrint")
+                _message.emit("successPrint")
+            }
+
         }
     }
 

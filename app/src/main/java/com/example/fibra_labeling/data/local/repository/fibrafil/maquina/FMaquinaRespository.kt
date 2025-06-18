@@ -8,4 +8,7 @@ interface FMaquinaRepository {
     suspend fun getAllFlow(): Flow<List<FMaquinaEntity>>
     suspend fun searchByNameAndCode(name: String?, code: String?): Flow<List<FMaquinaEntity>>
     suspend fun syncMaquinas()
+
+    // get by code
+    suspend fun getByCode(code: String): FMaquinaEntity?
 }

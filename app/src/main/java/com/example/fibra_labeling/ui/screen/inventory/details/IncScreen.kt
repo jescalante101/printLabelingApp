@@ -46,6 +46,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.navigation.NavController
+import com.example.fibra_labeling.ui.navigation.Screen
 import com.example.fibra_labeling.ui.screen.inventory.register.stock.ICountingScreen
 import kotlinx.coroutines.launch
 
@@ -54,6 +56,7 @@ import kotlinx.coroutines.launch
 fun IncScreen(
     onNavigateBack: () -> Unit,
     viewModel: IncViewModel = koinViewModel(),
+    navController: NavController,
     docEntry: Int
 ){
     var search by remember { mutableStateOf("") }
@@ -70,6 +73,22 @@ fun IncScreen(
     LaunchedEffect(Unit) {
         viewModel.setDocEntry(docEntry)
         viewModel.setSearch("")
+
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.eventoNavegacion.collect { destino ->
+            when (destino) {
+                "printSetting"->navController.navigate(Screen.PrintSetting.route)
+            }
+        }
+
+        viewModel.message.collect { error ->
+            when(error){
+                "successPrint"->snackbarHostState.showSnackbar("Etiqueta Impresa")
+                else->snackbarHostState.showSnackbar(error)
+            }
+        }
     }
 
 
@@ -152,7 +171,10 @@ fun IncScreen(
 
                                     showSheet = true
                                 },
-                                enabled = !inc.isSynced
+                                enabled = !inc.isSynced,
+                                onPrintClick = {
+                                    viewModel.getEtiquetaBYWhsAndItemCode(it.U_WhsCode.toString(), it.U_ItemCode.toString())
+                                }
                             )
                         }
 

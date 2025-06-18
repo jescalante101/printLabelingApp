@@ -57,6 +57,7 @@ class SyncRepositoryImpl(
             Log.e("Error",etiquetaDetalle.toString())
             if (etiquetaDetalle.isNotEmpty()){
                 val response = api.updateOitwInfo(etiquetaDetalle.map { it.toProductoDetalleUi() })
+                Log.e("SentETI",response.toString())
                 if (response.isNotEmpty()){
                     etiquetaDetalle.forEach {
                         it.isSynced = true

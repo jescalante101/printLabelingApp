@@ -34,4 +34,7 @@ class FMaquinaRepositoryImpl(
 
     }
 
+    override suspend fun getByCode(code: String): FMaquinaEntity? =dao.getByCode(code)
+
+
 }

@@ -126,34 +126,66 @@ fun NewPrintScreen(
         }else{
             Scaffold(
                 floatingActionButton = {
-                    FloatingActionButton(
-                        containerColor = Color(0xFF2C3E50),
-                        onClick = {
-                            viewModel.insertPesaje()
-                        }
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(horizontal = 16.dp),
-                            horizontalArrangement = Arrangement.Center,
-                            verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+                    Column{
+                        FloatingActionButton(
+                            containerColor = Color(0xFF2C3E50),
+                            onClick = {
+                                viewModel.insertPesaje(false)
+                            }
                         ) {
+                            Row(
+                                modifier = Modifier.padding(horizontal = 16.dp),
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+                            ) {
 
-                            Text(
-                                "Imprimir",
+                                Text(
+                                    "Guardar",
 
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = Color.White
-                            )
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = Color.White
+                                )
 
-                            Spacer(Modifier.width(8.dp))
+                                Spacer(Modifier.width(8.dp))
 
-                            Icon(
-                                painter = painterResource(R.drawable.ic_print),
-                                contentDescription = "Print",
-                                tint = Color.White
-                            )
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_save),
+                                    contentDescription = "Print",
+                                    tint = Color.White
+                                )
+                            }
+                        }
+                        Spacer(Modifier.height(16.dp))
+                        FloatingActionButton(
+                            containerColor = Color(0xFF2C3E50),
+                            onClick = {
+                                viewModel.insertPesaje()
+                            }
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(horizontal = 16.dp),
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+                            ) {
+
+                                Text(
+                                    "Imprimir",
+
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = Color.White
+                                )
+
+                                Spacer(Modifier.width(8.dp))
+
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_print),
+                                    contentDescription = "Print",
+                                    tint = Color.White
+                                )
+                            }
                         }
                     }
+
                 },
                 snackbarHost = { SnackbarHost(snackbarHostState) }
             ){

@@ -163,7 +163,8 @@ fun AppNavHost(navController: NavHostController = rememberNavController(), start
             val docEntry = backStackEntry.arguments?.getInt("docEntry")
             IncScreen(
                 onNavigateBack = {navController.popBackStack()},
-                docEntry = docEntry ?: 0
+                docEntry = docEntry ?: 0,
+                navController = navController
             )
         }
 

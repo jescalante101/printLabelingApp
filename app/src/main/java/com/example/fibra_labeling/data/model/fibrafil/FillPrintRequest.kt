@@ -12,5 +12,8 @@ data class FillPrintRequest(
     @SerialName("ipPrinter")
     val ipPrinter: String?,
     @SerialName("portPrinter")
-    val portPrinter: Int?
+    val portPrinter: Int?,
+
+    @SerialName("nroCopias")
+    val nroCopias: Int=1
 )

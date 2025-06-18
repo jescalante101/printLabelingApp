@@ -32,7 +32,7 @@ val viewModelModule= module {
     }
 
     viewModel{
-        ImpresionModelView(get(),get())
+        ImpresionModelView(get(),get(),get(),get())
     }
     viewModel{
         FillEtiquetaViewModel(get(),get(),get(),get(),get(),get())
@@ -48,7 +48,7 @@ val viewModelModule= module {
         StockViewModel(get())
     }
     viewModel{
-        IncViewModel(get())
+        IncViewModel(get(),get(),get(),get(),get())
     }
 
 
