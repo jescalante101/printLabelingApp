@@ -53,21 +53,26 @@ class SyncRepositoryImpl(
 
     override suspend fun syncEtiquetaDetalle() {
         try {
-            val etiquetaDetalle = etiquetaDetalleRepository.getNoSynced()
-            Log.e("Error",etiquetaDetalle.toString())
-            if (etiquetaDetalle.isNotEmpty()){
-                val response = api.updateOitwInfo(etiquetaDetalle.map { it.toProductoDetalleUi() })
-                Log.e("SentETI",response.toString())
-                if (response.isNotEmpty()){
-                    etiquetaDetalle.forEach {
+            val batchSize = 20
+            var offset = 0
+            while (true) {
+                val etiquetaDetalleBatch = etiquetaDetalleRepository.getNoSyncedPaged(batchSize, offset)
+                if (etiquetaDetalleBatch.isEmpty()) break
+
+                val response = api.updateOitwInfo(etiquetaDetalleBatch.map { it.toProductoDetalleUi() })
+                Log.e("SentETI", response.toString())
+
+                if (response.isNotEmpty()) {
+                    etiquetaDetalleBatch.forEach {
                         it.isSynced = true
                         etiquetaDetalleRepository.update(it)
                     }
                 }
+                offset += batchSize
             }
-        }catch (e:Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
-            Log.e("Error",e.message.toString())
+            Log.e("Error", e.message.toString())
             throw e
         }
     }

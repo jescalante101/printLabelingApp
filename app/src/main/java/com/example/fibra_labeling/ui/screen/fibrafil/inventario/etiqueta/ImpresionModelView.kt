@@ -72,25 +72,28 @@ class ImpresionModelView(
             _loading.value = true
             _isPrint.value=false
             val etiqueta= etiquetaDetalleRepository.getDetailsByWhsAndItemCode("CH3-RE",codeBar)
-            val maquina= fMaquinaRepository.getByCode(etiqueta.u_FIB_MachineCode.toString())
-            val data=etiqueta.toProductoDetalleUi().copy(
-                maquina = maquina?.name ?:"",
-                codBar = etiqueta.itemCode
-            )
-            _productDetailResult.value = Result.success(data)
-            _loading.value = false
-            _isPrint.value=true
+           if (etiqueta!=null){
+               val maquina= fMaquinaRepository.getByCode(etiqueta.u_FIB_MachineCode.toString())
+               val data=etiqueta.toProductoDetalleUi().copy(
+                   maquina = maquina?.name ?:"",
+                   codBar = etiqueta.itemCode
+               )
+               _productDetailResult.value = Result.success(data)
+               _loading.value = false
+               _isPrint.value=true
+           }else{
 
-//            repository.getOitwInfo(codeBar)
-//                .catch { e ->
-//                    _productDetailResult.value = Result.failure(e)
-//                    _loading.value = false
-//                    _isPrint.value=false
-//                }.collect { imobPasaje ->
-//                    _productDetailResult.value = Result.success(imobPasaje)
-//                    _loading.value = false
-//                    _isPrint.value=true
-//                }
+               repository.getOitwInfo(codeBar)
+                   .catch { e ->
+                       _productDetailResult.value = Result.failure(e)
+                       _loading.value = false
+                       _isPrint.value=false
+                   }.collect { imobPasaje ->
+                       _productDetailResult.value = Result.success(imobPasaje)
+                       _loading.value = false
+                       _isPrint.value=true
+                   }
+           }
         }
     }
 

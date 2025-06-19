@@ -15,6 +15,7 @@ import androidx.room.PrimaryKey
         )
     ]
 )
+
 data class FibIncEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,

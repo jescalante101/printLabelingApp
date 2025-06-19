@@ -9,5 +9,7 @@ interface EtiquetaDetalleRepository {
     suspend fun delete(etiqueta: EtiquetaDetalleEntity)
     suspend fun getNoSynced(): List<EtiquetaDetalleEntity>
     suspend fun deleteAll()
-    suspend fun getDetailsByWhsAndItemCode(whsCode: String, itemCode: String): EtiquetaDetalleEntity
+    suspend fun getDetailsByWhsAndItemCode(whsCode: String, itemCode: String): EtiquetaDetalleEntity?
+
+    suspend fun getNoSyncedPaged(limit: Int, offset: Int): List<EtiquetaDetalleEntity>
 }

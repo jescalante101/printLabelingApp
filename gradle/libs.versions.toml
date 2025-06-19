@@ -26,6 +26,7 @@ datastore = "1.1.7"
 
 room = "2.7.1"
 
+
 [libraries]
 
 # Compose BOM (solo aquí pones versión)
@@ -79,6 +80,7 @@ room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 room-paging = { module = "androidx.room:room-paging", version.ref = "room" }
+
 
 # Compose Testing (agrega si lo usas)
 compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest" }

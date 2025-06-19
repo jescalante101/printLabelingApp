@@ -134,11 +134,11 @@ class IncViewModel(
                 return@launch
             }
             val etiqueta = etiquetaDetalleRepository.getDetailsByWhsAndItemCode(whsCode, itemCode)
-            val maquina = fMaquinaRepository.getByCode(etiqueta.u_FIB_MachineCode.toString())
-            val data=  etiqueta.toProductoDetalleUi()
+            val maquina = fMaquinaRepository.getByCode(etiqueta?.u_FIB_MachineCode.toString())
+            val data= etiqueta?.toProductoDetalleUi()
             fillRepository.filPrintEtiqueta(
                 FillPrintRequest(
-                    data = data.copy(
+                    data = data?.copy(
                         maquina = maquina?.name ?: ""
                     ),
                     ipPrinter = ip,

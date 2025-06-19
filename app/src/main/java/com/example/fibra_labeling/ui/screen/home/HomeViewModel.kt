@@ -74,35 +74,38 @@ class HomeViewModel(
             _isSyncing.value = true
             _syncMessage.value = "Sincronizando datos con el servidor..."
             try {
-                awaitAll(
 
-                    //recuperando Datos
-                    async {
-                        _syncMessage.value = "Recuperando máquinas..."
-                        fillRespository.syncMaquinas()
-                    },
-                    async {
-                        _syncMessage.value = "Recuperando usuarios..."
-                        syncRepository.syncUsers()
-                    },
+                _syncMessage.value = "Recuperando máquinas..."
+                fillRespository.syncMaquinas()
+                kotlinx.coroutines.delay(500)
 
-                    async {
-                        _syncMessage.value = "Recuperando artículos..."
-                        syncRepository.syncOitms()
-                    } ,
-                    async {
-                        _syncMessage.value="Terminando sincronización..."
-                        syncRepository.syncEtiquetaDetalle()
-                    }
-                )
+
+                _syncMessage.value = "Recuperando usuarios..."
+                syncRepository.syncUsers()
+                kotlinx.coroutines.delay(500)
+
+                _syncMessage.value = "Recuperando artículos..."
+                syncRepository.syncOitms()
+                kotlinx.coroutines.delay(500)
+
+
+                _syncMessage.value="Terminando sincronización..."
+                syncRepository.syncEtiquetaDetalle()
+                kotlinx.coroutines.delay(500)
+
                 _syncMessage.value = "Sincronización completada."
+                _syncError.emit("success")
+                _isSyncing.value=false
             } catch (e: Exception) {
                 _syncMessage.value = "Error de sincronización: ${e.message}"
+                _syncError.emit("errorSync")
+                _isSyncing.value=false
                 Log.e("Sync", "No hay conexión: ${e.message}")
-            } finally {
-                // Da tiempo a mostrar el mensaje final
-                kotlinx.coroutines.delay(1000)
+            } catch (e: SocketTimeoutException) {
+                _syncMessage.value = "Error de sincronización: ${e.message}"
+                _syncError.emit("errorSync")
                 _isSyncing.value = false
+                Log.e("Sync", "No hay conexión: ${e.message}")
             }
         }
     }

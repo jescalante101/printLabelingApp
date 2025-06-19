@@ -15,5 +15,12 @@ class EtiquetaDetalleRepositoryImpl(
     override suspend fun getDetailsByWhsAndItemCode(
         whsCode: String,
         itemCode: String
-    ): EtiquetaDetalleEntity =dao.getDetailsByWhsAndItemCode(whsCode, itemCode)
+    ): EtiquetaDetalleEntity? =dao.getDetailsByWhsAndItemCode(whsCode, itemCode)
+
+    override suspend fun getNoSyncedPaged(
+        limit: Int,
+        offset: Int
+    ): List<EtiquetaDetalleEntity> =dao.getNoSyncedPaged(limit, offset)
+
+
 }

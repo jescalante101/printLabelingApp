@@ -17,7 +17,7 @@ interface EtiquetaDetalleDao {
     suspend fun getNoSynced(): List<EtiquetaDetalleEntity>
 
     @Query("SELECT * FROM etiqueta_detalle WHERE whsCode = :whsCode AND itemCode = :itemCode")
-    suspend fun getDetailsByWhsAndItemCode(whsCode: String, itemCode: String): EtiquetaDetalleEntity
+    suspend fun getDetailsByWhsAndItemCode(whsCode: String, itemCode: String): EtiquetaDetalleEntity?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(etiqueta: EtiquetaDetalleEntity)
@@ -33,4 +33,9 @@ interface EtiquetaDetalleDao {
 
     @Query("DELETE FROM etiqueta_detalle")
     suspend fun deleteAll()
+
+
+    @Query("SELECT * FROM etiqueta_detalle WHERE isSynced = 0 LIMIT :limit OFFSET :offset")
+    suspend fun getNoSyncedPaged(limit: Int, offset: Int): List<EtiquetaDetalleEntity>
+
 }
