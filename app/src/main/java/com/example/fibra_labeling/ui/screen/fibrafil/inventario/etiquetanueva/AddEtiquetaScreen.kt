@@ -19,9 +19,12 @@ import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledIconButton
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
@@ -44,6 +47,8 @@ import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -87,11 +92,7 @@ fun AddEtiquetaScreen(
         viewmodel.getAlmacens()
         viewmodel.searchMaquina("","")
         viewmodel.getUserLogin()
-
-
     }
-
-
 
     LaunchedEffect(pesajeResult) {
         when {
@@ -158,7 +159,6 @@ fun AddEtiquetaScreen(
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = Color.White
                                 )
-
                                 Spacer(Modifier.width(8.dp))
 
                                 Icon(
@@ -187,7 +187,6 @@ fun AddEtiquetaScreen(
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = Color.White
                                 )
-
                                 Spacer(Modifier.width(8.dp))
 
                                 Icon(
@@ -198,8 +197,6 @@ fun AddEtiquetaScreen(
                             }
                         }
                     }
-
-
                 },
                 snackbarHost = { SnackbarHost(snackbarHostState) }
             ){
@@ -251,11 +248,10 @@ fun AddEtiquetaScreen(
                             value = formState.lote,
                             onValueChange = {
 //                                    lote = it
-                                    viewmodel.onLoteChange(it)
+                                    viewmodel.onLoteChange(it.toString().toUpperCase(Locale.current))
                             },
                             enabled = true,
                             )
-
                     }
 
                     item {
@@ -263,8 +259,6 @@ fun AddEtiquetaScreen(
                     }
 
                     item {
-
-
                         FioriDropdownAlmacen(
                             label = "Almacén",
                             options = almacenes,
@@ -273,9 +267,7 @@ fun AddEtiquetaScreen(
                             isError = errorState.almacenError != null,
                             supportingText = { errorState.almacenError?.let { Text(it, color = Color.Red, fontSize = 12.sp) } }
                         )
-
                     }
-
                     item {
                         Spacer(Modifier.height(8.dp))
                     }
@@ -286,13 +278,9 @@ fun AddEtiquetaScreen(
                             label = "Refenencia",
                             value = formState.codigoReferencia,
                             onValueChange = {
-                                viewmodel.onCodigoReferenciaChange(it)
+                                viewmodel.onCodigoReferenciaChange(it.toString().toUpperCase(Locale.current))
                             },
                             enabled = true,
-
-//                                isError = formErrorState.loteError != null,
-//                                supportingText = { formErrorState.loteError?.let { Text(it, color = Color.Red, fontSize = 12.sp) } }
-
                         )
                     }
                     item {
@@ -317,7 +305,7 @@ fun AddEtiquetaScreen(
                             label = "Ubicacion",
                             value = formState.ubicacion,
                             onValueChange = {
-                                viewmodel.onUbicacionChange(it)
+                                viewmodel.onUbicacionChange(it.toString().toUpperCase(Locale.current))
                             },
                             enabled = true,
 
@@ -331,13 +319,44 @@ fun AddEtiquetaScreen(
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                             ) {
-                                Button(
-                                    onClick = {
-                                        showSheet = true
-                                    }
-                                ) {
-                                    Text("Conteo")
-                                }
+                               Row {
+
+                                   FilledTonalIconButton (
+                                       colors = IconButtonDefaults.iconButtonColors(
+                                           MaterialTheme.colorScheme.primary.copy(0.6f)
+                                       ),
+                                       onClick = {
+                                           //restar cantidad
+                                           val cantidad = formState.cantidad.toIntOrNull() ?: 0
+                                           if (cantidad > 0) {
+                                               viewmodel.onCantidadChange((cantidad - 1).toString())
+                                           }
+                                       }
+                                   ) {
+                                       Icon(
+                                           painter = painterResource(R.drawable.ic_minus),
+                                           contentDescription = "minus",
+
+                                       )
+                                   }
+                                   Spacer(Modifier.width(4.dp))
+                                   FilledTonalIconButton(
+                                       colors = IconButtonDefaults.iconButtonColors(
+                                           MaterialTheme.colorScheme.primary.copy(0.6f)
+                                       ),
+                                       onClick = {
+                                           //sumar cantidad
+                                           val cantidad = formState.cantidad.toIntOrNull() ?: 0
+                                           viewmodel.onCantidadChange((cantidad + 1).toString())
+                                       }
+                                   ) {
+                                       Icon(
+                                           painter = painterResource(R.drawable.ic_plus),
+                                           contentDescription = "plus",
+
+                                       )
+                                   }
+                               }
                                 Spacer(Modifier.width(8.dp))
                                 CustomTextFormField(
                                     label = "Conteo",
@@ -354,8 +373,6 @@ fun AddEtiquetaScreen(
                                     onlyNumbers = true
                                 )
                                 Spacer(Modifier.width(8.dp))
-
-
                             }
                         }
                     }
@@ -364,9 +381,7 @@ fun AddEtiquetaScreen(
                             errorState.cantidadError?.let { Text(it, color = Color.Red, fontSize = 12.sp) }
                         }
                     }
-
                 }
-
             }
         }
 
