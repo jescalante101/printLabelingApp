@@ -9,12 +9,16 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import androidx.lifecycle.viewModelScope
+import com.example.fibra_labeling.data.local.dao.ZplLabelDao
 import com.example.fibra_labeling.data.local.mapper.toProductoDetalleUi
 import com.example.fibra_labeling.data.local.repository.fibrafil.EtiquetaDetalleRepository
 import com.example.fibra_labeling.data.local.repository.fibrafil.maquina.FMaquinaRepository
 import com.example.fibra_labeling.data.model.fibrafil.FillPrintRequest
 import com.example.fibra_labeling.data.model.fibrafil.ProductoDetalleUi
+import com.example.fibra_labeling.data.model.fibrafil.ZplPrintRequest
+import com.example.fibra_labeling.data.model.fibrafil.toZplMap
 import com.example.fibra_labeling.data.remote.FillRepository
+import com.example.fibra_labeling.data.utils.ZplTemplateMapper
 import com.example.fibra_labeling.datastore.ImpresoraPreferences
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -32,7 +36,8 @@ class IncViewModel(
     private val etiquetaDetalleRepository: EtiquetaDetalleRepository,
     private val impresoraPrefs: ImpresoraPreferences,
     private val fillRepository: FillRepository,
-    private val fMaquinaRepository: FMaquinaRepository
+    private val fMaquinaRepository: FMaquinaRepository,
+    private val zplLabelDao: ZplLabelDao
 ): ViewModel() {
 
     // Estado para el docEntry actualmente consultado (puede ser un parámetro mutable)
@@ -128,23 +133,36 @@ class IncViewModel(
             val ip = impresoraPrefs.impresoraIp.first() // suspende hasta obtener el valor real
             val puerto = impresoraPrefs.impresoraPuerto.first()
 
+            val zpl=zplLabelDao.getSelectedLabel()
+
+            if (zpl==null){
+                _eventoNavegacion.emit("printSetting")
+                _loading.value=false
+                return@launch
+            }
+
             if (ip.isBlank() || puerto.isBlank()) {
                 _eventoNavegacion.emit("printSetting")
                 _loading.value=false
                 return@launch
             }
+
             val etiqueta = etiquetaDetalleRepository.getDetailsByWhsAndItemCode(whsCode, itemCode)
             val maquina = fMaquinaRepository.getByCode(etiqueta?.u_FIB_MachineCode.toString())
             val data= etiqueta?.toProductoDetalleUi()
-            fillRepository.filPrintEtiqueta(
-                FillPrintRequest(
-                    data = data?.copy(
-                        maquina = maquina?.name ?: ""
-                    ),
-                    ipPrinter = ip,
-                    portPrinter = puerto.toInt()
 
-                )
+            val dataBody= ZplPrintRequest(
+                ip=ip,
+                port=puerto.toInt(),
+                zplContent = ZplTemplateMapper.mapCustomTemplate(zpl.zplFile, data?.copy(
+                    maquina=maquina?.name ?:"",
+                    codBar = data.codigo
+                )!!.toZplMap() ,1)
+            )
+
+
+            fillRepository.filCustomPrintZpl(
+                dataBody
             ).catch {e->
                 Log.e("Error", e.message.toString());
                 _loading.value=false

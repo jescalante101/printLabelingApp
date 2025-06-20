@@ -12,6 +12,7 @@ import com.example.fibra_labeling.ui.screen.print.PrintViewModel
 import com.example.fibra_labeling.ui.screen.print.register.NewPrintViewModel
 import com.example.fibra_labeling.ui.screen.print.register.RegisterViewModel
 import com.example.fibra_labeling.ui.screen.setting.printer.PrinterSettingScreenViewModel
+import com.example.fibra_labeling.ui.screen.setting.zpl.ZplTemplateViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -28,14 +29,14 @@ val viewModelModule= module {
     viewModel{ BarcodeViewModel() }
 
     viewModel {
-        PrinterSettingScreenViewModel(get(),get())
+        PrinterSettingScreenViewModel(get(),get(),get())
     }
 
     viewModel{
-        ImpresionModelView(get(),get(),get(),get())
+        ImpresionModelView(get(),get(),get(),get(),get())
     }
     viewModel{
-        FillEtiquetaViewModel(get(),get(),get(),get(),get(),get())
+        FillEtiquetaViewModel(get(),get(),get(),get(),get(),get(),get(),get())
     }
     viewModel{
         OincRegisterViewModel(get(),get())
@@ -48,7 +49,11 @@ val viewModelModule= module {
         StockViewModel(get())
     }
     viewModel{
-        IncViewModel(get(),get(),get(),get(),get())
+        IncViewModel(get(),get(),get(),get(),get(),get())
+    }
+
+    viewModel{
+        ZplTemplateViewModel(get())
     }
 
 

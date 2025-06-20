@@ -19,5 +19,10 @@ data class ZplLabel(
     val description: String,
 
     @ColumnInfo(name = "zpl_file")
-    val zplFile: String
+    val zplFile: String,
+
+    //selected
+    @ColumnInfo(name = "selected")
+    val selected: Boolean = false
+
 )

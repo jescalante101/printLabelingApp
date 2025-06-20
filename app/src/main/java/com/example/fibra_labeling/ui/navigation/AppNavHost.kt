@@ -1,6 +1,7 @@
 package com.example.fibra_labeling.ui.navigation
 
 import BarcodeScannerScreen
+import ZplTemplateScreen
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -51,7 +52,9 @@ fun AppNavHost(navController: NavHostController = rememberNavController(), start
                 onNavigateToPackingList = { navController.navigate(Screen.PackingList.route) },
                 onNavigateToProduction = { navController.navigate(Screen.Production.route) },
                 onNavigateToSetting = { navController.navigate(Screen.PrintSetting.route) },
-                onNavigateToFill = {navController.navigate(Screen.FillImpresion.route)}
+                onNavigateToFill = {navController.navigate(Screen.FillImpresion.route)},
+                //zplTemplate
+                onNavigateToZplScreen = {navController.navigate(Screen.ZplTemplateScreen.route)}
             )
 
         }
@@ -215,6 +218,16 @@ fun AppNavHost(navController: NavHostController = rememberNavController(), start
                 itemCode = itemCode ?: "",
                 productName = productName ?: "",
                 navController = navController
+            )
+        }
+
+        composable(
+            Screen.ZplTemplateScreen.route
+        ) {
+            ZplTemplateScreen(
+                onBack = {
+                    navController.popBackStack()
+                }
             )
         }
 

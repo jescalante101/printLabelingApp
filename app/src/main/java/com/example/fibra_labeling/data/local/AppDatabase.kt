@@ -32,7 +32,7 @@ import com.example.fibra_labeling.data.migration.MIGRATION_4_5
         FibOITMEntity::class,
         ZplLabel::class
     ],
-    version = 4,//TODO: incrementar la version a  5 para la migracion de la base de datos
+    version = 5,//TODO: incrementar la version a  5 para la migracion de la base de datos
     exportSchema = false
 )
 abstract class AppDatabase: RoomDatabase()  {

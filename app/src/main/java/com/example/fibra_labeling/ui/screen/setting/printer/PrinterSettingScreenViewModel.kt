@@ -5,19 +5,25 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.fibra_labeling.data.local.dao.ZplLabelDao
+import com.example.fibra_labeling.data.local.entity.fibrafil.ZplLabel
 import com.example.fibra_labeling.data.remote.SettingRepository
 import com.example.fibra_labeling.datastore.ImpresoraPreferences
 import com.example.fibra_labeling.ui.screen.setting.printer.form.PrintFormErrorState
 import com.example.fibra_labeling.ui.screen.setting.printer.form.PrintFormState
 import com.example.fibra_labeling.ui.screen.setting.printer.form.isFormValid
 import com.example.fibra_labeling.ui.screen.setting.printer.form.validatePrintForm
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class PrinterSettingScreenViewModel(
     private val impresoraPreferences: ImpresoraPreferences,
-    private val settingRepository: SettingRepository
+    private val settingRepository: SettingRepository,
+    private val zplLabelDao: ZplLabelDao
 ) : ViewModel() {
     var formState by mutableStateOf(PrintFormState())
         private set
@@ -39,6 +45,12 @@ class PrinterSettingScreenViewModel(
             errorState = validatePrintForm(formState)
         }
     }
+
+    val zplLabels: StateFlow<List<ZplLabel>> = zplLabelDao.getAllLabels()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    var selectedLabelId by mutableStateOf<Long?>(null)
+        private set
 
     fun onPrinterNameChange(value: String) {
         formState = formState.copy(printerName = value)
@@ -99,4 +111,14 @@ class PrinterSettingScreenViewModel(
     fun clearResultMsg() {
         resultMsg = null
     }
+
+
+    fun onLabelSelected(id: Long) {
+        viewModelScope.launch {
+            zplLabelDao.unselectAllLabels()
+            zplLabelDao.setSelectedLabel(id)
+            selectedLabelId = id
+        }
+    }
+
 }

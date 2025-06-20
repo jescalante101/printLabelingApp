@@ -45,6 +45,10 @@ class HomeViewModel(
                 syncRepository.syncUsers()
                 kotlinx.coroutines.delay(500)
 
+                _syncMessage.value = "Recuperando almacenes..."
+                syncRepository.syncAlmacen()
+                kotlinx.coroutines.delay(500)
+
                 _syncMessage.value = "Recuperando artículos..."
                 syncRepository.syncOitms()
                 kotlinx.coroutines.delay(500)
@@ -82,6 +86,10 @@ class HomeViewModel(
 
                 _syncMessage.value = "Recuperando usuarios..."
                 syncRepository.syncUsers()
+                kotlinx.coroutines.delay(500)
+
+                _syncMessage.value = "Recuperando almacenes..."
+                syncRepository.syncAlmacen()
                 kotlinx.coroutines.delay(500)
 
                 _syncMessage.value = "Recuperando artículos..."

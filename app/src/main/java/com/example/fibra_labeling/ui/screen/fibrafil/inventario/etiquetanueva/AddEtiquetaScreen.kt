@@ -113,6 +113,7 @@ fun AddEtiquetaScreen(
             }
         }
     }
+
     LaunchedEffect(Unit) {
         viewmodel.eventoNavegacion.collect { destino ->
             when (destino) {
@@ -180,7 +181,6 @@ fun AddEtiquetaScreen(
                                 horizontalArrangement = Arrangement.Center,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-
                                 Text(
                                     "Guardar e Imprimir",
 
@@ -188,7 +188,6 @@ fun AddEtiquetaScreen(
                                     color = Color.White
                                 )
                                 Spacer(Modifier.width(8.dp))
-
                                 Icon(
                                     painter = painterResource(R.drawable.ic_print),
                                     contentDescription = "Print",
@@ -200,7 +199,6 @@ fun AddEtiquetaScreen(
                 },
                 snackbarHost = { SnackbarHost(snackbarHostState) }
             ){
-
                 LazyColumn (
                     modifier = Modifier
                         .fillMaxWidth()
@@ -253,7 +251,6 @@ fun AddEtiquetaScreen(
                             enabled = true,
                             )
                     }
-
                     item {
                         Spacer(Modifier.height(8.dp))
                     }
@@ -294,8 +291,8 @@ fun AddEtiquetaScreen(
                             selected = formState.maquina,
                             onSelectedChange = { viewmodel.onMaquinaChange(it) },
                             onFilterChange = { text -> viewmodel.searchMaquina(text, text) },
-                            isError = errorState.almacenError != null,
-                            supportingText = { errorState.almacenError?.let { Text(it, color = Color.Red, fontSize = 12.sp) } }
+                            isError = errorState.maquinaError != null,
+                            supportingText = { errorState.maquinaError?.let { Text(it, color = Color.Red, fontSize = 12.sp) } }
                         )
 
                     }

@@ -7,3 +7,8 @@ fun AlmacenResponse.toEntity() = FibAlmacenEntity(
     whsCode = whsCode,
     whsName = whsName
 )
+
+fun FibAlmacenEntity.toResponse() = AlmacenResponse(
+    whsCode = whsCode,
+    whsName = whsName
+)

@@ -52,6 +52,7 @@ import com.example.fibra_labeling.data.model.fibrafil.ProductoDetalleUi
 import com.example.fibra_labeling.ui.BarcodeViewModel
 import com.example.fibra_labeling.ui.component.CustomAppBar
 import com.example.fibra_labeling.ui.navigation.Screen
+import com.example.fibra_labeling.ui.screen.fibrafil.inventario.component.CopiesAndTemplateDialog
 import com.example.fibra_labeling.ui.screen.fibrafil.inventario.component.CopiesInputDialog
 import com.example.fibra_labeling.ui.screen.fibrafil.inventario.component.ProductoDetalleCard
 import com.example.fibra_labeling.ui.screen.print.component.LoadingDialog
@@ -86,6 +87,10 @@ fun ImpresionScreen(
     )
 
     var showDialogCopies by remember { mutableStateOf(false) }
+
+    var selectedTemplateId by remember { mutableStateOf<Long?>(null) }
+
+    val zplLabels = viewModel.labels.collectAsState().value
 
     LaunchedEffect(Unit) {
         barcodeViewModel.barcode.collect { scannedCode ->
@@ -149,16 +154,20 @@ fun ImpresionScreen(
         }
     }
 
-    CopiesInputDialog(
+    CopiesAndTemplateDialog (
         show = showDialogCopies,
         onDismiss = { showDialogCopies = false },
-        onConfirm = { nroCopias ->
+
+        onConfirm = { nroCopias,templateId ->
             Log.e("Nro Copias",nroCopias.toString())
             viewModel.filPrintEtiqueta(
-                nroCopias
+                nroCopias,templateId
             )
+
             showDialogCopies = false
-        }
+        },
+        templates = zplLabels,
+        selectedTemplateId = null,
     )
 
     Box{

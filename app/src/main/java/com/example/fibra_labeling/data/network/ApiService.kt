@@ -17,6 +17,7 @@ import com.example.fibra_labeling.data.model.fibrafil.FillPrintRequest
 import com.example.fibra_labeling.data.model.fibrafil.OncInsertResponse
 import com.example.fibra_labeling.data.model.fibrafil.StockResponse
 import com.example.fibra_labeling.data.model.fibrafil.UpdateITWResponse
+import com.example.fibra_labeling.data.model.fibrafil.ZplPrintRequest
 import com.example.fibra_labeling.data.model.fibrafil.oinc.OincApiResponse
 import com.example.fibra_labeling.data.model.fibrafil.oinc.OincInsertApiResponse
 import com.example.fibra_labeling.data.model.fibrafil.users.FilUserResponse
@@ -83,6 +84,9 @@ interface ApiService {
     @GET("fibrafil/oitmfills-all")
     suspend fun getallOitmsFill(): List<OITMData>
 
+
+    @POST("fibrafil/print-zpl")
+    suspend fun printCustomZpl(@Body zplCustom: ZplPrintRequest): FilPrintResponse
 
 
 }

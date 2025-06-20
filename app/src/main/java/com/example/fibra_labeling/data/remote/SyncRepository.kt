@@ -11,4 +11,6 @@ interface SyncRepository {
     suspend fun syncEtiquetaDetalle()
 
     suspend fun sycOinc(docEntry: Long):OncInsertResponse
+
+    suspend fun syncAlmacen()
 }

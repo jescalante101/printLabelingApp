@@ -6,9 +6,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.fibra_labeling.data.local.dao.FilAlmacenDao
+import com.example.fibra_labeling.data.local.dao.ZplLabelDao
 import com.example.fibra_labeling.data.local.entity.fibrafil.FibIncEntity
 import com.example.fibra_labeling.data.local.mapper.toApiData
 import com.example.fibra_labeling.data.local.mapper.toEtiquetaDetalleEntity
+import com.example.fibra_labeling.data.local.mapper.toResponse
 import com.example.fibra_labeling.data.local.repository.fibrafil.EtiquetaDetalleRepository
 import com.example.fibra_labeling.data.local.repository.fibrafil.fibinc.FibIncRepository
 import com.example.fibra_labeling.data.local.repository.fibrafil.maquina.FMaquinaRepository
@@ -18,7 +21,10 @@ import com.example.fibra_labeling.data.model.fibrafil.ProductoDetalleUi
 import com.example.fibra_labeling.data.model.fibrafil.FilPrintResponse
 import com.example.fibra_labeling.data.model.fibrafil.FillPrintRequest
 import com.example.fibra_labeling.data.model.fibrafil.StockResponse
+import com.example.fibra_labeling.data.model.fibrafil.ZplPrintRequest
+import com.example.fibra_labeling.data.model.fibrafil.toZplMap
 import com.example.fibra_labeling.data.remote.FillRepository
+import com.example.fibra_labeling.data.utils.ZplTemplateMapper
 import com.example.fibra_labeling.datastore.ImpresoraPreferences
 import com.example.fibra_labeling.datastore.UserLoginPreference
 import com.example.fibra_labeling.ui.screen.fibrafil.inventario.etiquetanueva.form.AddEtiquetaFormErrorState
@@ -32,6 +38,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlin.collections.map
 
@@ -41,7 +48,9 @@ class FillEtiquetaViewModel(
     private val etiquetaDetalleRepository: EtiquetaDetalleRepository,
     private val localRepository: FMaquinaRepository,
     private val userLoginPreference: UserLoginPreference,
-    private val fibIncRepository: FibIncRepository
+    private val fibIncRepository: FibIncRepository,
+    private val zplLabelDao: ZplLabelDao,
+    private val almacenDao: FilAlmacenDao
 ): ViewModel() {
 
 
@@ -155,22 +164,38 @@ class FillEtiquetaViewModel(
     fun getAlmacens(){
         viewModelScope.launch {
             _loading.value = true
-            repository.getAlmacens()
-                .catch { e ->
-                    Log.e("Error Almacen", e.message.toString())
-                    _almacens.value = listOf()
-                    _loading.value = false
+            val almacenData=almacenDao.getAll()
+            if (almacenData.isNotEmpty()){
+                _almacens.value=almacenData.map { it.toResponse() }
+                val select=almacenData.find {
+                    it.whsCode=="CH3-RE"
                 }
-                .collect {
-                    Log.e("Success Almacen", it.map { it.whsName }.toString())
-                    _almacens.value = it
-                    it.map {
-                        if (it.whsCode=="CH3-RE"){
-                            onAlmacenChange(it)
-                        }
-                    }
-                    _loading.value = false
-                }
+               if (select!=null){
+                   onAlmacenChange(select.toResponse())
+               }
+                _loading.value = false
+                //return@launch
+            }else{
+                _loading.value = false
+                //return@launch
+            }
+
+//            repository.getAlmacens()
+//                .catch { e ->
+//                    Log.e("Error Almacen", e.message.toString())
+//                    _almacens.value = listOf()
+//                    _loading.value = false
+//                }
+//                .collect {
+//                    Log.e("Success Almacen", it.map { it.whsName }.toString())
+//                    _almacens.value = it
+//                    it.map {
+//                        if (it.whsCode=="CH3-RE"){
+//                            onAlmacenChange(it)
+//                        }
+//                    }
+//                    _loading.value = false
+//                }
         }
     }
 
@@ -246,14 +271,21 @@ class FillEtiquetaViewModel(
             val ip = impresoraPrefs.impresoraIp.first() // suspende hasta obtener el valor real
             val puerto = impresoraPrefs.impresoraPuerto.first()
 
+            val zpl=zplLabelDao.getSelectedLabel()
+
+            if (zpl==null){
+                _eventoNavegacion.emit("printSetting")
+                _loading.value=false
+                return@launch
+            }
+
             if (ip.isBlank() || puerto.isBlank()) {
                 _eventoNavegacion.emit("printSetting")
                 _loading.value=false
                 return@launch
             }
 
-            val data= FillPrintRequest(
-                data = ProductoDetalleUi(
+                           val  details = ProductoDetalleUi(
                     codigo = formState.codigo,
                     productoName = formState.producto,
                     lote = formState.lote,
@@ -261,14 +293,24 @@ class FillEtiquetaViewModel(
                     maquina = formState.maquina?.name,
                     ubicacion = formState.ubicacion,
                     whsCode = formState.almacen?.whsCode ?: "CH3-RE",
-                    codBar = "" // TODO: Generar o asignar el código de barras real aquí si lo tienes
-                ),
-                ipPrinter = ip,
-                portPrinter = puerto.toInt(),
-                nroCopias = 1
+                    codBar = formState.codigo
+                )
 
+            val data= ZplPrintRequest(
+                ip=ip,
+                port=puerto.toInt(),
+                zplContent = ZplTemplateMapper.mapCustomTemplate(zpl.zplFile,details.toZplMap(),1)
             )
-            repository.filPrintEtiqueta(data).catch {e->
+
+
+//            val data= FillPrintRequest(
+
+//                ipPrinter = ip,
+//                portPrinter = puerto.toInt(),
+//                nroCopias = 1
+//
+//            )
+            repository.filCustomPrintZpl(data).catch {e->
                 Log.e("Error", e.message.toString());
                 _loading.value=false
                 _print.value=Result.failure(e)

@@ -10,6 +10,7 @@ import com.example.fibra_labeling.data.model.fibrafil.FilPrintResponse
 import com.example.fibra_labeling.data.model.fibrafil.FillPrintRequest
 import com.example.fibra_labeling.data.model.fibrafil.StockResponse
 import com.example.fibra_labeling.data.model.fibrafil.UpdateITWResponse
+import com.example.fibra_labeling.data.model.fibrafil.ZplPrintRequest
 import com.example.fibra_labeling.data.model.fibrafil.oinc.OincApiResponse
 import com.example.fibra_labeling.data.model.fibrafil.oinc.OincInsertApiResponse
 import com.example.fibra_labeling.data.model.fibrafil.users.FilUserResponse
@@ -140,6 +141,16 @@ class FillRepositoryImpl(private val apiService: ApiService): FillRepository {
         if(it is UnknownServiceException){
             throw Exception("No se permite conexión HTTP. Revisa la configuración de seguridad de red.");
         }else {
+            throw it
+        }
+    }
+
+    override suspend fun filCustomPrintZpl(zpl: ZplPrintRequest): Flow<FilPrintResponse> = flow {
+        emit(apiService.printCustomZpl(zpl))
+    }.catch {
+        if (it is UnknownServiceException) {
+            throw Exception("No se permite conexión HTTP. Revisa la configuración de seguridad de red.");
+        } else {
             throw it
         }
     }

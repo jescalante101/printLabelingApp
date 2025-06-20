@@ -3,6 +3,8 @@ package com.example.fibra_labeling.ui.screen.fibrafil.inventario.etiqueta
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.fibra_labeling.data.local.dao.ZplLabelDao
+import com.example.fibra_labeling.data.local.entity.fibrafil.ZplLabel
 import com.example.fibra_labeling.data.local.mapper.toProductoDetalleUi
 import com.example.fibra_labeling.data.local.repository.fibrafil.EtiquetaDetalleRepository
 import com.example.fibra_labeling.data.local.repository.fibrafil.maquina.FMaquinaRepository
@@ -12,23 +14,35 @@ import com.example.fibra_labeling.data.model.PrintResponse
 import com.example.fibra_labeling.data.model.fibrafil.ProductoDetalleUi
 import com.example.fibra_labeling.data.model.fibrafil.FilPrintResponse
 import com.example.fibra_labeling.data.model.fibrafil.FillPrintRequest
+import com.example.fibra_labeling.data.model.fibrafil.ZplPrintRequest
+import com.example.fibra_labeling.data.model.fibrafil.toZplMap
 import com.example.fibra_labeling.data.remote.FillRepository
+import com.example.fibra_labeling.data.utils.ZplTemplateMapper
 import com.example.fibra_labeling.datastore.ImpresoraPreferences
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class ImpresionModelView(
     private val repository: FillRepository,
     private val impresoraPrefs: ImpresoraPreferences,
     private val etiquetaDetalleRepository: EtiquetaDetalleRepository,
-    private val fMaquinaRepository: FMaquinaRepository
+    private val fMaquinaRepository: FMaquinaRepository,
+    private val zplLabelDao: ZplLabelDao
 ): ViewModel() {
 
+    val labels: StateFlow<List<ZplLabel>> = zplLabelDao.getAllLabels()
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000),
+            emptyList()
+        )
 
     private val _productDetailResult = MutableStateFlow<Result<ProductoDetalleUi>>(
         Result.success(ProductoDetalleUi(
@@ -97,13 +111,26 @@ class ImpresionModelView(
         }
     }
 
-    fun filPrintEtiqueta(copies: Int) {
+    fun filPrintEtiqueta(copies: Int,zplTemplate: String?) {
+
         viewModelScope.launch {
 
             _isPrintLoading.value = true
-
             val ip = impresoraPrefs.impresoraIp.first() // suspende hasta obtener el valor real
             val puerto = impresoraPrefs.impresoraPuerto.first()
+            var zpl=zplLabelDao.getSelectedLabel()
+
+            var zplFile=zplTemplate
+
+            if (zpl==null && zplTemplate==null){
+                _printResult.value = Result.failure(Exception("Etiqueta no configurada para impresion"))
+                _eventoNavegacion.emit("printSetting")
+                _isPrintLoading.value=false
+                return@launch
+            }
+            if (zplTemplate==null){
+                zplFile=zpl?.zplFile
+            }
 
             if (ip.isBlank() || puerto.isBlank()) {
                 _printResult.value = Result.failure(Exception("Impresora no configurada para impresión"))
@@ -112,6 +139,12 @@ class ImpresionModelView(
                 return@launch
             }
 
+            val template = ZplTemplateMapper.mapCustomTemplate(
+                zplFile.toString(),
+                _productDetailResult.value.getOrNull()?.copy(
+                    codBar = lastScannedBarcode.value.toString()
+                )?.toZplMap() ?: emptyMap() ,copies)
+
 //            val codeBarValue = CodeBarRequest(codeBar,ip,puerto.toInt())
             val body= FillPrintRequest(
                 ipPrinter = ip,
@@ -119,7 +152,13 @@ class ImpresionModelView(
                 data = _productDetailResult.value.getOrNull(),
                 nroCopias = copies
             )
-            repository.filPrintEtiqueta(body)
+            val newBody= ZplPrintRequest(
+                ip = ip,
+                port = puerto.toInt(),
+                zplContent = template
+            )
+
+            repository.filCustomPrintZpl(newBody)
                 .catch { e ->
                     _printResult.value = Result.failure(e)
                     _isPrintLoading.value = false
@@ -132,7 +171,6 @@ class ImpresionModelView(
                     _isPrintLoading.value = false
                 }
         }
-
 
     }
 

@@ -4,6 +4,7 @@ import android.util.Log
 import com.example.fibra_labeling.data.local.dao.FibIncDao
 import com.example.fibra_labeling.data.local.dao.FibOincDao
 import com.example.fibra_labeling.data.local.dao.FibOitmDao
+import com.example.fibra_labeling.data.local.dao.FilAlmacenDao
 import com.example.fibra_labeling.data.local.dao.FilUserDao
 import com.example.fibra_labeling.data.local.mapper.toApiResponse
 import com.example.fibra_labeling.data.local.mapper.toEntity
@@ -22,7 +23,8 @@ class SyncRepositoryImpl(
     private val oitmDao: FibOitmDao,
     private val etiquetaDetalleRepository: EtiquetaDetalleRepository,
     private val fibOincDao: FibOincDao,
-    private val fibIncDao: FibIncDao
+    private val fibIncDao: FibIncDao,
+    private val almacenDao: FilAlmacenDao
 ): SyncRepository {
 
     override suspend fun syncUsers() {
@@ -110,6 +112,17 @@ class SyncRepositoryImpl(
                success = false
            )
        }
+    }
+
+    override suspend fun syncAlmacen() {
+        try {
+            val almacen=api.getAlmacenesFill()
+            if (almacen.isNotEmpty()) almacenDao.deleteAll()
+            almacenDao.insertAll(almacen.map { it.toEntity() })
+        }catch (e: Exception){
+            e.printStackTrace()
+            throw e
+        }
     }
 
 

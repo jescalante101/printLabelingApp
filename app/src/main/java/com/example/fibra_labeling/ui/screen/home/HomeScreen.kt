@@ -58,6 +58,7 @@ import com.example.fibra_labeling.ui.component.CustomAppBar
 import com.example.fibra_labeling.ui.navigation.Screen
 import com.example.fibra_labeling.ui.screen.home.component.CustomBottomSheetMenu
 import com.example.fibra_labeling.ui.screen.home.component.CustomButtonCard
+import com.example.fibra_labeling.ui.screen.home.component.FioriMenuDrawerSheet
 import com.example.fibra_labeling.ui.screen.home.component.HomeCategories
 import com.example.fibra_labeling.ui.util.gradientBrush
 import kotlinx.coroutines.launch
@@ -74,7 +75,8 @@ fun HomeScreen(
     onNavigateToInventory: () -> Unit,
     onNavigateToPackingList: () -> Unit,
     onNavigateToProduction: () -> Unit,
-    onNavigateToSetting: () -> Unit
+    onNavigateToSetting: () -> Unit,
+    onNavigateToZplScreen: () -> Unit
 ){
     val categories = listOf(
         HomeCategories(R.drawable.ic_scan, "Generar etiquetas",Screen.Print.route),
@@ -98,6 +100,8 @@ fun HomeScreen(
     val snackbarHostState = remember { SnackbarHostState() }
 
     var menuExpanded by remember { mutableStateOf(false) }
+
+    var selectedMenu by remember { mutableStateOf("Impresora") }
 
 
     //Dialog
@@ -146,66 +150,25 @@ fun HomeScreen(
     }
 
 
-
-
-
     ModalNavigationDrawer(
         drawerContent = {
-            ModalDrawerSheet(
-                modifier = Modifier
-                    .background(gradientBrush),
-                drawerContainerColor = Color.Transparent
-            ){
-
-                Column(
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                        .verticalScroll(rememberScrollState())
-                ) {
-                    Spacer(Modifier.height(12.dp))
-                    Text("Opciones",
-                        modifier = Modifier.padding(16.dp),
-                        style = MaterialTheme.typography.titleLarge,
-                        color = Color.White
-                    )
-                    HorizontalDivider()
-
-                    Text("Section 1", modifier = Modifier.padding(16.dp), style = MaterialTheme.typography.titleMedium)
-                    NavigationDrawerItem(
-                        label = { Text("Impresora") },
-                        selected = false,
-                        onClick = {
-                            onNavigateToSetting()
-                        }
-                    )
-                    NavigationDrawerItem(
-                        label = { Text("Item 2") },
-                        selected = false,
-                        onClick = { /* Handle click */ }
-                    )
-
-                    HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-
-                    Text("Section 2", modifier = Modifier.padding(16.dp), style = MaterialTheme.typography.titleMedium)
-                    NavigationDrawerItem(
-                        label = { Text("Settings") },
-                        selected = false,
-                        icon = { Icon(Icons.Outlined.Settings, contentDescription = null) },
-                        badge = { Text("20") }, // Placeholder
-                        onClick = { /* Handle click */ }
-                    )
-                    NavigationDrawerItem(
-                        label = { Text("Help and feedback") },
-                        selected = false,
-                        icon = { Icon(Icons.AutoMirrored.Outlined.List, contentDescription = null) },
-                        onClick = { /* Handle click */ },
-                    )
-                    Spacer(Modifier.height(12.dp))
-                }
+            ModalDrawerSheet {
+                FioriMenuDrawerSheet (
+                    selectedMenu = selectedMenu,
+                    onSelect = { selectedMenu = it },
+                    onNavigateToSetting = {
+                        onNavigateToSetting()
+                    },
+                    onNavigateToZplScreen = {
+                        onNavigateToZplScreen()
+                    }
+                )
             }
         },
         drawerState = drawerState
 
-    ) {
+    )
+    {
 
 
         Box(
@@ -348,7 +311,6 @@ fun HomeScreen(
         )
 
     }
-
 
 
 }

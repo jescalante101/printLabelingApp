@@ -10,6 +10,7 @@ import com.example.fibra_labeling.data.model.fibrafil.FilPrintResponse
 import com.example.fibra_labeling.data.model.fibrafil.FillPrintRequest
 import com.example.fibra_labeling.data.model.fibrafil.StockResponse
 import com.example.fibra_labeling.data.model.fibrafil.UpdateITWResponse
+import com.example.fibra_labeling.data.model.fibrafil.ZplPrintRequest
 import com.example.fibra_labeling.data.model.fibrafil.oinc.OincApiResponse
 import com.example.fibra_labeling.data.model.fibrafil.oinc.OincInsertApiResponse
 import com.example.fibra_labeling.data.model.fibrafil.users.FilUserResponse
@@ -31,4 +32,6 @@ interface FillRepository {
     //
     suspend fun getUsers(): Flow<List<FilUserResponse>>
     suspend fun getAllOitms(): Flow<List<OITMData>>
+
+    suspend fun filCustomPrintZpl(zpl: ZplPrintRequest): Flow<FilPrintResponse>
 }

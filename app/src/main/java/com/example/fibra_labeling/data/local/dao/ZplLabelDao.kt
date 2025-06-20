@@ -35,4 +35,15 @@ interface ZplLabelDao {
 
     @Query("SELECT COUNT(*) FROM zpl_labels")
     suspend fun getLabelsCount(): Int
+
+    @Query("SELECT * FROM zpl_labels WHERE selected = 1")
+    suspend fun getSelectedLabel(): ZplLabel?
+
+    // actualizar selected a true
+    @Query("UPDATE zpl_labels SET selected = 1 WHERE id = :id")
+    suspend fun setSelectedLabel(id: Long)
+
+    @Query("UPDATE zpl_labels SET selected = 0")
+    suspend fun unselectAllLabels()
+
 }
