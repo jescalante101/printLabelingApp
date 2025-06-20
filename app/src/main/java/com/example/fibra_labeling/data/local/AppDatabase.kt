@@ -11,6 +11,7 @@ import com.example.fibra_labeling.data.local.dao.FibOincDao
 import com.example.fibra_labeling.data.local.dao.FibOitmDao
 import com.example.fibra_labeling.data.local.dao.FilAlmacenDao
 import com.example.fibra_labeling.data.local.dao.FilUserDao
+import com.example.fibra_labeling.data.local.dao.ZplLabelDao
 import com.example.fibra_labeling.data.local.entity.fibrafil.EtiquetaDetalleEntity
 import com.example.fibra_labeling.data.local.entity.fibrafil.FMaquinaEntity
 import com.example.fibra_labeling.data.local.entity.fibrafil.FibAlmacenEntity
@@ -18,7 +19,9 @@ import com.example.fibra_labeling.data.local.entity.fibrafil.FibIncEntity
 import com.example.fibra_labeling.data.local.entity.fibrafil.FibOITMEntity
 import com.example.fibra_labeling.data.local.entity.fibrafil.FibOincEntity
 import com.example.fibra_labeling.data.local.entity.fibrafil.FilUserEntity
-import com.example.fibra_labeling.data.migration.MIGRATION_2_3
+import com.example.fibra_labeling.data.local.entity.fibrafil.ZplLabel
+import com.example.fibra_labeling.data.migration.MIGRATION_3_4
+import com.example.fibra_labeling.data.migration.MIGRATION_4_5
 
 @Database(
     entities = [EtiquetaDetalleEntity::class,
@@ -26,9 +29,10 @@ import com.example.fibra_labeling.data.migration.MIGRATION_2_3
         FibOincEntity::class,
         FibIncEntity::class,
         FibAlmacenEntity::class,
-        FibOITMEntity::class
+        FibOITMEntity::class,
+        ZplLabel::class
     ],
-    version = 4,
+    version = 4,//TODO: incrementar la version a  5 para la migracion de la base de datos
     exportSchema = false
 )
 abstract class AppDatabase: RoomDatabase()  {
@@ -41,6 +45,8 @@ abstract class AppDatabase: RoomDatabase()  {
     abstract fun almacenDao(): FilAlmacenDao
     abstract fun oitmDao(): FibOitmDao
 
+    abstract fun zplLabelDao(): ZplLabelDao
+
     companion object {
         @Volatile private var INSTANCE: AppDatabase? = null
 
@@ -51,7 +57,9 @@ abstract class AppDatabase: RoomDatabase()  {
                     AppDatabase::class.java,
                     "fibra_labeling_db"
                 )
-                    .addMigrations(MIGRATION_2_3)  // Agregar la migración
+                    .fallbackToDestructiveMigrationOnDowngrade(true)
+                    .addMigrations(MIGRATION_3_4)
+                    .addMigrations(MIGRATION_4_5)
                     .build().also { INSTANCE = it }
             }
     }

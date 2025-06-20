@@ -2,9 +2,9 @@ package com.example.fibra_labeling.di
 
 import androidx.room.Room
 import com.example.fibra_labeling.data.local.AppDatabase
-import com.example.fibra_labeling.data.migration.MIGRATION_2_3
+import com.example.fibra_labeling.data.migration.MIGRATION_3_4
+import com.example.fibra_labeling.data.migration.MIGRATION_4_5
 import org.koin.dsl.module
-import kotlin.math.sin
 
 val roomModule = module {
     single {
@@ -13,7 +13,9 @@ val roomModule = module {
                 AppDatabase::class.java,
                 "fibra_labeling_db"
             )
-            .addMigrations(MIGRATION_2_3)
+            .fallbackToDestructiveMigrationOnDowngrade(true)
+            .addMigrations(MIGRATION_3_4)
+            .addMigrations(MIGRATION_4_5)
             .build()
     }
 
@@ -24,5 +26,5 @@ val roomModule = module {
     single { get<AppDatabase>().incDao() }
     single { get<AppDatabase>().almacenDao() }
     single { get<AppDatabase>().oitmDao() }
-
+    single { get<AppDatabase>().zplLabelDao() }
 }

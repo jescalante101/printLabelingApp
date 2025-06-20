@@ -26,7 +26,7 @@ interface FibIncDao {
     SELECT * FROM fib_inc 
     WHERE docEntry = :docEntry
       AND (U_ItemName LIKE '%' || :filter || '%' OR U_ItemCode LIKE '%' || :filter || '%')
-    ORDER BY U_ItemCode
+    ORDER BY id DESC
 """)
     fun getByDocEntry(
         docEntry: Int,
