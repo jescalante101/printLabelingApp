@@ -68,7 +68,7 @@ private val LightColorScheme = lightColorScheme(
     */
 )
 
-private val LightColors = lightColorScheme(
+val LightColors = lightColorScheme(
     primary = FioriPrimary,
     onPrimary = FioriOnPrimary,
     secondary = FioriSecondary,
@@ -77,7 +77,8 @@ private val LightColors = lightColorScheme(
     onBackground = FioriOnBackground,
     surface = FioriSurface,
     onSurface = FioriOnSurface,
-    // Puedes agregar otros colores como tertiary si deseas
+    primaryContainer = FioriPrimaryContainer,
+    onPrimaryContainer = FioriOnPrimaryContainer,
 )
 
 private val DarkColors = darkColorScheme(

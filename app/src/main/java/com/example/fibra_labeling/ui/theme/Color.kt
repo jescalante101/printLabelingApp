@@ -48,6 +48,10 @@ val FioriBackground = Color(0xFFF7F7F7)
 val FioriSurface = Color(0xFFFFFFFF)
 val FioriOnBackground = Color(0xFF222222)
 val FioriOnSurface = Color(0xFF222222)
+val FioriPrimaryContainer = FioriSecondary
+val FioriOnPrimaryContainer = FioriOnSecondary
+
+
 
 val FioriDarkPrimary = Color(0xFF0A6ED1)
 val FioriDarkOnPrimary = Color(0xFFFFFFFF)

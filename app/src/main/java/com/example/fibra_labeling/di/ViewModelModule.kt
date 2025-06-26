@@ -1,16 +1,17 @@
 package com.example.fibra_labeling.di
 
 import com.example.fibra_labeling.ui.BarcodeViewModel
-import com.example.fibra_labeling.ui.screen.fibrafil.inventario.etiqueta.ImpresionModelView
-import com.example.fibra_labeling.ui.screen.fibrafil.inventario.etiquetanueva.FillEtiquetaViewModel
+import com.example.fibra_labeling.ui.screen.fibra_print.etiqueta.PrintViewModel
+import com.example.fibra_labeling.ui.screen.fibra_print.etiqueta.register.NewPrintViewModel
+import com.example.fibra_labeling.ui.screen.fibra_print.etiqueta.register.RegisterViewModel
+import com.example.fibra_labeling.ui.screen.fibrafil.etiqueta.etiqueta.ImpresionModelView
+import com.example.fibra_labeling.ui.screen.fibrafil.etiqueta.etiquetanueva.FillEtiquetaViewModel
 import com.example.fibra_labeling.ui.screen.home.HomeViewModel
-import com.example.fibra_labeling.ui.screen.inventory.RegisterCabeceraViewModel
-import com.example.fibra_labeling.ui.screen.inventory.details.IncViewModel
-import com.example.fibra_labeling.ui.screen.inventory.register.OincRegisterViewModel
-import com.example.fibra_labeling.ui.screen.inventory.register.stock.StockViewModel
-import com.example.fibra_labeling.ui.screen.print.PrintViewModel
-import com.example.fibra_labeling.ui.screen.print.register.NewPrintViewModel
-import com.example.fibra_labeling.ui.screen.print.register.RegisterViewModel
+import com.example.fibra_labeling.ui.screen.fibrafil.inventario.RegisterCabeceraViewModel
+import com.example.fibra_labeling.ui.screen.fibrafil.inventario.details.IncViewModel
+import com.example.fibra_labeling.ui.screen.fibrafil.inventario.register.OincRegisterViewModel
+import com.example.fibra_labeling.ui.screen.fibrafil.inventario.register.stock.StockViewModel
+
 import com.example.fibra_labeling.ui.screen.setting.printer.PrinterSettingScreenViewModel
 import com.example.fibra_labeling.ui.screen.setting.zpl.ZplTemplateViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel

@@ -12,7 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
-import com.example.fibra_labeling.ui.screen.print.util.generarCodigoBarras
+import com.example.fibra_labeling.ui.screen.fibra_print.etiqueta.util.generarCodigoBarras
 
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable

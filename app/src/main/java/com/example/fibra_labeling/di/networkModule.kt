@@ -42,11 +42,11 @@ val networkModule = module {
             .writeTimeout(400, TimeUnit.SECONDS)
             .build()
     }
-
     single {
+
         val contentType = "application/json".toMediaType()
         Retrofit.Builder()
-            .baseUrl(" http://192.168.1.7:8080/backend/")
+            .baseUrl("http://192.168.20.125:5000/")
             .addConverterFactory(get<Json>().asConverterFactory(contentType))
             .client(get())
             .build()

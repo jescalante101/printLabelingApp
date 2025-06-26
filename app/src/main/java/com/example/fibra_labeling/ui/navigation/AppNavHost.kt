@@ -14,27 +14,43 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.fibra_labeling.ui.screen.fibrafil.inventario.etiqueta.ImpresionScreen
-import com.example.fibra_labeling.ui.screen.fibrafil.inventario.etiquetanueva.AddEtiquetaScreen
+import com.example.fibra_labeling.ui.screen.fibra_print.etiqueta.PrintScreen
+import com.example.fibra_labeling.ui.screen.fibra_print.etiqueta.register.NewPrintScreen
+import com.example.fibra_labeling.ui.screen.fibra_print.etiqueta.register.PrintRegisterScreen
+import com.example.fibra_labeling.ui.screen.fibrafil.etiqueta.etiqueta.ImpresionScreen
+import com.example.fibra_labeling.ui.screen.fibrafil.etiqueta.etiquetanueva.AddEtiquetaScreen
 import com.example.fibra_labeling.ui.screen.home.HomeScreen
-import com.example.fibra_labeling.ui.screen.inventory.InventoryScreen
-import com.example.fibra_labeling.ui.screen.inventory.RegisterCabecera
-import com.example.fibra_labeling.ui.screen.inventory.details.IncScreen
+import com.example.fibra_labeling.ui.screen.fibrafil.inventario.InventoryScreen
+import com.example.fibra_labeling.ui.screen.fibrafil.inventario.RegisterCabecera
+import com.example.fibra_labeling.ui.screen.fibrafil.inventario.details.IncScreen
 import com.example.fibra_labeling.ui.screen.packing.PackingScreen
-import com.example.fibra_labeling.ui.screen.print.PrintScreen
-import com.example.fibra_labeling.ui.screen.print.register.NewPrintScreen
-import com.example.fibra_labeling.ui.screen.print.register.PrintRegisterScreen
 import com.example.fibra_labeling.ui.screen.production.ProductionScreen
 import com.example.fibra_labeling.ui.screen.reception.ReceptionScreen
 import com.example.fibra_labeling.ui.screen.setting.printer.PrintSettingScreen
 import com.example.fibra_labeling.ui.screen.transfer.TransferScreen
+import com.example.fibra_labeling.ui.screen.welcome.WelcomeScreen
 
 @Composable
-fun AppNavHost(navController: NavHostController = rememberNavController(), startDestination: String = Screen.Home.route){
+fun AppNavHost(navController: NavHostController = rememberNavController(), startDestination: String = Screen.Welcome.route){
     NavHost(
         navController = navController,
         startDestination = startDestination,
     ){
+
+        composable(
+            Screen.Welcome.route,
+            enterTransition = {
+                fadeIn(animationSpec = tween(700)) +
+                        scaleIn(initialScale = 0.9f, animationSpec = tween(700))
+            },
+        ){
+            WelcomeScreen (
+                onEmpresaSeleccionada = {
+                    // Navegar a la pantalla SELECCIONADA Y ALMACENAR LA EMPRESA SELECCIONADA
+                }
+            )
+        }
+
         composable(
             Screen.Home.route,
             enterTransition = {
