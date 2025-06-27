@@ -35,20 +35,22 @@ class HomePrintViewModel(private val pSyncRepository: PSyncRepository): ViewMode
             _isSyncing.value = true
             _syncMessage.value = "Sincronizando datos con el servidor..."
             try {
-//                _syncMessage.value = "Recuperando máquinas..."
-//                fillRespository.syncMaquinas()
-//                delay(500)
 
-//                _syncMessage.value = "Recuperando usuarios..."
-//                syncRepository.syncUsers()
-//                delay(500)
-//
-//                _syncMessage.value = "Recuperando almacenes..."
-//                syncRepository.syncAlmacen()
-//                delay(500)
+
+                _syncMessage.value = "Recuperando usuarios..."
+                pSyncRepository.syncUsers()
+                delay(500)
+
+                _syncMessage.value = "Recuperando almacenes..."
+                pSyncRepository.syncAlmacen()
+                delay(500)
 
                 _syncMessage.value = "Recuperando artículos..."
                 pSyncRepository.syncOitms()
+                delay(500)
+
+                _syncMessage.value = "Recuperando Proveedores..."
+                pSyncRepository.syncProveedor()
                 delay(500)
 
                 // Puedes seguir agregando pasos aquí...

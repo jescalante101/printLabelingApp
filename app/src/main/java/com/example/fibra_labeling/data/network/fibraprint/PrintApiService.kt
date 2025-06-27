@@ -10,6 +10,8 @@ import com.example.fibra_labeling.data.model.PesajeRequest
 import com.example.fibra_labeling.data.model.PesajeResponse
 import com.example.fibra_labeling.data.model.PrintResponse
 import com.example.fibra_labeling.data.model.ProveedorResponse
+import com.example.fibra_labeling.data.model.fibrafil.users.FilUserResponse
+import com.example.fibra_labeling.data.model.fibraprint.OcrdResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -43,7 +45,11 @@ interface PrintApiService {
     @GET("fibraprint/oitms")
     suspend fun getOitms(): List<OITMData>
 
+    @GET("fibraprint/proveedor")
+    suspend fun getProveedor(): List<OcrdResponse>
 
+    @GET("fibraprint/users")
+    suspend fun getUsers() : List<FilUserResponse>
 
 
 }

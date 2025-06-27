@@ -6,6 +6,7 @@ import com.example.fibra_labeling.data.local.database.PrintDatabase
 import com.example.fibra_labeling.data.migration.MIGRATION_3_4
 import com.example.fibra_labeling.data.migration.MIGRATION_4_5
 import org.koin.dsl.module
+import kotlin.math.sin
 
 val roomModule = module {
 
@@ -45,4 +46,8 @@ val roomModule = module {
 
     //FIBRA PRINT DAOS
     single { get<PrintDatabase>().pOitmDao() }
+    single { get<PrintDatabase>().pOcrdDao() }
+    single { get<PrintDatabase>().pOwhDao() }
+    single { get<PrintDatabase>().pOusrDao() }
+    single { get<PrintDatabase>().pOincDao() }
 }

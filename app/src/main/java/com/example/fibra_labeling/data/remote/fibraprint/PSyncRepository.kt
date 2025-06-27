@@ -12,4 +12,7 @@ interface PSyncRepository {
     suspend fun sycOinc(docEntry: Long):OncInsertResponse
 
     suspend fun syncAlmacen()
+
+    suspend fun syncProveedor()
+
 }

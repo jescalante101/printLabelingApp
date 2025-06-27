@@ -36,6 +36,5 @@ val repositoryModule = module {
 
     //remote
     single<SyncRepository> { SyncRepositoryImpl(get(),get(),get(),get(),get(),get(),get()) }
-
-    single<PSyncRepository>{ PSyncRepositoryImpl(get(),get()) }
+    single<PSyncRepository>{ PSyncRepositoryImpl(get(),get(),get(),get(),get()) }
 }

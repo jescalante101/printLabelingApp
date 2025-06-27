@@ -9,4 +9,5 @@ interface PesajeRepository {
     suspend fun getPesaje(codeBar: String): Flow<ImobPasaje>
     suspend fun printPesaje(codeBarValue: CodeBarRequest): Flow<PrintResponse>
 
+
 }
