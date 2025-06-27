@@ -1,16 +1,15 @@
 package com.example.fibra_labeling.di
 
-import com.example.fibra_labeling.data.network.ApiService
-import com.example.fibra_labeling.data.remote.FillRepository
-import com.example.fibra_labeling.data.remote.FillRepositoryImpl
+import com.example.fibra_labeling.data.network.fibrafil.ApiService
+import com.example.fibra_labeling.data.network.fibraprint.PrintApiService
+import com.example.fibra_labeling.data.remote.fibrafil.FillRepository
+import com.example.fibra_labeling.data.remote.fibrafil.FillRepositoryImpl
 import com.example.fibra_labeling.data.remote.OitmRepository
 import com.example.fibra_labeling.data.remote.OitmRespositoryImpl
 import com.example.fibra_labeling.data.remote.PesajeRepositoryImpl
 import com.example.fibra_labeling.data.remote.PesajeRepository
 import com.example.fibra_labeling.data.remote.SettingRepository
 import com.example.fibra_labeling.data.remote.SettingRepositoryImpl
-import com.example.fibra_labeling.data.remote.SyncRepository
-import com.example.fibra_labeling.data.remote.SyncRepositoryImpl
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
@@ -53,6 +52,7 @@ val networkModule = module {
     }
 
     single<ApiService> { get<Retrofit>().create(ApiService::class.java) }
+    single<PrintApiService> { get<Retrofit>().create(PrintApiService::class.java) }
 
     single<PesajeRepository> { PesajeRepositoryImpl(get()) }
     single<OitmRepository> { OitmRespositoryImpl(get()) }

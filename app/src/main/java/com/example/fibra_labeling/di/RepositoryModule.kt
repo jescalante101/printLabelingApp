@@ -14,13 +14,16 @@ import com.example.fibra_labeling.data.local.repository.fibrafil.oitm.FibOITMRep
 import com.example.fibra_labeling.data.local.repository.fibrafil.oitm.FibOitmRepository
 import com.example.fibra_labeling.data.local.repository.fibrafil.user.FUserRepository
 import com.example.fibra_labeling.data.local.repository.fibrafil.user.FUserRepositoryImpl
-import com.example.fibra_labeling.data.remote.SyncRepository
-import com.example.fibra_labeling.data.remote.SyncRepositoryImpl
+import com.example.fibra_labeling.data.remote.fibrafil.SyncRepository
+import com.example.fibra_labeling.data.remote.fibrafil.SyncRepositoryImpl
+import com.example.fibra_labeling.data.remote.fibraprint.PSyncRepository
+import com.example.fibra_labeling.data.remote.fibraprint.PSyncRepositoryImpl
 import org.koin.dsl.module
+import kotlin.math.sin
 
 val repositoryModule = module {
 
-    //local
+    //local fibrafil
     single<EtiquetaDetalleRepository> { EtiquetaDetalleRepositoryImpl(get()) }
     single<FMaquinaRepository>{ FMaquinaRepositoryImpl(get(),get()) }
     single<FUserRepository> { FUserRepositoryImpl(get()) }
@@ -30,7 +33,9 @@ val repositoryModule = module {
     single<FibOitmRepository> { FibOITMRepositoryImpl(get()) }
 
 
+
     //remote
     single<SyncRepository> { SyncRepositoryImpl(get(),get(),get(),get(),get(),get(),get()) }
 
+    single<PSyncRepository>{ PSyncRepositoryImpl(get(),get()) }
 }

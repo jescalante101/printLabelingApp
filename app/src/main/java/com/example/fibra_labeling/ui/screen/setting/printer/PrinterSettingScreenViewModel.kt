@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.fibra_labeling.data.local.dao.ZplLabelDao
+import com.example.fibra_labeling.data.local.dao.fibrafil.ZplLabelDao
 import com.example.fibra_labeling.data.local.entity.fibrafil.ZplLabel
 import com.example.fibra_labeling.data.remote.SettingRepository
 import com.example.fibra_labeling.datastore.ImpresoraPreferences

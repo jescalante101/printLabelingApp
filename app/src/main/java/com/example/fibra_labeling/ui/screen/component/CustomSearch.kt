@@ -13,6 +13,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 
@@ -62,5 +63,11 @@ fun CustomSearch(
             .focusRequester(focusRequester)
             .padding(horizontal = 16.dp),
     )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun CustomSearchPreview() {
+    CustomSearch(onChangeValue = {}, focusRequester = FocusRequester())
 }
 

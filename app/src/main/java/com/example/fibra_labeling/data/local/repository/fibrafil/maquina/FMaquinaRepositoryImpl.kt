@@ -1,10 +1,10 @@
 package com.example.fibra_labeling.data.local.repository.fibrafil.maquina
 
 import android.util.Log
-import com.example.fibra_labeling.data.local.dao.FMaquinaDao
+import com.example.fibra_labeling.data.local.dao.fibrafil.FMaquinaDao
 import com.example.fibra_labeling.data.local.entity.fibrafil.FMaquinaEntity
-import com.example.fibra_labeling.data.local.mapper.toEntity
-import com.example.fibra_labeling.data.network.ApiService
+import com.example.fibra_labeling.data.local.mapper.fibrafil.toEntity
+import com.example.fibra_labeling.data.network.fibrafil.ApiService
 import kotlinx.coroutines.flow.Flow
 
 class FMaquinaRepositoryImpl(

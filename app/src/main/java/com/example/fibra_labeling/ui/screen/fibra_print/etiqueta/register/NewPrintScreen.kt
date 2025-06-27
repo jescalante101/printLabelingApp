@@ -232,44 +232,45 @@ fun NewPrintScreen(
                     item {
                         Spacer(Modifier.height(2.dp))
                     }
-
                     item {
-                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(24.dp)) {
-                            if (proveedor.isSuccess){
-                                FioriTextField(
-                                    label = "Proveedor",
-                                    value = formState.proveedor,
-                                    onValueChange = {
-                                        viewModel.onProveedorChange(it)
-                                    },
-                                    enabled = false,
-                                    modifier = Modifier.weight(1f)
-                                )
-                            }else{
-                                FioriTextField(
-                                    label = "Proveedor",
-                                    value = formState.proveedor,
-                                    onValueChange = {
-                                        viewModel.onProveedorChange(it)
-                                    },
-                                    enabled = false,
-                                    modifier = Modifier.weight(1f)
-                                )
-                            }
+                        if (proveedor.isSuccess){
                             FioriTextField(
-                                label = "Lote",
-                                value = formState.lote,
+                                label = "Proveedor",
+                                value = formState.proveedor,
                                 onValueChange = {
-                                    lote = it
-                                    viewModel.onLoteChange(it)
+                                    viewModel.onProveedorChange(it)
                                 },
-                                enabled = true,
-                                modifier = Modifier.weight(1f),
-                                isError = formErrorState.loteError != null,
-                                supportingText = { formErrorState.loteError?.let { Text(it, color = Color.Red, fontSize = 12.sp) } }
+                                enabled = false,
 
                             )
+                        }else{
+                            FioriTextField(
+                                label = "Proveedor",
+                                value = formState.proveedor,
+                                onValueChange = {
+                                    viewModel.onProveedorChange(it)
+                                },
+                                enabled = false,
+                            )
                         }
+                    }
+                    item {
+                        Spacer(Modifier.height(16.dp))
+                    }
+
+                    item {
+                        FioriTextField(
+                            label = "Lote",
+                            value = formState.lote,
+                            onValueChange = {
+                                lote = it
+                                viewModel.onLoteChange(it)
+                            },
+                            enabled = true,
+                            isError = formErrorState.loteError != null,
+                            supportingText = { formErrorState.loteError?.let { Text(it, color = Color.Red, fontSize = 12.sp) } }
+
+                        )
 
                     }
 
@@ -296,20 +297,20 @@ fun NewPrintScreen(
                         )
                     }
 
-                    item {
-                        FioriDropdown(
-                            label = "Motivo",
-                            options = motivos.map { it->it.descripcion },
-                            selected = formState.motivo.toString(),
-                            onSelectedChange = { value->
-                                motivo = motivos.first { it.descripcion.toString().contentEquals(value) }
-                                viewModel.onMotivoChange(motivo.codigo)
-                            },
-                            isError = formErrorState.motivoError != null,
-                            supportingText = { formErrorState.motivoError?.let { Text(it, color = Color.Red, fontSize = 12.sp) } }
-
-                            )
-                    }
+//                    item {
+//                        FioriDropdown(
+//                            label = "Motivo",
+//                            options = motivos.map { it->it.descripcion },
+//                            selected = formState.motivo.toString(),
+//                            onSelectedChange = { value->
+//                                motivo = motivos.first { it.descripcion.toString().contentEquals(value) }
+//                                viewModel.onMotivoChange(motivo.codigo)
+//                            },
+//                            isError = formErrorState.motivoError != null,
+//                            supportingText = { formErrorState.motivoError?.let { Text(it, color = Color.Red, fontSize = 12.sp) } }
+//
+//                            )
+//                    }
 
                     item {
                         Spacer(Modifier.height(16.dp))
@@ -367,17 +368,17 @@ fun NewPrintScreen(
                                 supportingText = { formErrorState.metroLinealError?.let { Text(it, color = Color.Red, fontSize = 12.sp) } }
 
                             )
-                            FioriTextField(
-                                label = "Equivalente",
-                                value = formState.equivalente.toString(),
-                                onValueChange = {
-                                    equivalente = it
-                                    viewModel.onEquivalenteChange(it)
-                                },
-                                enabled = true,
-                                modifier = Modifier.weight(1f),
-
-                            )
+//                            FioriTextField(
+//                                label = "Equivalente",
+//                                value = formState.equivalente.toString(),
+//                                onValueChange = {
+//                                    equivalente = it
+//                                    viewModel.onEquivalenteChange(it)
+//                                },
+//                                enabled = true,
+//                                modifier = Modifier.weight(1f),
+//
+//                            )
                         }
                     }
                     item {

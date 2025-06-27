@@ -1,6 +1,6 @@
 package com.example.fibra_labeling.data.local.repository.fibrafil.oitm
 
-import com.example.fibra_labeling.data.local.dao.FibOitmDao
+import com.example.fibra_labeling.data.local.dao.fibrafil.FibOitmDao
 import com.example.fibra_labeling.data.local.entity.fibrafil.FibOITMEntity
 import kotlinx.coroutines.flow.Flow
 

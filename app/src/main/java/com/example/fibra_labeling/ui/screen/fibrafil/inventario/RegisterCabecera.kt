@@ -65,6 +65,7 @@ fun RegisterCabecera(
     val scope = rememberCoroutineScope()
 
     // Confirmación de sincronización (cuando el usuario acepta)
+
     fun onConfirmSync(dto: FibOincEntity) {
         viewModel.syncEtiquetaEncabezado(dto.docEntry)
     }
@@ -228,8 +229,6 @@ fun RegisterCabecera(
         }
     }
 
-
-
     // Bottom sheet para el registro
     OncRegisterScreen(
         showSheet = showSheet,
@@ -238,7 +237,6 @@ fun RegisterCabecera(
     )
 }
 
-
 @Preview
 @Composable
 fun PreviewRegisterCabecera() {
@@ -246,6 +244,5 @@ fun PreviewRegisterCabecera() {
         onNavigateBack = {},
         onNavigateToFilEtiqueta = {},
         onNavigateToDetails = {}
-
     )
 }

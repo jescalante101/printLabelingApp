@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fibra_labeling.data.local.entity.fibrafil.FibOincWithDetalles
 import com.example.fibra_labeling.data.local.repository.fibrafil.oinc.FibOincRepository
-import com.example.fibra_labeling.data.remote.SyncRepository
+import com.example.fibra_labeling.data.remote.fibrafil.SyncRepository
 import com.example.fibra_labeling.datastore.UserLoginPreference
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async

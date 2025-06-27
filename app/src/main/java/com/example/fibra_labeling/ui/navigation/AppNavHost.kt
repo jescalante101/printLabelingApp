@@ -14,12 +14,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.fibra_labeling.ui.screen.fibra_print.etiqueta.PrintScreen
+import com.example.fibra_labeling.ui.screen.fibra_print.etiqueta.impresion.PrintScreen
+import com.example.fibra_labeling.ui.screen.fibra_print.etiqueta.products.PrintProductScreen
 import com.example.fibra_labeling.ui.screen.fibra_print.etiqueta.register.NewPrintScreen
 import com.example.fibra_labeling.ui.screen.fibra_print.etiqueta.register.PrintRegisterScreen
+import com.example.fibra_labeling.ui.screen.fibra_print.home_print.HomePrintScreen
+import com.example.fibra_labeling.ui.screen.fibra_print.inventario.PrintOncScreen
 import com.example.fibra_labeling.ui.screen.fibrafil.etiqueta.etiqueta.ImpresionScreen
 import com.example.fibra_labeling.ui.screen.fibrafil.etiqueta.etiquetanueva.AddEtiquetaScreen
-import com.example.fibra_labeling.ui.screen.home.HomeScreen
+import com.example.fibra_labeling.ui.screen.fibrafil.home.HomeScreen
 import com.example.fibra_labeling.ui.screen.fibrafil.inventario.InventoryScreen
 import com.example.fibra_labeling.ui.screen.fibrafil.inventario.RegisterCabecera
 import com.example.fibra_labeling.ui.screen.fibrafil.inventario.details.IncScreen
@@ -47,6 +50,11 @@ fun AppNavHost(navController: NavHostController = rememberNavController(), start
             WelcomeScreen (
                 onEmpresaSeleccionada = {
                     // Navegar a la pantalla SELECCIONADA Y ALMACENAR LA EMPRESA SELECCIONADA
+                    if(it == "Print"){
+                        navController.navigate(Screen.HomePrint.route)
+                    }else{
+                        navController.navigate(Screen.Home.route)
+                    }
                 }
             )
         }
@@ -59,9 +67,7 @@ fun AppNavHost(navController: NavHostController = rememberNavController(), start
             }
 
         ){
-
             HomeScreen(
-                onNavigateToPrint = { navController.navigate(Screen.Print.route) },
                 onNavigateToReception = { navController.navigate(Screen.Reception.route) },
                 onNavigateToTransfer = { navController.navigate(Screen.Transfer.route) },
                 onNavigateToInventory = { navController.navigate(Screen.InventarioOnc.route) },
@@ -71,11 +77,26 @@ fun AppNavHost(navController: NavHostController = rememberNavController(), start
                 onNavigateToFill = {navController.navigate(Screen.FillImpresion.route)},
                 //zplTemplate
                 onNavigateToZplScreen = {navController.navigate(Screen.ZplTemplateScreen.route)}
+
             )
 
         }
 
-
+        composable(
+            Screen.HomePrint.route,
+        ){
+            HomePrintScreen(
+                onNavigateToPrint = { navController.navigate(Screen.Print.route) },
+                onNavigateToReception = { navController.navigate(Screen.Reception.route) },
+                onNavigateToTransfer = { navController.navigate(Screen.Transfer.route) },
+                onNavigateToInventory = { navController.navigate(Screen.PrintOncScreen.route) },
+                onNavigateToPackingList = { navController.navigate(Screen.PackingList.route) },
+                onNavigateToProduction = { navController.navigate(Screen.Production.route) },
+                onNavigateToSetting = { navController.navigate(Screen.PrintSetting.route) },
+                //zplTemplate
+                onNavigateToZplScreen = {navController.navigate(Screen.ZplTemplateScreen.route)}
+            )
+        }
         composable(
             Screen.Print.route,
             enterTransition = {
@@ -91,9 +112,21 @@ fun AppNavHost(navController: NavHostController = rememberNavController(), start
                 onBack = { navController.popBackStack() },
                 onNavigateToScan = { navController.navigate(Screen.Scan.route) },
                 navController = navController,
-                onNavigateToRegister = { navController.navigate("${Screen.PrintRegister.route}/true") }
+                onNavigateToRegister = { navController.navigate(Screen.PrintProduct.route) }
             )
         }
+
+        composable(
+            Screen.PrintOncScreen.route
+        ) {
+            PrintOncScreen(
+                onBack = { navController.popBackStack() },
+                onNavigateToProduct = {
+                    navController.navigate(Screen.PrintProduct.route)
+                },
+            )
+        }
+
 
         composable(
             Screen.Scan.route,
@@ -121,6 +154,19 @@ fun AppNavHost(navController: NavHostController = rememberNavController(), start
                     navController.navigate("${Screen.FillImpresionNew.route}/$itemCode/$productName")
                 },
 
+            )
+        }
+
+        composable(
+            Screen.PrintProduct.route,
+        ) {
+            PrintProductScreen(
+                onNavigateToNewPrint = {
+                    code,name->
+                    navController.navigate("${Screen.NewPrint.route}/$code/$name")
+
+                },
+                onBack = { navController.popBackStack() },
             )
         }
 

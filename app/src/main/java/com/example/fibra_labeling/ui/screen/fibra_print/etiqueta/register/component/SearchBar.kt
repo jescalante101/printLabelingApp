@@ -32,59 +32,47 @@ fun SearchBar(
         value = searchText,
         onValueChange = onSearchTextChange,
         keyboardOptions = KeyboardOptions.Default.copy(
-            imeAction = ImeAction.Done // O ImeAction.Search, Send, etc.
+            imeAction = ImeAction.Search
         ),
         keyboardActions = KeyboardActions(
-            onDone = {
-                onDone()
-            }
+            onSearch = { onSearch(searchText) },
+            onDone = { onDone() }
         ),
         placeholder = {
             Text(
                 text = "Buscar por nombre o código...",
-                color = Color(0xFF95A5A6),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
                 style = MaterialTheme.typography.bodySmall
             )
         },
         leadingIcon = {
-            IconButton(
-                onClick = {
-                    onSearch(searchText)
-                }
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = "Buscar",
-                    tint = Color(0xFF7F8C8D)
-                )
-            }
-
+            Icon(
+                imageVector = Icons.Default.Search,
+                contentDescription = "Buscar",
+                tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
+            )
         },
         trailingIcon = {
             if (searchText.isNotEmpty()) {
-                IconButton(
-                    onClick = { onSearchTextChange("") }
-                ) {
+                IconButton(onClick = { onSearchTextChange("") }) {
                     Icon(
                         imageVector = Icons.Default.Clear,
                         contentDescription = "Limpiar",
-                        tint = Color(0xFF7F8C8D)
+                        tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
                     )
                 }
             }
         },
-
         singleLine = true,
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(16.dp),
         colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = Color(0xFF3498DB),
-            unfocusedBorderColor = Color(0xFFE0E0E0),
-            focusedContainerColor = Color.White,
-            unfocusedContainerColor = Color.White,
-
+            focusedBorderColor = MaterialTheme.colorScheme.primary,
+            unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
+            focusedContainerColor = MaterialTheme.colorScheme.background,
+            unfocusedContainerColor = MaterialTheme.colorScheme.background
         ),
         textStyle = MaterialTheme.typography.bodyMedium.copy(
-            color = Color.Black,
+            color = MaterialTheme.colorScheme.onSurface,
             fontWeight = FontWeight.Medium
         ),
         modifier = modifier.fillMaxWidth()

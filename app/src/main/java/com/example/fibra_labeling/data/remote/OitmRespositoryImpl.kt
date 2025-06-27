@@ -5,13 +5,14 @@ import com.example.fibra_labeling.data.model.OitmResponse
 import com.example.fibra_labeling.data.model.PesajeRequest
 import com.example.fibra_labeling.data.model.PesajeResponse
 import com.example.fibra_labeling.data.model.ProveedorResponse
-import com.example.fibra_labeling.data.network.ApiService
+import com.example.fibra_labeling.data.network.fibrafil.ApiService
+import com.example.fibra_labeling.data.network.fibraprint.PrintApiService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import java.net.UnknownServiceException
 
-class OitmRespositoryImpl(private val apiservice: ApiService): OitmRepository {
+class OitmRespositoryImpl(private val apiservice: PrintApiService): OitmRepository {
 
     override suspend fun getOitms(
         filter: String,

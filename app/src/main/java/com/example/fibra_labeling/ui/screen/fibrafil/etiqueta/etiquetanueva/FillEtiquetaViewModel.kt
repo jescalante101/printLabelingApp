@@ -6,12 +6,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.fibra_labeling.data.local.dao.FilAlmacenDao
-import com.example.fibra_labeling.data.local.dao.ZplLabelDao
+import com.example.fibra_labeling.data.local.dao.fibrafil.FilAlmacenDao
+import com.example.fibra_labeling.data.local.dao.fibrafil.ZplLabelDao
 import com.example.fibra_labeling.data.local.entity.fibrafil.FibIncEntity
-import com.example.fibra_labeling.data.local.mapper.toApiData
-import com.example.fibra_labeling.data.local.mapper.toEtiquetaDetalleEntity
-import com.example.fibra_labeling.data.local.mapper.toResponse
+import com.example.fibra_labeling.data.local.mapper.fibrafil.toApiData
+import com.example.fibra_labeling.data.local.mapper.fibrafil.toEtiquetaDetalleEntity
+import com.example.fibra_labeling.data.local.mapper.fibrafil.toResponse
 import com.example.fibra_labeling.data.local.repository.fibrafil.EtiquetaDetalleRepository
 import com.example.fibra_labeling.data.local.repository.fibrafil.fibinc.FibIncRepository
 import com.example.fibra_labeling.data.local.repository.fibrafil.maquina.FMaquinaRepository
@@ -21,7 +21,7 @@ import com.example.fibra_labeling.data.model.fibrafil.ProductoDetalleUi
 import com.example.fibra_labeling.data.model.fibrafil.FilPrintResponse
 import com.example.fibra_labeling.data.model.fibrafil.ZplPrintRequest
 import com.example.fibra_labeling.data.model.fibrafil.toZplMap
-import com.example.fibra_labeling.data.remote.FillRepository
+import com.example.fibra_labeling.data.remote.fibrafil.FillRepository
 import com.example.fibra_labeling.data.utils.ZplTemplateMapper
 import com.example.fibra_labeling.datastore.ImpresoraPreferences
 import com.example.fibra_labeling.datastore.UserLoginPreference

@@ -1,12 +1,14 @@
 package com.example.fibra_labeling.di
 
 import com.example.fibra_labeling.ui.BarcodeViewModel
-import com.example.fibra_labeling.ui.screen.fibra_print.etiqueta.PrintViewModel
+import com.example.fibra_labeling.ui.screen.fibra_print.etiqueta.impresion.PrintViewModel
+import com.example.fibra_labeling.ui.screen.fibra_print.etiqueta.products.PrintProductViewModel
 import com.example.fibra_labeling.ui.screen.fibra_print.etiqueta.register.NewPrintViewModel
 import com.example.fibra_labeling.ui.screen.fibra_print.etiqueta.register.RegisterViewModel
+import com.example.fibra_labeling.ui.screen.fibra_print.home_print.HomePrintViewModel
 import com.example.fibra_labeling.ui.screen.fibrafil.etiqueta.etiqueta.ImpresionModelView
 import com.example.fibra_labeling.ui.screen.fibrafil.etiqueta.etiquetanueva.FillEtiquetaViewModel
-import com.example.fibra_labeling.ui.screen.home.HomeViewModel
+import com.example.fibra_labeling.ui.screen.fibrafil.home.HomeViewModel
 import com.example.fibra_labeling.ui.screen.fibrafil.inventario.RegisterCabeceraViewModel
 import com.example.fibra_labeling.ui.screen.fibrafil.inventario.details.IncViewModel
 import com.example.fibra_labeling.ui.screen.fibrafil.inventario.register.OincRegisterViewModel
@@ -57,5 +59,12 @@ val viewModelModule= module {
         ZplTemplateViewModel(get())
     }
 
+    viewModel{
+        PrintProductViewModel(get())
+    }
+
+    viewModel{
+        HomePrintViewModel(get())
+    }
 
 }

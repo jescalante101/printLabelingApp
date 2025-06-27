@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fibra_labeling.data.model.fibrafil.StockResponse
-import com.example.fibra_labeling.data.remote.FillRepository
+import com.example.fibra_labeling.data.remote.fibrafil.FillRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch

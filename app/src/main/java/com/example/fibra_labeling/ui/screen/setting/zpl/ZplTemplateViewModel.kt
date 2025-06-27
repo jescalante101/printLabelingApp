@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 
 import androidx.lifecycle.viewModelScope
 import com.example.fibra_labeling.data.local.entity.fibrafil.ZplLabel
-import com.example.fibra_labeling.data.local.dao.ZplLabelDao
+import com.example.fibra_labeling.data.local.dao.fibrafil.ZplLabelDao
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 

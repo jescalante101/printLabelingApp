@@ -81,8 +81,8 @@ fun WelcomeScreen(
                         Spacer(modifier = Modifier.height(8.dp))
                         // descrption
                         Text(
-                            text = "Seleccione una empresa para gestionar el almacén"
-                                .repeat(2),
+                            text = "Seleccione una empresa para gestionar el almacén",
+
                             style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.Normal,
                             color = LightColors.onSurface,
@@ -109,7 +109,7 @@ fun WelcomeScreen(
                         EmpresaCard(
                             nombre = "Fibrafil",
                             descripcion = "Producción y almacén",
-                            onClick = { onEmpresaSeleccionada("Fibrafil") },
+                            onClick = { onEmpresaSeleccionada("Fil") },
                             backgroundColor = LightColors.primary,
                             textColor = LightColors.surface,
                             modifier = Modifier.weight(1f),
@@ -118,7 +118,7 @@ fun WelcomeScreen(
                         EmpresaCard(
                             nombre = "Fibraprint",
                             descripcion = "Diseño e impresión",
-                            onClick = { onEmpresaSeleccionada("Fibraprint") },
+                            onClick = { onEmpresaSeleccionada("Print") },
                             backgroundColor = LightColors.background,
                             textColor = LightColors.onSurface,
                             modifier = Modifier.weight(1f),

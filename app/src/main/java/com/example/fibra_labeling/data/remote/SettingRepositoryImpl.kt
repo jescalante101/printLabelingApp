@@ -1,7 +1,7 @@
 package com.example.fibra_labeling.data.remote
 
 import com.example.fibra_labeling.data.model.IsPrintOnlineResponse
-import com.example.fibra_labeling.data.network.ApiService
+import com.example.fibra_labeling.data.network.fibrafil.ApiService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow

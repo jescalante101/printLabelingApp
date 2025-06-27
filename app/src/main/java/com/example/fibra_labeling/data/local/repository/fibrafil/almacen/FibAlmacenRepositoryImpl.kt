@@ -1,6 +1,6 @@
 package com.example.fibra_labeling.data.local.repository.fibrafil.almacen
 
-import com.example.fibra_labeling.data.local.dao.FilAlmacenDao
+import com.example.fibra_labeling.data.local.dao.fibrafil.FilAlmacenDao
 import com.example.fibra_labeling.data.local.entity.fibrafil.FibAlmacenEntity
 
 class FibAlmacenRepositoryImpl(

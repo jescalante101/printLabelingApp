@@ -1,6 +1,6 @@
 package com.example.fibra_labeling.data.local.repository.fibrafil.user
 
-import com.example.fibra_labeling.data.local.dao.FilUserDao
+import com.example.fibra_labeling.data.local.dao.fibrafil.FilUserDao
 import com.example.fibra_labeling.data.local.entity.fibrafil.FilUserEntity
 
 class FUserRepositoryImpl(private val dao: FilUserDao): FUserRepository {

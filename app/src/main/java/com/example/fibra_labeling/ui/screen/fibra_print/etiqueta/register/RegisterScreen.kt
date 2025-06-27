@@ -18,7 +18,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.unit.dp
 import com.example.fibra_labeling.R
-import com.example.fibra_labeling.data.local.mapper.toOitmData
+import com.example.fibra_labeling.data.local.mapper.fibrafil.toOitmData
 import com.example.fibra_labeling.ui.component.CustomAppBar
 import com.example.fibra_labeling.ui.screen.fibra_print.etiqueta.register.component.ProductCard
 import com.example.fibra_labeling.ui.screen.fibra_print.etiqueta.register.component.SearchBar
@@ -32,12 +32,9 @@ fun PrintRegisterScreen(
     onNavigateToFillPrint: (itemCode:String,productName:String) -> Unit,
     viewModel: RegisterViewModel= koinViewModel(),
     isPrint: Boolean=true,
-
 ) {
 
     val oitmResult by viewModel.oitmResponse.collectAsState()
-    val loading by viewModel.loading.collectAsState()
-    val totalResult by viewModel.totalResult.collectAsState()
 
     var searchText by remember { mutableStateOf("") }
 

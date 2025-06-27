@@ -9,15 +9,13 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import androidx.lifecycle.viewModelScope
-import com.example.fibra_labeling.data.local.dao.ZplLabelDao
-import com.example.fibra_labeling.data.local.mapper.toProductoDetalleUi
+import com.example.fibra_labeling.data.local.dao.fibrafil.ZplLabelDao
+import com.example.fibra_labeling.data.local.mapper.fibrafil.toProductoDetalleUi
 import com.example.fibra_labeling.data.local.repository.fibrafil.EtiquetaDetalleRepository
 import com.example.fibra_labeling.data.local.repository.fibrafil.maquina.FMaquinaRepository
-import com.example.fibra_labeling.data.model.fibrafil.FillPrintRequest
-import com.example.fibra_labeling.data.model.fibrafil.ProductoDetalleUi
 import com.example.fibra_labeling.data.model.fibrafil.ZplPrintRequest
 import com.example.fibra_labeling.data.model.fibrafil.toZplMap
-import com.example.fibra_labeling.data.remote.FillRepository
+import com.example.fibra_labeling.data.remote.fibrafil.FillRepository
 import com.example.fibra_labeling.data.utils.ZplTemplateMapper
 import com.example.fibra_labeling.datastore.ImpresoraPreferences
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -25,8 +23,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
