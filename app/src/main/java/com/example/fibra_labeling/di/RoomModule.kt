@@ -50,4 +50,7 @@ val roomModule = module {
     single { get<PrintDatabase>().pOwhDao() }
     single { get<PrintDatabase>().pOusrDao() }
     single { get<PrintDatabase>().pOincDao() }
+    single{get<PrintDatabase>().pIncDao()}
+    single{get<PrintDatabase>().pesajeDao()}
+
 }

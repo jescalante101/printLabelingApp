@@ -6,6 +6,8 @@ import com.example.fibra_labeling.ui.screen.fibra_print.etiqueta.products.PrintP
 import com.example.fibra_labeling.ui.screen.fibra_print.etiqueta.register.NewPrintViewModel
 import com.example.fibra_labeling.ui.screen.fibra_print.etiqueta.register.RegisterViewModel
 import com.example.fibra_labeling.ui.screen.fibra_print.home_print.HomePrintViewModel
+import com.example.fibra_labeling.ui.screen.fibra_print.inventario.PrintOncViewModel
+import com.example.fibra_labeling.ui.screen.fibra_print.inventario.register.PrintRegisterOIncViewModel
 import com.example.fibra_labeling.ui.screen.fibrafil.etiqueta.etiqueta.ImpresionModelView
 import com.example.fibra_labeling.ui.screen.fibrafil.etiqueta.etiquetanueva.FillEtiquetaViewModel
 import com.example.fibra_labeling.ui.screen.fibrafil.home.HomeViewModel
@@ -27,7 +29,7 @@ val viewModelModule= module {
 
     viewModel{ PrintViewModel(get(),get()) }
     viewModel{ RegisterViewModel(get(),get(),get()) }
-    viewModel{ NewPrintViewModel(get(),get(),get()) }
+    viewModel{ NewPrintViewModel(get(),get(),get(),get(),get(),get()) }
 
     viewModel{ BarcodeViewModel() }
 
@@ -65,6 +67,15 @@ val viewModelModule= module {
 
     viewModel{
         HomePrintViewModel(get())
+    }
+
+
+    //FIBRAPRINT VIEW MODEL
+    viewModel{
+        PrintOncViewModel(get(),get())
+    }
+    viewModel{
+        PrintRegisterOIncViewModel(get(),get())
     }
 
 }

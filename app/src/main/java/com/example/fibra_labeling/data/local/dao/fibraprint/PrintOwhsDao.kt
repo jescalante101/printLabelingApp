@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.example.fibra_labeling.data.local.entity.fibraprint.POwhsEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface PrintOwhsDao {
@@ -30,7 +31,7 @@ interface PrintOwhsDao {
         WHERE whsCode LIKE '%' || :filtro || '%'
            OR whsName LIKE '%' || :filtro || '%'
     """)
-    suspend fun buscarPorCodigoONombre(filtro: String): List<POwhsEntity>
+    fun buscarPorCodigoONombre(filtro: String): Flow<List<POwhsEntity>>
 
     // Obtener uno por código (clave primaria)
     @Query("SELECT * FROM p_owhs WHERE whsCode = :codigo")

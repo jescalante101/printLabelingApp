@@ -2,7 +2,6 @@ package com.example.fibra_labeling.ui.screen.fibra_print.etiqueta.register
 
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,9 +14,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -43,16 +40,20 @@ import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.fibra_labeling.R
-import com.example.fibra_labeling.ui.component.CustomAppBar
+import com.example.fibra_labeling.ui.screen.component.CustomFioriDropDown
+import com.example.fibra_labeling.ui.screen.component.CustomFioriTextField
 import com.example.fibra_labeling.ui.screen.component.FioriDropdown
+import com.example.fibra_labeling.ui.screen.fibra_print.etiqueta.component.PrintFioriDropdownProveedor
 import com.example.fibra_labeling.ui.screen.fibra_print.etiqueta.register.component.FioriDropdownAlmacen
 import com.example.fibra_labeling.ui.theme.Fibra_labelingTheme
+import com.example.fibra_labeling.ui.theme.FioriBackground
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -64,355 +65,53 @@ fun NewPrintScreen(
     viewModel: NewPrintViewModel= koinViewModel()
 ) {
 
-
-    val almacenes by viewModel.almacenes.collectAsState()
-    val loading by viewModel.loading.collectAsState()
-    val motivos :List<Motivo> = viewModel.motivos
-    val pisos = (1..4).map { it.toString() }
-    val proveedor by viewModel.proveedorName.collectAsState()
-    var lote by remember { mutableStateOf("") }
-
-    val formState by viewModel.formState.collectAsState()
-    val formErrorState by viewModel.formErrorState.collectAsState()
-
-
-    var motivo by remember { mutableStateOf(motivos.first()) }
-    var ubicacion by remember { mutableStateOf("") }
-    var piso by remember { mutableStateOf(pisos.first()) }
-    var metroLineal by remember { mutableStateOf("") }
-    var equivalente by remember { mutableStateOf("") }
-
-    val pesajeResult by viewModel.print.collectAsState()
+    val pisos = (1..5).map { it.toString() }
+    val formState = viewModel.formState
     val snackbarHostState = remember { SnackbarHostState() }
+
+    val proveedores by viewModel.allProveedores.collectAsState()
+    val allAlmacenes by viewModel.allAlmacenes.collectAsState()
+
+    val eventNotification by viewModel.eventNotification.collectAsState("")
 
     LaunchedEffect (Unit) {
         Log.e("code,Name", "${code},${name}")
         viewModel.onCodigoChange(code)
         viewModel.onNameChange(name)
-
-        viewModel.getProveedorName(code)
-        viewModel.getAlmacens()
-
     }
 
-    LaunchedEffect(pesajeResult) {
-        when {
-            pesajeResult.isSuccess -> {
-                val data = pesajeResult.getOrNull()
-                if (data?.success == true) {
-                    if (data.result.isEmpty()){
-                        snackbarHostState.showSnackbar(data.message.toString())
-                        onBack()
-                    }else{
-                        snackbarHostState.showSnackbar(data.result.toString())
-                        onBack()
-                    }
-                }
-            }
-            else -> {
-                snackbarHostState.showSnackbar(pesajeResult.exceptionOrNull()?.message.orEmpty())
+    LaunchedEffect(Unit) {
+        when(eventNotification){
+            "saveSuccess"->{
+                snackbarHostState.showSnackbar("Etiqueta guardada correctamente")
             }
         }
     }
 
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
-
-        if(loading){
-            CircularProgressIndicator(
-                modifier = Modifier.align(androidx.compose.ui.Alignment.Center)
-            )
-        }else{
-            Scaffold(
-                floatingActionButton = {
-                    Column{
-                        FloatingActionButton(
-                            containerColor = Color(0xFF2C3E50),
-                            onClick = {
-                                viewModel.insertPesaje(false)
-                            }
-                        ) {
-                            Row(
-                                modifier = Modifier.padding(horizontal = 16.dp),
-                                horizontalArrangement = Arrangement.Center,
-                                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
-                            ) {
-
-                                Text(
-                                    "Guardar",
-
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = Color.White
-                                )
-
-                                Spacer(Modifier.width(8.dp))
-
-                                Icon(
-                                    painter = painterResource(R.drawable.ic_save),
-                                    contentDescription = "Print",
-                                    tint = Color.White
-                                )
-                            }
-                        }
-                        Spacer(Modifier.height(16.dp))
-                        FloatingActionButton(
-                            containerColor = Color(0xFF2C3E50),
-                            onClick = {
-                                viewModel.insertPesaje()
-                            }
-                        ) {
-                            Row(
-                                modifier = Modifier.padding(horizontal = 16.dp),
-                                horizontalArrangement = Arrangement.Center,
-                                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
-                            ) {
-
-                                Text(
-                                    "Imprimir",
-
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = Color.White
-                                )
-
-                                Spacer(Modifier.width(8.dp))
-
-                                Icon(
-                                    painter = painterResource(R.drawable.ic_print),
-                                    contentDescription = "Print",
-                                    tint = Color.White
-                                )
-                            }
-                        }
-                    }
-
-                },
-                snackbarHost = { SnackbarHost(snackbarHostState) }
-            ){
-
-
-
-                LazyColumn (
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(it)
-                        .padding(horizontal = 24.dp, vertical = 16.dp)
-                        .nestedScroll(rememberNestedScrollInteropConnection())
-                        .imePadding()
-                ) {
-                    item {
-                        Spacer(Modifier.height(70.dp))
-                    }
-                    item{
-                        Text(
-                            buildAnnotatedString {
-                                withStyle(style= SpanStyle(color = Color.Black)) {
-                                    append("Código:")
-                                }
-                                withStyle(style= SpanStyle(color = Color.Black.copy(0.6f))) {
-                                    append(formState.codigo)
-                                }
-                            },
-                            style = MaterialTheme.typography.labelSmall,
-                        )
-                    }
-                    item {
-                        Text(
-                            buildAnnotatedString {
-                                withStyle(style= SpanStyle(color = Color.Black)) {
-                                    append("Código:")
-                                }
-                                withStyle(style= SpanStyle(color = Color.Black.copy(0.6f))) {
-                                    append(formState.name)
-                                }
-                            },
-                            style = MaterialTheme.typography.labelSmall,
-                        )
-                    }
-                    item {
-                        Spacer(Modifier.height(2.dp))
-                    }
-                    item {
-                        if (proveedor.isSuccess){
-                            FioriTextField(
-                                label = "Proveedor",
-                                value = formState.proveedor,
-                                onValueChange = {
-                                    viewModel.onProveedorChange(it)
-                                },
-                                enabled = false,
-
-                            )
-                        }else{
-                            FioriTextField(
-                                label = "Proveedor",
-                                value = formState.proveedor,
-                                onValueChange = {
-                                    viewModel.onProveedorChange(it)
-                                },
-                                enabled = false,
-                            )
-                        }
-                    }
-                    item {
-                        Spacer(Modifier.height(16.dp))
-                    }
-
-                    item {
-                        FioriTextField(
-                            label = "Lote",
-                            value = formState.lote,
-                            onValueChange = {
-                                lote = it
-                                viewModel.onLoteChange(it)
-                            },
-                            enabled = true,
-                            isError = formErrorState.loteError != null,
-                            supportingText = { formErrorState.loteError?.let { Text(it, color = Color.Red, fontSize = 12.sp) } }
-
-                        )
-
-                    }
-
-                    item {
-                        Spacer(Modifier.height(16.dp))
-                    }
-
-                    item {
-
-                        FioriDropdownAlmacen(
-                            label = "Almacén",
-                            options = almacenes,
-                            selected = formState.almacen,
-                            onSelectedChange = { viewModel.onAlmacenChange(it) },
-                            isError = formErrorState.almacenError != null,
-                            supportingText = { formErrorState.almacenError?.let { Text(it, color = Color.Red, fontSize = 12.sp) } }
-                        )
-
-                    }
-
-                    item {
-                        Spacer(
-                            Modifier.height(16.dp)
-                        )
-                    }
-
-//                    item {
-//                        FioriDropdown(
-//                            label = "Motivo",
-//                            options = motivos.map { it->it.descripcion },
-//                            selected = formState.motivo.toString(),
-//                            onSelectedChange = { value->
-//                                motivo = motivos.first { it.descripcion.toString().contentEquals(value) }
-//                                viewModel.onMotivoChange(motivo.codigo)
-//                            },
-//                            isError = formErrorState.motivoError != null,
-//                            supportingText = { formErrorState.motivoError?.let { Text(it, color = Color.Red, fontSize = 12.sp) } }
-//
-//                            )
+//    LaunchedEffect(pesajeResult) {
+//        when {
+//            pesajeResult.isSuccess -> {
+//                val data = pesajeResult.getOrNull()
+//                if (data?.success == true) {
+//                    if (data.result.isEmpty()){
+//                        snackbarHostState.showSnackbar(data.message.toString())
+//                        onBack()
+//                    }else{
+//                        snackbarHostState.showSnackbar(data.result.toString())
+//                        onBack()
 //                    }
+//                }
+//            }
+//            else -> {
+//                snackbarHostState.showSnackbar(pesajeResult.exceptionOrNull()?.message.orEmpty())
+//            }
+//        }
+//    }
 
-                    item {
-                        Spacer(Modifier.height(16.dp))
-                    }
-
-                    // Fila 3: Ubicación, Piso, Metro Lineal, Equivalente
-                    item {
-                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(24.dp)) {
-                            FioriTextField(
-                                label = "Ubicación",
-                                value = formState.ubicacion.toString(),
-                                onValueChange = {
-                                    ubicacion = it
-                                    viewModel.onUbicacionChange(it)
-                                                },
-                                enabled = true,
-                                modifier = Modifier.weight(1f),
-                                isError = formErrorState.ubicacionError != null,
-                                supportingText = { formErrorState.ubicacionError?.let { Text(it, color = Color.Red, fontSize = 12.sp) } }
-                            )
-                            FioriDropdown(
-                                label = "Piso",
-                                options = pisos,
-                                selected = formState.piso.toString(),
-                                onSelectedChange = {
-                                    piso = it
-                                    viewModel.onPisoChange(it)
-                                },
-                                modifier = Modifier.weight(1f),
-                                isError = formErrorState.pisoError != null,
-                                supportingText = { formErrorState.pisoError?.let { Text(it, color = Color.Red, fontSize = 12.sp) } }
-                            )
-
-                        }
-                    }
-
-                    item { Spacer(Modifier.height(16.dp)) }
-
-                    item {
-                        Row(
-                            Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(24.dp)
-                        ) {
-                            FioriTextField(
-                                label = "Metro Lineal",
-                                value = formState.metroLineal,
-                                onValueChange = {
-                                    metroLineal = it
-                                    viewModel.onMetroLinealChange(it)
-                                },
-                                enabled = true,
-                                modifier = Modifier.weight(1f),
-                                onlyNumbers = true,
-                                isError = formErrorState.metroLinealError != null,
-                                supportingText = { formErrorState.metroLinealError?.let { Text(it, color = Color.Red, fontSize = 12.sp) } }
-
-                            )
-//                            FioriTextField(
-//                                label = "Equivalente",
-//                                value = formState.equivalente.toString(),
-//                                onValueChange = {
-//                                    equivalente = it
-//                                    viewModel.onEquivalenteChange(it)
-//                                },
-//                                enabled = true,
-//                                modifier = Modifier.weight(1f),
-//
-//                            )
-                        }
-                    }
-                    item {
-                        Spacer(modifier = Modifier.height(16.dp))
-                    }
-                    item {
-                        FioriTextField(
-                            label = "Peso Bruto",
-                            value = formState.pesoBruto,
-                            onValueChange = {
-                                viewModel.onPesoBrutoChange(it)
-                            },
-                            enabled = true,
-                            modifier = Modifier.fillMaxWidth(),
-                            onlyNumbers = true,
-                            isError = formErrorState.pesoBrutoError != null,
-                            supportingText = { formErrorState.pesoBrutoError?.let { Text(it, color = Color.Red, fontSize = 12.sp) } }
-
-                        )
-                    }
-                    item {
-                        Spacer(modifier = Modifier.height(36.dp))
-                    }
-                }
-
-            }
-        }
-
-        Box(
-            modifier = Modifier.padding(top= 32.dp)
-        ){
-            CustomAppBar(
-                title = { Text("IMPRESIÓN ETIQUETA", color = Color.Black, style = MaterialTheme.typography.titleMedium ) },
-                leadingIcon = {
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                navigationIcon = {
                     IconButton(
                         onClick = {
                             onBack()
@@ -421,78 +120,263 @@ fun NewPrintScreen(
                         Icon(
                             painter = painterResource(R.drawable.ic_arrow_left),
                             contentDescription = "Back",
-                            tint = Color.Black
+                            tint = MaterialTheme.colorScheme.primary
                         )
                     }
                 },
-                trailingIcon ={
-                    IconButton(
-                        onClick = {
 
-                        }
-                    ){
+                title = {
+                    Text(
+                        text = "Registrar Etiqueta",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                    )
+                },
+
+                )
+        },
+        floatingActionButton = {
+            Column{
+                FloatingActionButton(
+                    containerColor = Color(0xFF2C3E50),
+                    onClick = {
+                        viewModel.saveLocal()
+                    }
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+                    ) {
+
+                        Text(
+                            "Guardar",
+
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Color.White
+                        )
+
+                        Spacer(Modifier.width(8.dp))
+
                         Icon(
-                            imageVector = Icons.Default.AccountCircle,
-                            contentDescription = "user",
-                            tint = Color.Black
+                            painter = painterResource(R.drawable.ic_save),
+                            contentDescription = "Print",
+                            tint = Color.White
                         )
                     }
                 }
-            )
+                Spacer(Modifier.height(16.dp))
+                FloatingActionButton(
+                    containerColor = Color(0xFF2C3E50),
+                    onClick = {
+                       // viewModel.insertPesaje()
+                    }
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+                    ) {
+
+                        Text(
+                            "Imprimir",
+
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Color.White
+                        )
+
+                        Spacer(Modifier.width(8.dp))
+
+                        Icon(
+                            painter = painterResource(R.drawable.ic_print),
+                            contentDescription = "Print",
+                            tint = Color.White
+                        )
+                    }
+                }
+            }
+
+        },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        contentColor = FioriBackground
+    ){ it ->
+        LazyColumn (
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(it)
+                .padding(horizontal = 24.dp, vertical = 16.dp)
+                .nestedScroll(rememberNestedScrollInteropConnection())
+                .imePadding()
+        ) {
+            item {
+                Spacer(Modifier.height(16.dp))
+            }
+            item{
+                Text(
+                    buildAnnotatedString {
+                        withStyle(style= SpanStyle(color = Color.Black)) {
+                            append("Código:")
+                        }
+                        withStyle(style= SpanStyle(color = Color.Black.copy(0.6f))) {
+                            append(formState.codigo)
+                        }
+                    },
+                    style = MaterialTheme.typography.labelSmall,
+                )
+            }
+            item {
+                Text(
+                    buildAnnotatedString {
+                        withStyle(style= SpanStyle(color = Color.Black)) {
+                            append("Código:")
+                        }
+                        withStyle(style= SpanStyle(color = Color.Black.copy(0.6f))) {
+                            append(formState.name)
+                        }
+                    },
+                    style = MaterialTheme.typography.labelSmall,
+                )
+            }
+            item {
+                Spacer(Modifier.height(8.dp))
+            }
+            item {
+
+                CustomFioriDropDown(
+                    label = "Proveedor",
+                    options = proveedores,
+                    selected = formState.proveedor,
+                    onSelectedChange = {pro->
+                        viewModel.onProveedorChange(pro)
+                    },
+                    onFilterChange = {filter->
+                        viewModel.setFilter(filter)
+                    },
+                    itemLabel = {pro->
+                        "${pro.cardName} - ${pro.cardCode}"
+                    }
+                )
+
+            }
+            item {
+                Spacer(Modifier.height(16.dp))
+            }
+            item {
+                CustomFioriTextField(
+                    label = "Lote",
+                    value = formState.lote,
+                    onValueChange = {
+                        viewModel.onLoteChange(it)
+                    },
+                    enabled = true,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+
+            }
+            item {
+                Spacer(Modifier.height(16.dp))
+            }
+            item {
+                CustomFioriDropDown(
+                    label = "Almacén",
+                    options = allAlmacenes,
+                    selected = formState.almacen,
+                    onSelectedChange = {whs->
+                        viewModel.onAlmacenChange(whs)
+                    },
+                    onFilterChange = {whs->
+                        viewModel.setFilterAlmacen(whs)
+                    },
+                    itemLabel = {whs->
+                        "${whs.whsName} - ${whs.whsCode}"
+                    }
+                )
+            }
+            item {
+                Spacer(
+                    Modifier.height(16.dp)
+                )
+            }
+
+            // Fila 3: Ubicación, Piso, Metro Lineal, Equivalente
+            item {
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(24.dp)) {
+                    CustomFioriTextField(
+                        label = "Ubicación",
+                        value = formState.ubicacion.toString(),
+                        onValueChange = {
+                            viewModel.onUbicacionChange(it)
+                        },
+                        enabled = true,
+                        modifier = Modifier.weight(1f),
+                    )
+
+                    FioriDropdown(
+                        label = "Piso",
+                        options = pisos,
+                        selected = formState.piso.toString(),
+                        onSelectedChange = {
+                            viewModel.onPisoChange(it)
+                        },
+                        modifier = Modifier.weight(1f),
+                    )
+
+                }
+            }
+            item { Spacer(Modifier.height(16.dp)) }
+            item {
+                CustomFioriTextField(
+                    label = "Metro Lineal",
+                    value = formState.metroLineal,
+                    onValueChange = {
+                        viewModel.onMetroLinealChange(it)
+                    },
+                    enabled = true,
+                    isOnlyNumber =  true,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+
+            }
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+            item {
+
+                CustomFioriTextField(
+                    label = "Peso Bruto",
+                    value = formState.pesoBruto,
+                    onValueChange = {
+                        viewModel.onPesoBrutoChange(it)
+                    },
+                    enabled = true,
+                    modifier = Modifier.fillMaxWidth(),
+                    isOnlyNumber = true,
+
+                )
+            }
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+            item{
+                CustomFioriTextField(
+                    label = "Zona",
+                    value = formState.zona,
+                    onValueChange = {
+                        viewModel.onZonaChange(it)
+                    },
+                    enabled = true,
+                    modifier = Modifier.fillMaxWidth(),
+
+                )
+            }
         }
 
     }
 
 
 
+
 }
-
-// SAP Fiori style TextField
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun FioriTextField(
-    label: String,
-    value: String,
-    onValueChange: (String) -> Unit,
-    enabled: Boolean,
-    modifier: Modifier = Modifier,
-    onlyNumbers: Boolean = false,
-    isError: Boolean = false,
-    supportingText: @Composable (() -> Unit)? = null,
-) {
-    OutlinedTextField(
-        value = value,
-        onValueChange = { newValue->
-            if (onlyNumbers) {
-                val filteredValue = newValue.filter { it.isDigit() || it == '.' }
-                if (filteredValue.count { it == '.' } <= 1) {
-                    onValueChange(filteredValue)
-                }
-            } else {
-                onValueChange(newValue)
-            }
-        },
-        enabled = enabled,
-        readOnly = !enabled,
-        modifier = modifier.fillMaxWidth(),
-        label = { Text(label, fontSize = 13.sp) },
-        singleLine = true,
-        shape = RoundedCornerShape(8.dp),
-        colors = TextFieldDefaults.colors(
-            focusedContainerColor = Color(0xFFF7F7F7),
-            unfocusedContainerColor = Color(0xFFF7F7F7),
-            disabledContainerColor = Color(0xFFF7F7F7),
-            focusedIndicatorColor = Color(0xFF0070F2),
-            unfocusedIndicatorColor = Color(0xFFE0E0E0)
-        ),
-        keyboardOptions = if (onlyNumbers) KeyboardOptions(keyboardType = KeyboardType.Decimal) else KeyboardOptions.Default,
-        isError = isError,
-        supportingText = supportingText
-    )
-}
-
-
-
 
 
 @Preview(showBackground = true)

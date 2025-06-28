@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.example.fibra_labeling.data.local.entity.fibraprint.POusrEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface PrintOusrDao {
@@ -28,7 +29,7 @@ interface PrintOusrDao {
         WHERE uNAME LIKE '%' || :filtro || '%'
            OR useRCODE LIKE '%' || :filtro || '%'
     """)
-    suspend fun buscarPorNombreOCodigo(filtro: String): List<POusrEntity>
+    fun buscarPorNombreOCodigo(filtro: String): Flow<List<POusrEntity>>
 
     // Obtener un usuario por ID
     @Query("SELECT * FROM p_ousr WHERE userid = :id")

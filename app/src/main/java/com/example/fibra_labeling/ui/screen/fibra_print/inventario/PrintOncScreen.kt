@@ -1,7 +1,9 @@
 package com.example.fibra_labeling.ui.screen.fibra_print.inventario
 
-import FioriCardConteoCompact
 import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,6 +21,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,21 +33,26 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.fibra_labeling.R
-import com.example.fibra_labeling.data.local.entity.fibrafil.FibOincEntity
+import com.example.fibra_labeling.ui.screen.component.CustomEmptyMessage
 import com.example.fibra_labeling.ui.screen.component.CustomSearch
+import com.example.fibra_labeling.ui.screen.fibra_print.inventario.component.PrintFioriCardConteoCompact
 import com.example.fibra_labeling.ui.screen.fibra_print.inventario.register.PrintOncRegister
 import com.example.fibra_labeling.ui.theme.FioriBackground
+import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PrintOncScreen(
     onBack: () -> Unit,
     onNavigateToProduct: () -> Unit,
+    viewModel: PrintOncViewModel= koinViewModel()
 ){
 
     val snackbarHostState = remember { SnackbarHostState() }
     var showSheet by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
+
+    val allUser by viewModel.allUsers.collectAsState()
 
     Scaffold(
         containerColor = FioriBackground,
@@ -52,7 +60,7 @@ fun PrintOncScreen(
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        "Registrar OINC",
+                        "Inventatio",
                         style = MaterialTheme.typography.titleLarge,
                         color = Color.Black,
                         fontWeight = FontWeight.Bold
@@ -94,6 +102,7 @@ fun PrintOncScreen(
                 value = searchQuery,
                 onChangeValue = {
                         text ->
+                    viewModel.onSearch(text)
                     //viewModel.updateSearchQuery(text)
                 },
 
@@ -121,69 +130,52 @@ fun PrintOncScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             LazyColumn {
-                item { Spacer(modifier = Modifier.height(16.dp)) }
-                items(3) { index ->
+                item {
+                    if (allUser.isEmpty()){
+                        CustomEmptyMessage(
+                            title = "No hay Inventario",
+                            message = "Presione el boton flotante para crear un nuevo registro"
+                        )
+                    }else  {
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
 
-                    FioriCardConteoCompact(
-                        dto = FibOincEntity(
-                            u_CountDate = "2023-08-01",
-                            u_userCodeCount = "Juan Pérez",
-                            u_StartTime = "08:00:00",
+                }
 
-                            u_UserNameCount = "Ref123",
-                            u_Remarks = "Observaciones adicionales",
-                            u_Ref = "",
-                            isSynced = false
-                        ),
-                        onDetailsClick = {
-                            //onNavigateToDetails(inc.cabecera.docEntry.toInt())
-                        },
-                        onSyncClick = {
-                            //showDialog = true
-                            //itemToSync = inc.cabecera
-                        },
-                        onClick = {
-                            Log.e("TAG", "PrintOncScreen: ${it.u_UserNameCount}")
+                items(allUser.size) { index ->
 
-                            onNavigateToProduct()
-                            //viewModel.saveUserLogin(
-                            //    userLogin = inc.cabecera.u_UserNameCount ?: "",
-                            //    code = inc.cabecera.u_Ref ?: "",
-                            //    docEntry = inc.cabecera.docEntry.toString()
-                            //)
+                    AnimatedVisibility(
+                        visible = true,
+                        enter = fadeIn(),
+                        exit = fadeOut()
+                    ) {
+                        val oinc=allUser[index]
+                        PrintFioriCardConteoCompact(
+                            dto = oinc.header,
+                            onDetailsClick = {
+                                //onNavigateToDetails(inc.cabecera.docEntry.toInt())
+                            },
 
-                        },
-                        isSyncing = false,
-                        detailsEnabled = false
-                    )
+                            onSyncClick = {
+                                //showDialog = true
+                                //itemToSync = inc.cabecera
+                            },
 
+                            onClick = { oinc->
+                                Log.e("TAG", "PrintOncScreen: ${oinc.u_UserNameCount}")
 
-//                    val inc = oincs[index]
-//                    FioriCardConteoCompact(
-//                        dto = inc.cabecera,
-//                        isSyncing = loading,
-//                        onClick = {
-////                            viewModel.saveUserLogin(
-////                                userLogin = inc.cabecera.u_UserNameCount ?: "",
-////                                code = inc.cabecera.u_Ref ?: "",
-////                                docEntry = inc.cabecera.docEntry.toString()
-////                            )
-////                            onNavigateToFilEtiqueta(false)
-//                        },
-//
-//                        onDetailsClick = {
-//                            //onNavigateToDetails(inc.cabecera.docEntry.toInt())
-//                        },
-//
-//                        onSyncClick = {
-////                            showDialog = true
-////                            itemToSync = inc.cabecera
-//                        },
-//
-//                        detailsEnabled = inc.detalles.isNotEmpty()
-//                    )
-//
-//
+                                onNavigateToProduct()
+                                viewModel.saveUserLogin(
+                                    userLogin = oinc.u_UserNameCount ?: "",
+                                    code = oinc.u_Ref ?: "",
+                                    docEntry = oinc.docEntry.toString()
+                                )
+
+                            },
+                            isSyncing = false,
+                            detailsEnabled = oinc.details.isNotEmpty()
+                        )
+                    }
                 }
             }
         }

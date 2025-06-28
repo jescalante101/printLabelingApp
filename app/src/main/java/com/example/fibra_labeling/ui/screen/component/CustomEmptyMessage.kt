@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 import com.example.fibra_labeling.ui.theme.Fibra_labelingTheme
 
 @Composable
-fun CustomEntyMessage(
+fun CustomEmptyMessage(
     title: String = "Sin resultados",
     message: String = "No se encontraron resultados para la búsqueda"
 ){
@@ -46,6 +46,6 @@ fun CustomEntyMessage(
 fun CustomPreview(){
 
     Fibra_labelingTheme {
-        CustomEntyMessage()
+        CustomEmptyMessage()
     }
 }

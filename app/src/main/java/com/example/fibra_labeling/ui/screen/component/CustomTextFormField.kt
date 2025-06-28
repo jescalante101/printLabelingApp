@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -54,6 +55,17 @@ fun CustomTextFormField(
         keyboardOptions = if (onlyNumbers) KeyboardOptions(keyboardType = KeyboardType.Decimal) else KeyboardOptions.Default,
         isError = isError,
         supportingText = supportingText
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun CustomTextFormFieldPreview() {
+    CustomTextFormField(
+        label = "Label",
+        value = "Value",
+        onValueChange = {},
+        enabled = true
     )
 }
 

@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.example.fibra_labeling.data.local.entity.fibraprint.POcrdEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface PrintOcrdDao {
@@ -28,7 +29,7 @@ interface PrintOcrdDao {
         WHERE cardCode LIKE '%' || :filtro || '%' 
            OR cardName LIKE '%' || :filtro || '%'
     """)
-    suspend fun buscarPorCodigoONombre(filtro: String): List<POcrdEntity>
+    fun buscarPorCodigoONombre(filtro: String): Flow<List<POcrdEntity>>
 
     // Obtener uno por ID
     @Query("SELECT * FROM p_ocrd WHERE id = :id")
