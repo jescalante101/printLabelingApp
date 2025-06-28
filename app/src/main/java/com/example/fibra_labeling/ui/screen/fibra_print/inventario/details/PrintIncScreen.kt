@@ -16,11 +16,14 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -37,10 +40,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.fibra_labeling.R
+import com.example.fibra_labeling.data.local.entity.fibraprint.PIncEntity
+import com.example.fibra_labeling.ui.navigation.Screen
+import com.example.fibra_labeling.ui.screen.component.CustomCountingWidget
 import com.example.fibra_labeling.ui.screen.component.CustomSearch
 import com.example.fibra_labeling.ui.screen.component.CustomSwipeableItem
 import com.example.fibra_labeling.ui.screen.fibra_print.inventario.details.component.PrintFioriCardIncCompact
+import com.example.fibra_labeling.ui.screen.fibrafil.inventario.register.stock.ICountingScreen
 import com.example.fibra_labeling.ui.theme.FioriBackground
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
@@ -58,11 +66,28 @@ fun PrintIncScreen(
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     var showSheet by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val itemSelected by viewModel.selectedItem.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.setDocEntry(docEntry)
         viewModel.setSearch("")
 
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.eventoNavegacion.collect { destino ->
+            when (destino) {
+                "printSetting"->navController.navigate(Screen.PrintSetting.route)
+            }
+        }
+
+        viewModel.message.collect { error ->
+            when(error){
+                "successPrint"->snackbarHostState.showSnackbar("Etiqueta Impresa")
+                else->snackbarHostState.showSnackbar(error)
+            }
+        }
     }
 
     Scaffold(
@@ -86,7 +111,8 @@ fun PrintIncScreen(
                 }
             )
         },
-        containerColor = FioriBackground
+        containerColor = FioriBackground,
+        snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { paddingValues ->
         LazyColumn  (
             modifier = Modifier
@@ -165,24 +191,36 @@ fun PrintIncScreen(
                         PrintFioriCardIncCompact(
                             dto = inc,
                             onClick = { item ->
-//                                viewModel.onItemSelectedChange(inc)
-//
-//                                showSheet = true
+                                viewModel.selectItem(item)
+                                showSheet = true
                             },
                             enabled = !inc.isSynced,
-                            onPrintClick = {
-//                                viewModel.getEtiquetaBYWhsAndItemCode(
-//                                    it.U_WhsCode.toString(),
-//                                    it.U_ItemCode.toString()
-//                                )
+                            onPrintClick = {data->
+                                viewModel.printEtiqueta(data)
                             }
                         )
                     }
 
                 }
             }
+        }
+    }
 
-
+    if (showSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showSheet = false },
+            sheetState = sheetState,
+        ) {
+            CustomCountingWidget(
+                onSave = { cantidad ->
+//                    viewModel.onConteoChange(cantidad.toString()) // ← Aquí obtienes el valor cuando el usuario confirma
+                    viewModel.updateConteo(cantidad.toDouble())
+                    showSheet = false
+                },
+                product = itemSelected?.itemName ?: "",
+                itemCode = itemSelected?.itemCode ?:"",
+                conteo = itemSelected?.countQty?.toDouble() ?: 0.0
+            )
         }
     }
 }

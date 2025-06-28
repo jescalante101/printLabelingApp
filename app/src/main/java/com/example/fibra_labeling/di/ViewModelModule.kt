@@ -79,7 +79,7 @@ val viewModelModule= module {
         PrintRegisterOIncViewModel(get(),get())
     }
     viewModel{
-        PrintIncViewModel(get())
+        PrintIncViewModel(get(),get(),get(),get(),get())
     }
 
 }

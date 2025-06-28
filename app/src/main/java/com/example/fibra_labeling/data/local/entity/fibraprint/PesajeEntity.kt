@@ -19,6 +19,7 @@ data class PesajeEntity(
     val metroLineal: String?,
     val nombre: String?,
     val u_area: String?,
+    val codigo: String?,
 
     // Campo local para saber si ya se sincronizó con el servidor
     val isSynced: Boolean = false,

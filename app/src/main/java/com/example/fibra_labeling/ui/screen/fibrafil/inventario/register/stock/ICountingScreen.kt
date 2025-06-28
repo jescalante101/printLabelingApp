@@ -231,40 +231,6 @@ fun ICountingScreen(
             }
         }
 
-//        Box(
-//            modifier = Modifier.padding(top= 32.dp)
-//        ){
-//            CustomAppBar(
-//                title = { Text("Toma de Inventario", color = Color.Black, style = MaterialTheme.typography.titleMedium) },
-//                leadingIcon = {
-//                    IconButton(
-//                        onClick = {
-//                            onNavigateBack()
-//                        }
-//                    ) {
-//                        Icon(
-//                            painter = painterResource(R.drawable.ic_arrow_left),
-//                            contentDescription = "Back",
-//                            tint = Color.Black
-//                        )
-//                    }
-//                },
-//                trailingIcon ={
-//                    IconButton(
-//                        onClick = {
-//
-//                        }
-//                    ){
-//                        Icon(
-//                            imageVector = Icons.Default.AccountCircle,
-//                            contentDescription = "user",
-//                            tint = Color.Black
-//                        )
-//                    }
-//                }
-//            )
-//
-//        }
 //
     }
 }

@@ -31,4 +31,8 @@ interface PrintIncDao {
 
     @Query("DELETE FROM p_inc")
     suspend fun deleteAll()
+
+    //Update
+    @Update
+    suspend fun update(printInc: PIncEntity)
 }

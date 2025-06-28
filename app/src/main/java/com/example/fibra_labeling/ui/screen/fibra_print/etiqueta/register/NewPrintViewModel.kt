@@ -151,6 +151,7 @@ class NewPrintViewModel(
                 u_area = formState.zona,
                 nombre = formState.name,
                 usuario = user,
+                codigo = formState.codigo,
             )
 
             val diference= 0.0 - (formState.pesoBruto.toDoubleOrNull() ?:0.0)
@@ -165,6 +166,7 @@ class NewPrintViewModel(
                 difference = diference,
                 binLocation = formState.ubicacion,
                 uarea = formState.zona,
+                codeBar = generateStringCodeBar(pesoDecimal = peso.toBigDecimal())
             )
             pesajeDao.insert(pesaje)
             pincDao.insert(inc)
