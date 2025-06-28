@@ -41,6 +41,13 @@ class PrintOncViewModel(
 
     }
 
+    fun deleteOinc(oinc:POincWithDetails){
+        viewModelScope.launch {
+            oincDao.eliminar(oinc.header)
+            oincDao.deletePOincDetails(oinc.details)
+        }
+    }
+
 
 
 }

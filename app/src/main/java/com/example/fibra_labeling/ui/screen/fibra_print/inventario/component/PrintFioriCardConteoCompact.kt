@@ -100,7 +100,7 @@ fun PrintFioriCardConteoCompact(
                         onDetailsClick(dto.docEntry.toInt())
                     },
                     modifier = Modifier.padding(end = 8.dp),
-                    enabled = !isSyncing
+                    enabled = detailsEnabled
                 ) {
                     Text("Detalle")
                 }

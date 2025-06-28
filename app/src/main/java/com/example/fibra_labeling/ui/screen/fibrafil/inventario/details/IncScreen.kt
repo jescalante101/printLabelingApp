@@ -137,6 +137,7 @@ fun IncScreen(
                         modifier = Modifier.height(8.dp)
                     )
                 }
+
                 items(incData.size) {index->
                     AnimatedVisibility(
                         visible = true,

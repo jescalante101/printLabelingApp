@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
+import com.example.fibra_labeling.data.local.entity.fibraprint.PIncEntity
 import com.example.fibra_labeling.data.local.entity.fibraprint.POincEntity
 import com.example.fibra_labeling.data.local.entity.fibraprint.POincWithDetails
 import kotlinx.coroutines.flow.Flow
@@ -54,4 +55,7 @@ interface PrintOincDao {
     @Transaction
     @Query("SELECT * FROM p_oinc")
     suspend fun getAllOincWithDetails(): List<POincWithDetails>
+
+    @Delete
+    suspend fun deletePOincDetails(details: List<PIncEntity>): Int
 }

@@ -54,6 +54,7 @@ import com.example.fibra_labeling.ui.screen.fibra_print.etiqueta.component.Print
 import com.example.fibra_labeling.ui.screen.fibra_print.etiqueta.register.component.FioriDropdownAlmacen
 import com.example.fibra_labeling.ui.theme.Fibra_labelingTheme
 import com.example.fibra_labeling.ui.theme.FioriBackground
+import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -72,7 +73,7 @@ fun NewPrintScreen(
     val proveedores by viewModel.allProveedores.collectAsState()
     val allAlmacenes by viewModel.allAlmacenes.collectAsState()
 
-    val eventNotification by viewModel.eventNotification.collectAsState("")
+
 
     LaunchedEffect (Unit) {
         Log.e("code,Name", "${code},${name}")
@@ -81,32 +82,21 @@ fun NewPrintScreen(
     }
 
     LaunchedEffect(Unit) {
-        when(eventNotification){
-            "saveSuccess"->{
-                snackbarHostState.showSnackbar("Etiqueta guardada correctamente")
+        viewModel.eventNotification.collect {
+            eventNotification->
+            when(eventNotification) {
+                "saveSuccess" -> {
+                    snackbarHostState.showSnackbar("Etiqueta guardada correctamente")
+                    delay(30)
+                    onBack()
+                }
+                "saveError" -> {
+                    snackbarHostState.showSnackbar("Error al guardar la etiqueta")
+                }
             }
         }
-    }
 
-//    LaunchedEffect(pesajeResult) {
-//        when {
-//            pesajeResult.isSuccess -> {
-//                val data = pesajeResult.getOrNull()
-//                if (data?.success == true) {
-//                    if (data.result.isEmpty()){
-//                        snackbarHostState.showSnackbar(data.message.toString())
-//                        onBack()
-//                    }else{
-//                        snackbarHostState.showSnackbar(data.result.toString())
-//                        onBack()
-//                    }
-//                }
-//            }
-//            else -> {
-//                snackbarHostState.showSnackbar(pesajeResult.exceptionOrNull()?.message.orEmpty())
-//            }
-//        }
-//    }
+    }
 
     Scaffold(
         topBar = {

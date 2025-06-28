@@ -17,6 +17,8 @@ import com.example.fibra_labeling.data.local.entity.fibraprint.PesajeEntity
 import com.example.fibra_labeling.datastore.ImpresoraPreferences
 import com.example.fibra_labeling.datastore.UserLoginPreference
 import com.example.fibra_labeling.ui.screen.fibra_print.etiqueta.register.form.PrintFormStateNewLabel
+import com.example.fibra_labeling.ui.screen.fibra_print.etiqueta.util.generarCodigoBarras
+import com.example.fibra_labeling.ui.util.generateStringCodeBar
 import com.example.fibra_labeling.ui.util.getLocalDateNow
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -135,11 +137,11 @@ class NewPrintViewModel(
             val user= userLoginPreference.userName.firstOrNull() ?: ""
             val docEntry= userLoginPreference.docEntry.firstOrNull() ?: ""
             val userCode= userLoginPreference.userCode.firstOrNull() ?: ""
-
+            val peso=formState.pesoBruto.toDoubleOrNull() ?: 0.0
             val pesaje= PesajeEntity(
-                peso = formState.pesoBruto.toDoubleOrNull() ?: 0.0,
+                peso = peso,
                 fecha = getLocalDateNow!!,
-                codigoBarra = "",//TODO: Implentar codigo de barras
+                codigoBarra = generateStringCodeBar(pesoDecimal = peso.toBigDecimal()),
                 proveedor = formState.proveedor?.cardName,
                 lote = formState.lote,
                 almacen = formState.almacen?.whsName,
@@ -164,11 +166,9 @@ class NewPrintViewModel(
                 binLocation = formState.ubicacion,
                 uarea = formState.zona,
             )
-
             pesajeDao.insert(pesaje)
             pincDao.insert(inc)
             reset()
-
             _eventNotification.emit("saveSuccess")
 
         }

@@ -45,5 +45,7 @@ data class PIncEntity(
     val machineCode: String?=null,
 
     @ColumnInfo(name = "u_area")
-    val uarea: String?=null
+    val uarea: String?=null,
+
+    val isSynced: Boolean = false
 )

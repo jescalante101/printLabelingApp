@@ -13,6 +13,7 @@ sealed class Screen(val route:String) {
     object PrintProduct: Screen("product")
 
     object PrintOncScreen: Screen("printOnc")
+    object PrintIncScreen: Screen("printInc")
 
 
     object Transfer: Screen("transfer")

@@ -20,6 +20,7 @@ import com.example.fibra_labeling.ui.screen.fibra_print.etiqueta.register.NewPri
 import com.example.fibra_labeling.ui.screen.fibra_print.etiqueta.register.PrintRegisterScreen
 import com.example.fibra_labeling.ui.screen.fibra_print.home_print.HomePrintScreen
 import com.example.fibra_labeling.ui.screen.fibra_print.inventario.PrintOncScreen
+import com.example.fibra_labeling.ui.screen.fibra_print.inventario.details.PrintIncScreen
 import com.example.fibra_labeling.ui.screen.fibrafil.etiqueta.etiqueta.ImpresionScreen
 import com.example.fibra_labeling.ui.screen.fibrafil.etiqueta.etiquetanueva.AddEtiquetaScreen
 import com.example.fibra_labeling.ui.screen.fibrafil.home.HomeScreen
@@ -124,6 +125,25 @@ fun AppNavHost(navController: NavHostController = rememberNavController(), start
                 onNavigateToProduct = {
                     navController.navigate(Screen.PrintProduct.route)
                 },
+                onNavigateToDetails = {docEntry->
+                    navController.navigate("${Screen.PrintIncScreen.route}/$docEntry")
+                }
+            )
+        }
+
+        composable(
+            route="${Screen.PrintIncScreen.route}/{docEntry}",
+            arguments = listOf(
+                navArgument("docEntry"){type= NavType.IntType}
+            )
+        ) {backStackEntry ->
+            val docEntry = backStackEntry.arguments?.getInt("docEntry")
+            PrintIncScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                navController = navController,
+                docEntry = docEntry ?: 0
             )
         }
 

@@ -1,6 +1,7 @@
 package com.example.fibra_labeling.data.local.dao.fibraprint
 import androidx.room.*
 import com.example.fibra_labeling.data.local.entity.fibraprint.PIncEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface PrintIncDao {
@@ -19,11 +20,11 @@ interface PrintIncDao {
 
     @Query("""
         SELECT * FROM p_inc
-        WHERE item_code LIKE '%' || :filter || '%'
+        WHERE doc_entry = :docEntry and ( item_code LIKE '%' || :filter || '%'
            OR item_name LIKE '%' || :filter || '%'
-           OR ref1 LIKE '%' || :filter || '%'
+           OR ref1 LIKE '%' || :filter || '%')
     """)
-    suspend fun filterByText(filter: String): List<PIncEntity>
+    fun filterByText(docEntry: Int,filter: String): Flow<List<PIncEntity>>
 
     @Delete
     suspend fun delete(printInc: PIncEntity)

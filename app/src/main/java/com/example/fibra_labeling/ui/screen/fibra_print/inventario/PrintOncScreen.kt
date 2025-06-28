@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import com.example.fibra_labeling.R
 import com.example.fibra_labeling.ui.screen.component.CustomEmptyMessage
 import com.example.fibra_labeling.ui.screen.component.CustomSearch
+import com.example.fibra_labeling.ui.screen.component.CustomSwipeableItem
 import com.example.fibra_labeling.ui.screen.fibra_print.inventario.component.PrintFioriCardConteoCompact
 import com.example.fibra_labeling.ui.screen.fibra_print.inventario.register.PrintOncRegister
 import com.example.fibra_labeling.ui.theme.FioriBackground
@@ -45,7 +46,8 @@ import org.koin.androidx.compose.koinViewModel
 fun PrintOncScreen(
     onBack: () -> Unit,
     onNavigateToProduct: () -> Unit,
-    viewModel: PrintOncViewModel= koinViewModel()
+    viewModel: PrintOncViewModel= koinViewModel(),
+    onNavigateToDetails: (Int) -> Unit
 ){
 
     val snackbarHostState = remember { SnackbarHostState() }
@@ -150,31 +152,43 @@ fun PrintOncScreen(
                         exit = fadeOut()
                     ) {
                         val oinc=allUser[index]
-                        PrintFioriCardConteoCompact(
-                            dto = oinc.header,
-                            onDetailsClick = {
-                                //onNavigateToDetails(inc.cabecera.docEntry.toInt())
+
+                        CustomSwipeableItem(
+                            item = oinc,
+                            itemId = oinc.header.docEntry,
+                            canSwipe = { !oinc.header.isSynced },
+                            onDelete = {
+                                viewModel.deleteOinc(oinc)
                             },
+                        ) {
+                            PrintFioriCardConteoCompact(
+                                dto = oinc.header,
+                                onDetailsClick = {
+                                    onNavigateToDetails(oinc.header.docEntry.toInt())
+                                },
 
-                            onSyncClick = {
-                                //showDialog = true
-                                //itemToSync = inc.cabecera
-                            },
+                                onSyncClick = {
+                                    //showDialog = true
+                                    //itemToSync = inc.cabecera
+                                },
 
-                            onClick = { oinc->
-                                Log.e("TAG", "PrintOncScreen: ${oinc.u_UserNameCount}")
+                                onClick = { oinc->
+                                    Log.e("TAG", "PrintOncScreen: ${oinc.u_UserNameCount}")
 
-                                onNavigateToProduct()
-                                viewModel.saveUserLogin(
-                                    userLogin = oinc.u_UserNameCount ?: "",
-                                    code = oinc.u_Ref ?: "",
-                                    docEntry = oinc.docEntry.toString()
-                                )
+                                    onNavigateToProduct()
+                                    viewModel.saveUserLogin(
+                                        userLogin = oinc.u_UserNameCount ?: "",
+                                        code = oinc.u_Ref ?: "",
+                                        docEntry = oinc.docEntry.toString()
+                                    )
 
-                            },
-                            isSyncing = false,
-                            detailsEnabled = oinc.details.isNotEmpty()
-                        )
+                                },
+                                isSyncing = oinc.header.isSynced,
+                                detailsEnabled = oinc.details.isNotEmpty()
+                            )
+
+                        }
+
                     }
                 }
             }

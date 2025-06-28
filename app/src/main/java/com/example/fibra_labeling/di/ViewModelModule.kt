@@ -7,6 +7,7 @@ import com.example.fibra_labeling.ui.screen.fibra_print.etiqueta.register.NewPri
 import com.example.fibra_labeling.ui.screen.fibra_print.etiqueta.register.RegisterViewModel
 import com.example.fibra_labeling.ui.screen.fibra_print.home_print.HomePrintViewModel
 import com.example.fibra_labeling.ui.screen.fibra_print.inventario.PrintOncViewModel
+import com.example.fibra_labeling.ui.screen.fibra_print.inventario.details.PrintIncViewModel
 import com.example.fibra_labeling.ui.screen.fibra_print.inventario.register.PrintRegisterOIncViewModel
 import com.example.fibra_labeling.ui.screen.fibrafil.etiqueta.etiqueta.ImpresionModelView
 import com.example.fibra_labeling.ui.screen.fibrafil.etiqueta.etiquetanueva.FillEtiquetaViewModel
@@ -76,6 +77,9 @@ val viewModelModule= module {
     }
     viewModel{
         PrintRegisterOIncViewModel(get(),get())
+    }
+    viewModel{
+        PrintIncViewModel(get())
     }
 
 }
