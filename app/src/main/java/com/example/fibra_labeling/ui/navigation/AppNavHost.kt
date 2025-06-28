@@ -21,6 +21,7 @@ import com.example.fibra_labeling.ui.screen.fibra_print.etiqueta.register.PrintR
 import com.example.fibra_labeling.ui.screen.fibra_print.home_print.HomePrintScreen
 import com.example.fibra_labeling.ui.screen.fibra_print.inventario.PrintOncScreen
 import com.example.fibra_labeling.ui.screen.fibra_print.inventario.details.PrintIncScreen
+import com.example.fibra_labeling.ui.screen.fibra_print.inventario.details.register.PrintRegisterIncDetailsScreen
 import com.example.fibra_labeling.ui.screen.fibrafil.etiqueta.etiqueta.ImpresionScreen
 import com.example.fibra_labeling.ui.screen.fibrafil.etiqueta.etiquetanueva.AddEtiquetaScreen
 import com.example.fibra_labeling.ui.screen.fibrafil.home.HomeScreen
@@ -144,6 +145,31 @@ fun AppNavHost(navController: NavHostController = rememberNavController(), start
                 },
                 navController = navController,
                 docEntry = docEntry ?: 0
+            )
+        }
+
+        composable(
+            Screen.PrintIncDetailsRegister.route,
+            enterTransition = {
+                fadeIn(animationSpec = tween(700)) +
+                        scaleIn(initialScale = 0.9f, animationSpec = tween(700))
+            },
+            exitTransition = {
+                fadeOut(animationSpec = tween(300)) +
+                        scaleOut(targetScale = 1.2f, animationSpec = tween(500))
+            },
+            arguments = listOf(
+                navArgument("itemCode"){type= NavType.StringType},
+                navArgument("itemName"){type= NavType.StringType},
+                navArgument("codeBar"){type= NavType.StringType}
+
+            )
+        ) { backStackEntry ->
+            PrintRegisterIncDetailsScreen(
+                onBackNavigation = { navController.popBackStack() },
+                itemCode = backStackEntry.arguments?.getString("itemCode") ?: "",
+                itemName = backStackEntry.arguments?.getString("itemName") ?: "",
+                codeBar = backStackEntry.arguments?.getString("codeBar") ?: "",
             )
         }
 

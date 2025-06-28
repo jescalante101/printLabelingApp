@@ -231,7 +231,6 @@ fun NewPrintScreen(
                 Spacer(Modifier.height(8.dp))
             }
             item {
-
                 CustomFioriDropDown(
                     label = "Proveedor",
                     options = proveedores,
@@ -246,7 +245,6 @@ fun NewPrintScreen(
                         "${pro.cardName} - ${pro.cardCode}"
                     }
                 )
-
             }
             item {
                 Spacer(Modifier.height(16.dp))
@@ -261,11 +259,12 @@ fun NewPrintScreen(
                     enabled = true,
                     modifier = Modifier.fillMaxWidth(),
                 )
-
             }
+
             item {
                 Spacer(Modifier.height(16.dp))
             }
+
             item {
                 CustomFioriDropDown(
                     label = "Almacén",

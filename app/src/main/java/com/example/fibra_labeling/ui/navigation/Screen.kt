@@ -15,6 +15,8 @@ sealed class Screen(val route:String) {
     object PrintOncScreen: Screen("printOnc")
     object PrintIncScreen: Screen("printInc")
 
+    object PrintIncDetailsRegister: Screen("printIncDetailsRegister")
+
 
     object Transfer: Screen("transfer")
     object Reception: Screen("reception")

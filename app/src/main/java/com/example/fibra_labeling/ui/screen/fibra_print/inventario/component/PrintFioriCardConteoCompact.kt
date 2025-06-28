@@ -1,5 +1,6 @@
 package com.example.fibra_labeling.ui.screen.fibra_print.inventario.component
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -42,7 +43,6 @@ fun PrintFioriCardConteoCompact(
     isSyncing: Boolean = true, // Nuevo parámetro,
     detailsEnabled: Boolean = true
 ) {
-
     // para controlar el estado del botón de envío
     var isSyncPress = remember { mutableStateOf(false) }
 
@@ -58,7 +58,8 @@ fun PrintFioriCardConteoCompact(
             if (dto.u_EndTime == null && !isSyncing) {
                 onClick(dto)
             }
-        }
+        },
+        border = BorderStroke(width = 1.dp, color = Color(0xFF004990))
     ) {
         Column(Modifier.padding(18.dp)) {
             // Header
@@ -77,6 +78,7 @@ fun PrintFioriCardConteoCompact(
             LabelAndValueFiori("Usuario", dto.u_UserNameCount ?: "")
             LabelAndValueFiori("Referencia", dto.u_Ref ?: "")
             LabelAndValueFiori("Observaciones", dto.u_Remarks ?: "")
+            LabelAndValueFiori("N° Doc", dto.docEntry.toString())
 
             // ⬇️ Mostrar el docNumber solo si está sincronizando
             if (dto.isSynced) {

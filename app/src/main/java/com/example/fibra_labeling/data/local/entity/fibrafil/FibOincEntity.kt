@@ -1,5 +1,6 @@
 package com.example.fibra_labeling.data.local.entity.fibrafil
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -15,8 +16,10 @@ data class FibOincEntity(
     val u_userCodeCount: String?,
     val isSynced: Boolean = false,
 
+
     //Nuevos Columnas
     val docNum: String? = null, // Nuevo campo
-    val fechaSync: String? = null // Nuevo campo
+    val fechaSync: String? = null,// Nuevo campo
+
 
 )

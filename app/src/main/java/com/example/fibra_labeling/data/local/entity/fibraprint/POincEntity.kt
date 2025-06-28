@@ -1,5 +1,6 @@
 package com.example.fibra_labeling.data.local.entity.fibraprint
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 @Entity(tableName = "p_oinc")
@@ -17,5 +18,7 @@ data class POincEntity(
     val isSynced: Boolean = false,
     //Nuevos Columnas
     val docNum: String? = null, // Nuevo campo
-    val fechaSync: String? = null // Nuevo campo
+    val fechaSync: String? = null, // Nuevo campo
+    @ColumnInfo(name = "u_MobilIdentification")
+    val u_MobilIdentification: String? = null // Nuevo campo
 )

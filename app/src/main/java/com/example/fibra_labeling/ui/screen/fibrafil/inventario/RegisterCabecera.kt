@@ -87,7 +87,6 @@ fun RegisterCabecera(
 
     Box {
         Scaffold(
-
             snackbarHost = { SnackbarHost(snackbarHostState) },
             floatingActionButton = {
                 // Floating button para crear un nuevo registro

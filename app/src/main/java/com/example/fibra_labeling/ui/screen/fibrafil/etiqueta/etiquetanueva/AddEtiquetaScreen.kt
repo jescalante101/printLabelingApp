@@ -314,7 +314,6 @@ fun AddEtiquetaScreen(
                                 verticalAlignment = Alignment.CenterVertically,
                             ) {
                                Row {
-
                                    FilledTonalIconButton (
                                        colors = IconButtonDefaults.iconButtonColors(
                                            MaterialTheme.colorScheme.primary.copy(0.6f)

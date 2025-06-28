@@ -24,24 +24,32 @@ class PrintProductViewModel(
     val filtro= _filtro.asStateFlow()
 
     val _totalResult = MutableStateFlow<Int>(0)
-    val totalResult: StateFlow<Int> = _totalResult.asStateFlow()
-
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val productos: StateFlow<List<POITMEntity>> = _filtro
         .flatMapLatest { filtroRaw ->
-            val terms = filtroRaw.split("\\s+".toRegex()).filter { it.isNotBlank() }
-            val term1 = terms.getOrNull(0)?.replace("*", "%")?.let { "%$it%" }
-            val term2 = terms.getOrNull(1)?.replace("*", "%")?.let { "%$it%" }
-            val term3 = terms.getOrNull(2)?.replace("*", "%")?.let { "%$it%" }
-            printOitmDao.searchProduct(term1,term2,term3)
+            // Limpiamos y obtenemos el primer término del usuario
+            val term = filtroRaw.split("\\s+".toRegex())
+                .filter { it.isNotBlank() }
+                .getOrNull(0) // Tomamos solo el primer término, como en tu código original
+
+            val filter: String = if (term.isNullOrBlank()) {
+                "%" // Si el usuario no ha escrito nada, buscamos todo ("%")
+            } else if (term.contains("*")) {
+                // Si el término contiene '*', solo reemplazamos '*' por '%'
+                term.replace("*", "%")
+            } else {
+                // Si el término NO contiene '*', lo envolvemos con '%' para búsqueda "contiene"
+                "%$term%"
+            }
+            printOitmDao.searchProduct(filter)
                 .catch { e ->
                     _totalResult.value = 0
                 }
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
-
     fun setFiltro(filtro: String) {
         _filtro.value = filtro
     }
+
 }

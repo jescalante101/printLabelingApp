@@ -47,8 +47,10 @@ data class PIncEntity(
     @ColumnInfo(name = "u_area")
     val uarea: String?=null,
 
-    @ColumnInfo(name = "codeBar")
+    @ColumnInfo(name = "u_codeBar")
     val codeBar: String?=null,
+
+
 
 
     val isSynced: Boolean = false

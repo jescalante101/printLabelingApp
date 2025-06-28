@@ -65,7 +65,7 @@ fun PrintProductScreen(
 
                 title = {
                     Text(
-                        text = "Productos a etiquetar",
+                        text = "Productos a Inventariar",
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                     )
@@ -89,12 +89,12 @@ fun PrintProductScreen(
             // Campo de búsqueda
             SearchBar(
                 searchText = filtro,
-                onSearchTextChange = {
-                    viewModel.setFiltro(it.toUpperCase(Locale.current))
+                onSearchTextChange = {text->
+                    viewModel.setFiltro(text.toUpperCase(Locale.current))
                 },
                 modifier = Modifier.padding(bottom = 20.dp),
-                onSearch = {
-                    viewModel.setFiltro(it)
+                onSearch = {search->
+                    viewModel.setFiltro(search)
                 },
                 onDone = {
                     viewModel.setFiltro(filtro)
@@ -121,10 +121,9 @@ fun PrintProductScreen(
                         ProductCard(
                             producto = product.toOitmData()!!,
                             modifier = Modifier.animateItem(),
-                            onNavigateToDetail = {
-                                val encodedProductName = Uri.encode(it.desc)
-                                val code = Uri.encode(it.codesap)
-
+                            onNavigateToDetail = {oITMData ->
+                                val encodedProductName = Uri.encode(oITMData.desc)
+                                val code = Uri.encode(oITMData.codesap)
                                 onNavigateToNewPrint(code, encodedProductName)
 //                                if (isPrint) {
 //                                    onNavigateToNewPrint(code, encodedProductName)

@@ -62,7 +62,7 @@ fun PrintOncScreen(
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        "Inventatio",
+                        "Inventario",
                         style = MaterialTheme.typography.titleLarge,
                         color = Color.Black,
                         fontWeight = FontWeight.Bold
@@ -132,6 +132,7 @@ fun PrintOncScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             LazyColumn {
+
                 item {
                     if (allUser.isEmpty()){
                         CustomEmptyMessage(
@@ -141,7 +142,6 @@ fun PrintOncScreen(
                     }else  {
                         Spacer(modifier = Modifier.height(16.dp))
                     }
-
                 }
 
                 items(allUser.size) { index ->

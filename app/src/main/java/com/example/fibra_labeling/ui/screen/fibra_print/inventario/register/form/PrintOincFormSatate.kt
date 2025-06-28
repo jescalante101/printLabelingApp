@@ -1,6 +1,5 @@
 package com.example.fibra_labeling.ui.screen.fibra_print.inventario.register.form
 
-import com.example.fibra_labeling.data.local.entity.fibraprint.POincEntity
 import com.example.fibra_labeling.data.local.entity.fibraprint.POusrEntity
 
 data class PrintOincFormState(
