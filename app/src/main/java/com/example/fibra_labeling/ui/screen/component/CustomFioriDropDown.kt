@@ -44,7 +44,8 @@ fun <T> CustomFioriDropDown(
     itemLabel: (T) -> String,
     modifier: Modifier = Modifier,
     isError: Boolean = false,
-    supportingText: @Composable (() -> Unit)? = null
+    supportingText: @Composable (() -> Unit)? = null,
+    enabled: Boolean = true
 ) {
     var text by rememberSaveable(selected) { mutableStateOf(selected?.let { itemLabel(it) } ?: "") }
     var filterText by rememberSaveable { mutableStateOf("") }
@@ -56,6 +57,7 @@ fun <T> CustomFioriDropDown(
         CustomFioriTextField(
             value = text,
             singleLine = true,
+            enabled = enabled,
             onValueChange = { newText ->
                 text = newText
                 isDropdownVisible = true
@@ -65,8 +67,11 @@ fun <T> CustomFioriDropDown(
             trailingIcon = {
                 IconButton(
                     onClick = {
-                        isDropdownVisible = !isDropdownVisible
-                        focusRequester.requestFocus()
+                        if (enabled){
+                            isDropdownVisible = !isDropdownVisible
+                            focusRequester.requestFocus()
+                        }
+
                     }
                 ) {
                     Icon(

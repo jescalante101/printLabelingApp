@@ -10,6 +10,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -22,6 +23,12 @@ class PrintOncViewModel(
     fun onSearch(query: String){
         _searchUser.value = query
     }
+
+    val _loading = MutableStateFlow(false)
+    val loading = _loading.asStateFlow()
+
+    private val _syncMessage = MutableStateFlow<String?>(null)
+    val syncMessage: StateFlow<String?> = _syncMessage
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val allUsers: StateFlow<List<POincWithDetails>> = _searchUser

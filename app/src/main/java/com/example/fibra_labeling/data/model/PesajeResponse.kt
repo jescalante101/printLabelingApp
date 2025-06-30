@@ -14,7 +14,7 @@ data class PesajeResponse(
     val success: Boolean?=false,
 
     @SerialName("data")
-    val data: ImobPasaje?=null,
+    val data: ImobPesaje?=null,
 
     @SerialName("message")
     val message: String=""

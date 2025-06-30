@@ -67,16 +67,16 @@ fun PrintRegisterScreen(
                 // Campo de búsqueda
                 SearchBar(
                     searchText = searchText,
-                    onSearchTextChange = {
-                        searchText = it.toString().toUpperCase(Locale.current)
-                        viewModel.setFiltro(it)
+                    onSearchTextChange = {filter->
+                        searchText = filter.toUpperCase(Locale.current)
+                        viewModel.setFiltro(filter)
                     },
                     modifier = Modifier.padding(bottom = 16.dp),
-                    onSearch = {
+                    onSearch = {text->
                         if (isPrint){
-                            viewModel.getOitm(filter = it, isFill = false)
+                            viewModel.getOitm(filter = text, isFill = false)
                         }
-                        viewModel.setFiltro(it)
+                        viewModel.setFiltro(text)
                     },
                     onDone = {
                         if (isPrint){
@@ -108,9 +108,9 @@ fun PrintRegisterScreen(
                                 ProductCard(
                                     producto = product.toOitmData()!!,
                                     modifier = Modifier.animateItem(),
-                                    onNavigateToDetail = {
-                                        val encodedProductName = Uri.encode(it.desc)
-                                        val code=Uri.encode(it.codesap)
+                                    onNavigateToDetail = { data->
+                                        val encodedProductName = Uri.encode(data.desc)
+                                        val code=Uri.encode(data.codesap)
                                         if (isPrint){
                                             onNavigateToNewPrint(code,encodedProductName)
                                         }else{

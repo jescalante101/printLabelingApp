@@ -15,6 +15,8 @@ data class PrintFormStateNewLabel(
     val zona: String="",
     val pesoBruto: String="",
     val usuario:String="jtevez",
-    val isValid: Boolean=false
+    val isValid: Boolean=false,
+    val unidad: String="",
+    val observacion: String="",
 
 )

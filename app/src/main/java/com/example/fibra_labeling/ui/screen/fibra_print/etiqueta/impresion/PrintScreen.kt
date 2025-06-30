@@ -80,6 +80,7 @@ fun PrintScreen(
         viewModelStoreOwner = activity
     )
     val lastBarcode by viewModel.lastScannedBarcode.collectAsState()
+
     val currentBackStackEntry = navController.currentBackStackEntryAsState().value
 
     LaunchedEffect(Unit) {

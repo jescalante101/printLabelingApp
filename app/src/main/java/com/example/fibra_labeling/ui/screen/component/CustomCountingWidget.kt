@@ -32,12 +32,23 @@ fun CustomCountingWidget(
     onSave: (value: String) -> Unit = { _ -> },
     product: String = "Pernos",
     itemCode: String = "123456789",
-    conteo: Double = 0.0
+    conteo: Double = 0.0,
+    operation: String="Cantidad Contada",
+    unidad: String=""
 ) {
     var cantidad by remember { mutableStateOf("0") }
 
     LaunchedEffect(Unit) {
-        cantidad = conteo.toString()
+        cantidad = if(conteo>0){
+            if(conteo.toString().contains(".")){
+                conteo.toString()
+            }else{
+                conteo.toInt().toString()
+            }
+        }else{
+            "0"
+        }
+
     }
 
     Box(
@@ -91,13 +102,13 @@ fun CustomCountingWidget(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Text(
-                        text = "Cantidad Contada",
+                        text = operation,
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                     Text(
-                        text = cantidad,
-                        style = MaterialTheme.typography.displayLarge,
+                        text = "$cantidad $unidad",
+                        style = MaterialTheme.typography.headlineLarge,
                         color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.Bold
                     )

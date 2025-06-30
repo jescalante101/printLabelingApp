@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class ImobPasaje(
+data class ImobPesaje(
     @SerialName("docEntry") // Añadido para mapear "DocEntry"
     val docEntry: Int?=0, // El valor es un número, así que Int es apropiado
 
@@ -57,5 +57,8 @@ data class ImobPasaje(
     val userUpdate: String? = "",
 
     @SerialName("updateDate")
-    val updateDate: String? = ""
+    val updateDate: String? = "",
+
+    @SerialName("area")
+    val area: String? =""
 )

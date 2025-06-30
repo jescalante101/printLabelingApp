@@ -44,6 +44,11 @@ interface PrintOincDao {
     @Update
     suspend fun actualizar(conteo: POincEntity)
 
+    //actualizar en bloque por docEntry con query
+    @Query("UPDATE p_oinc SET fechaSync = :fecha, isSynced =1, docNum = :docNum WHERE docEntry = :docEntry")
+    suspend fun actualizarPorDocEntry(docEntry: Long,fecha: String,docNum: String)
+
+
     // Eliminar un registro
     @Delete
     suspend fun eliminar(conteo: POincEntity)
@@ -55,6 +60,11 @@ interface PrintOincDao {
     @Transaction
     @Query("SELECT * FROM p_oinc")
     suspend fun getAllOincWithDetails(): List<POincWithDetails>
+
+    // transaction by docEntry
+    @Transaction
+    @Query("SELECT * FROM p_oinc WHERE docEntry = :docEntry")
+    suspend fun getOincWithDetailsByDocEntry(docEntry: Long): POincWithDetails?
 
     @Delete
     suspend fun deletePOincDetails(details: List<PIncEntity>): Int

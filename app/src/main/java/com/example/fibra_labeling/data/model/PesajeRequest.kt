@@ -1,6 +1,7 @@
 package com.example.fibra_labeling.data.model
 
 
+import com.example.fibra_labeling.data.local.entity.fibraprint.PesajeEntity
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -31,5 +32,31 @@ data class PesajeRequest(
     @SerialName("ubicacion")
     val ubicacion: String?,
     @SerialName("usuario")
-    val usuario: String?
+    val usuario: String?,
+    @SerialName("zona")
+    val zona: String?,
+    @SerialName("codeBar")
+    val codeBar: String?
 )
+
+
+fun PesajeEntity.toPesajeRequest(): PesajeRequest {
+    return PesajeRequest(
+        almacen = this.almacen,
+        codigo = this.codigo,
+        equi = null, // No existe en PesajeEntity
+        lote = this.lote,
+        mLineal = this.metroLineal,
+        motivo = null, // No existe en PesajeEntity
+        name = this.nombre,
+        pesoBruto = this.peso.toString(),
+        piso = this.piso,
+        provee = this.proveedor,
+        stepd = this.fecha, // Asumiendo que stepd es la fecha
+        ubicacion = this.ubicacion,
+        usuario = this.usuario,
+        zona = this.u_area, // Asumiendo que zona corresponde a u_area
+        codeBar = this.codigoBarra,
+
+    )
+}

@@ -82,7 +82,7 @@ fun PrintFioriCardIncCompact(
                 }
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text("Contado", style = MaterialTheme.typography.labelSmall, color = Color(0xFF607D8B))
-                    Text(dto.countQty?.toString() ?: "-", fontWeight = FontWeight.Bold)
+                    Text("${dto.countQty?.toString()} ${dto.ref2}" , fontWeight = FontWeight.Bold)
                 }
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text("Diferencia", style = MaterialTheme.typography.labelSmall, color = Color(0xFF607D8B))

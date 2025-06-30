@@ -21,6 +21,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,6 +34,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.fibra_labeling.R
+import com.example.fibra_labeling.data.local.entity.fibrafil.FibOincEntity
 import com.example.fibra_labeling.ui.screen.component.CustomEmptyMessage
 import com.example.fibra_labeling.ui.screen.component.CustomSearch
 import com.example.fibra_labeling.ui.screen.component.CustomSwipeableItem
@@ -53,9 +55,29 @@ fun PrintOncScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     var showSheet by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
-
+    var showDialog by remember { mutableStateOf(false) }
+    val loading by viewModel.loading.collectAsState()
     val allUser by viewModel.allUsers.collectAsState()
+    val syncMessage by viewModel.syncMessage.collectAsState()
 
+    LaunchedEffect(loading) {
+        if (!loading) {
+            showDialog = false // Cierra el diálogo de carga una vez que termina la sincronización
+        }
+    }
+    LaunchedEffect(syncMessage) {
+        syncMessage?.let {
+            snackbarHostState.showSnackbar(it)
+        }
+    }
+
+    fun onConfirmSync(dto: FibOincEntity) {
+        viewModel.syncEtiquetaEncabezado(dto.docEntry)
+    }
+
+    fun onDismissDialog() {
+        showDialog = false
+    }
     Scaffold(
         containerColor = FioriBackground,
         topBar = {

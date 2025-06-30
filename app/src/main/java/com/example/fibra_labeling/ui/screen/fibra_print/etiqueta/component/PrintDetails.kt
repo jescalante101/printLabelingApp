@@ -23,11 +23,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.fibra_labeling.data.model.ImobPasaje
+import com.example.fibra_labeling.data.model.ImobPesaje
 import com.example.fibra_labeling.ui.screen.component.CodigoBarrasImage
 
 @Composable
-fun SapFioriDetailCard(item: ImobPasaje, modifier: Modifier = Modifier) {
+fun SapFioriDetailCard(item: ImobPesaje, modifier: Modifier = Modifier) {
     Card (
         modifier = modifier
             .padding(16.dp)
@@ -72,26 +72,26 @@ fun SapFioriDetailCard(item: ImobPasaje, modifier: Modifier = Modifier) {
             // Info principal agrupada
             GroupRowFiori("Proveedor", item.proveedor)
             GroupRowFiori("Almacén", item.almacen)
-            GroupRowFiori("Motivo", item.motivo)
+//            GroupRowFiori("Motivo", item.motivo)
             GroupRowFiori("Ubicación", item.ubicacion)
             GroupRowFiori("Piso", item.piso)
             HorizontalDivider(Modifier.padding(vertical = 12.dp))
             // Medidas
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 GroupInfoFiori("Metro Lineal", item.metroLineal)
-                GroupInfoFiori("Equivalente", item.equivalente)
+//                GroupInfoFiori("Equivalente", item.equivalente)
                 GroupInfoFiori("Peso", "${item.peso ?: 0.0} kg")
             }
             HorizontalDivider(Modifier.padding(vertical = 12.dp))
             // Auditoría
             GroupRowFiori("Creado por", item.userCreate)
             GroupRowFiori("Fecha creación", item.createDate)
-            item.userUpdate?.let {
-                GroupRowFiori("Actualizado por", it)
-            }
-            item.updateDate?.let {
-                GroupRowFiori("Fecha actualización", it)
-            }
+//            item.userUpdate?.let {
+//                GroupRowFiori("Actualizado por", it)
+//            }
+//            item.updateDate?.let {
+//                GroupRowFiori("Fecha actualización", it)
+//            }
             Spacer(Modifier.height(12.dp))
             // Código de barras visual
 
@@ -151,7 +151,7 @@ fun GroupInfoFiori(label: String, value: String) {
 @Composable
 fun PreviewFiori(){
     SapFioriDetailCard(
-        item = ImobPasaje(
+        item = ImobPesaje(
             itemCode = "12345",
             almacen = "dd",
             lote = "dd",

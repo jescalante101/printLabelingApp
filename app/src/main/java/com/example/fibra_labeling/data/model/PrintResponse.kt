@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class PrintResponse(
     @SerialName("data")
-    val `data`: ImobPasaje?=null,
+    val `data`: ImobPesaje?=null,
     @SerialName("message")
     val message: String?,
     @SerialName("success")

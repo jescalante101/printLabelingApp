@@ -20,6 +20,7 @@ data class PesajeEntity(
     val nombre: String?,
     val u_area: String?,
     val codigo: String?,
+    val unidad:String?,
 
     // Campo local para saber si ya se sincronizó con el servidor
     val isSynced: Boolean = false,

@@ -39,12 +39,13 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun PrintProductScreen(
     viewModel: PrintProductViewModel = koinViewModel(),
-    onNavigateToNewPrint: (String, String) -> Unit,
-    onBack: () -> Unit
+    onNavigateToNewPrint: (String, String,String) -> Unit,
+    onBack: () -> Unit,
 ){
 
     val filtro by viewModel.filtro.collectAsState()
     val productos by viewModel.productos.collectAsState()
+
 
     Scaffold(
         topBar = {
@@ -65,7 +66,7 @@ fun PrintProductScreen(
 
                 title = {
                     Text(
-                        text = "Productos a Inventariar",
+                        text = "Productos a Etiquetar",
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                     )
@@ -124,7 +125,8 @@ fun PrintProductScreen(
                             onNavigateToDetail = {oITMData ->
                                 val encodedProductName = Uri.encode(oITMData.desc)
                                 val code = Uri.encode(oITMData.codesap)
-                                onNavigateToNewPrint(code, encodedProductName)
+                                val unidad=Uri.encode(oITMData.unida)
+                                onNavigateToNewPrint(code, encodedProductName,unidad)
 //                                if (isPrint) {
 //                                    onNavigateToNewPrint(code, encodedProductName)
 //                                } else {
@@ -137,6 +139,4 @@ fun PrintProductScreen(
             }
         }
     }
-
-
 }

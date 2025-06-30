@@ -8,6 +8,8 @@ import com.example.fibra_labeling.ui.screen.fibra_print.etiqueta.register.Regist
 import com.example.fibra_labeling.ui.screen.fibra_print.home_print.HomePrintViewModel
 import com.example.fibra_labeling.ui.screen.fibra_print.inventario.PrintOncViewModel
 import com.example.fibra_labeling.ui.screen.fibra_print.inventario.details.PrintIncViewModel
+import com.example.fibra_labeling.ui.screen.fibra_print.inventario.details.register.PrintRegisterIncDetailsViewModel
+import com.example.fibra_labeling.ui.screen.fibra_print.inventario.product.PrintPesajeViewModel
 import com.example.fibra_labeling.ui.screen.fibra_print.inventario.register.PrintRegisterOIncViewModel
 import com.example.fibra_labeling.ui.screen.fibrafil.etiqueta.etiqueta.ImpresionModelView
 import com.example.fibra_labeling.ui.screen.fibrafil.etiqueta.etiquetanueva.FillEtiquetaViewModel
@@ -28,9 +30,9 @@ val viewModelModule= module {
     }
 
 
-    viewModel{ PrintViewModel(get(),get()) }
+    viewModel{ PrintViewModel(get(),get(),get()) }
     viewModel{ RegisterViewModel(get(),get(),get()) }
-    viewModel{ NewPrintViewModel(get(),get(),get(),get(),get(),get()) }
+    viewModel{ NewPrintViewModel(get(),get(),get(),get(),get(),get(),get(),get(),get()) }
 
     viewModel{ BarcodeViewModel() }
 
@@ -80,6 +82,14 @@ val viewModelModule= module {
     }
     viewModel{
         PrintIncViewModel(get(),get(),get(),get(),get())
+    }
+
+    viewModel{
+        PrintPesajeViewModel(get(),get())
+    }
+
+    viewModel{
+        PrintRegisterIncDetailsViewModel(get(),get(),get(),get(),get())
     }
 
 }

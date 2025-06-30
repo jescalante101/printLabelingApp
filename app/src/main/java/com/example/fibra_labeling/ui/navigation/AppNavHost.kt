@@ -22,6 +22,7 @@ import com.example.fibra_labeling.ui.screen.fibra_print.home_print.HomePrintScre
 import com.example.fibra_labeling.ui.screen.fibra_print.inventario.PrintOncScreen
 import com.example.fibra_labeling.ui.screen.fibra_print.inventario.details.PrintIncScreen
 import com.example.fibra_labeling.ui.screen.fibra_print.inventario.details.register.PrintRegisterIncDetailsScreen
+import com.example.fibra_labeling.ui.screen.fibra_print.inventario.product.PrintPesajeScreen
 import com.example.fibra_labeling.ui.screen.fibrafil.etiqueta.etiqueta.ImpresionScreen
 import com.example.fibra_labeling.ui.screen.fibrafil.etiqueta.etiquetanueva.AddEtiquetaScreen
 import com.example.fibra_labeling.ui.screen.fibrafil.home.HomeScreen
@@ -124,7 +125,7 @@ fun AppNavHost(navController: NavHostController = rememberNavController(), start
             PrintOncScreen(
                 onBack = { navController.popBackStack() },
                 onNavigateToProduct = {
-                    navController.navigate(Screen.PrintProduct.route)
+                    navController.navigate(Screen.PrintPesajeScreen.route)
                 },
                 onNavigateToDetails = {docEntry->
                     navController.navigate("${Screen.PrintIncScreen.route}/$docEntry")
@@ -149,7 +150,25 @@ fun AppNavHost(navController: NavHostController = rememberNavController(), start
         }
 
         composable(
-            Screen.PrintIncDetailsRegister.route,
+            Screen.PrintPesajeScreen.route
+        ) {
+            PrintPesajeScreen(
+                onNavigateBack = navController::popBackStack,
+                onNavigateToIncRegister = {itemCode,itemName,codeBar->
+                    navController.navigate("${Screen.PrintIncDetailsRegister.route}/$itemCode/$itemName/$codeBar")
+                },
+                onNavigateToProducts = {
+                    navController.navigate(Screen.PrintProduct.route)
+                },
+                navController = navController,
+                onNavigateToScan = {
+                    navController.navigate(Screen.Scan.route)
+                }
+            )
+        }
+
+        composable(
+            "${Screen.PrintIncDetailsRegister.route}/{itemCode}/{itemName}/{codeBar}",
             enterTransition = {
                 fadeIn(animationSpec = tween(700)) +
                         scaleIn(initialScale = 0.9f, animationSpec = tween(700))
@@ -208,8 +227,8 @@ fun AppNavHost(navController: NavHostController = rememberNavController(), start
         ) {
             PrintProductScreen(
                 onNavigateToNewPrint = {
-                    code,name->
-                    navController.navigate("${Screen.NewPrint.route}/$code/$name")
+                    code,name,unidad->
+                    navController.navigate("${Screen.NewPrint.route}/$code/$name/$unidad")
 
                 },
                 onBack = { navController.popBackStack() },
@@ -217,18 +236,22 @@ fun AppNavHost(navController: NavHostController = rememberNavController(), start
         }
 
         composable(
-            route="${Screen.NewPrint.route}/{code}/{name}",
+            route="${Screen.NewPrint.route}/{code}/{name}/{unidad}",
             arguments = listOf(
                 navArgument("code"){type= NavType.StringType},
-                navArgument("name"){type= NavType.StringType}
+                navArgument("name"){type= NavType.StringType},
+                navArgument("unidad"){type= NavType.StringType}
             )
         ){ backStackEntry ->
             val code = backStackEntry.arguments?.getString("code")
             val name = backStackEntry.arguments?.getString("name")
+            val unidad = backStackEntry.arguments?.getString("unidad")
             NewPrintScreen (
                 onBack = { navController.popBackStack() },
                 code = code ?: "",
-                name = name ?: ""
+                name = name ?: "",
+                unidad = unidad ?: "",
+                navController = navController
             )
         }
 

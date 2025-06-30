@@ -8,5 +8,6 @@ data class POITMEntity(
     @PrimaryKey val codesap: String, // Usamos el código SAP como PK
     val desc: String?,
     val unida: String?,
-    val codebars: String? = ""
+    val codebars: String? = "",
+    val cardCode: String?=""
 )

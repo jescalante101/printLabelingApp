@@ -14,5 +14,8 @@ data class OITMData(
     val unida: String?,
 
     @SerialName("codebars")
-    val codebars: String?=""
+    val codebars: String?="",
+
+    @SerialName("cardCode")
+    val cardCode: String?=""
 )

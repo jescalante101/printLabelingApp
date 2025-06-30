@@ -9,7 +9,9 @@ fun OITMData.toEntity(): POITMEntity? =
             codesap = it,
             desc = desc,
             unida = unida,
-            codebars = codebars ?: ""
+            codebars = codebars ?: "",
+            cardCode=cardCode ?:""
+
         )
     }
 
@@ -18,5 +20,6 @@ fun POITMEntity.toOitmData(): OITMData?=
         codesap = codesap,
         desc = desc,
         unida = unida,
-        codebars = codebars
+        codebars = codebars,
+        cardCode=cardCode
     )

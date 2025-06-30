@@ -21,7 +21,7 @@ fun CustomFioriTextField(
     supportingText: @Composable (() -> Unit)? = null,
     enabled: Boolean = true,
     placeholder: String? = null,
-    style: TextStyle= MaterialTheme.typography.labelLarge,
+    textStyle: TextStyle= MaterialTheme.typography.labelLarge,
     fontWeight: FontWeight = FontWeight.Bold,
     singleLine: Boolean = true,
     leadingIcon: @Composable (() -> Unit)? = null,
@@ -33,7 +33,7 @@ fun CustomFioriTextField(
 
         value = value,
         onValueChange = onValueChange,
-        label = { Text(label, style = style, fontWeight = fontWeight) },
+        label = { Text(label, style = textStyle, fontWeight = fontWeight) },
         placeholder = placeholder?.let { { Text(it) } },
         modifier = modifier,
         singleLine = singleLine,
@@ -51,11 +51,11 @@ fun CustomFioriTextField(
             unfocusedContainerColor = MaterialTheme.colorScheme.surface,
             errorContainerColor = MaterialTheme.colorScheme.surface
         ),
-        textStyle = style,
+        textStyle = textStyle,
         leadingIcon = leadingIcon,
         trailingIcon= trailingIcon,
         readOnly=readOnly,
         keyboardOptions = if (isOnlyNumber) KeyboardOptions(keyboardType = KeyboardType.Decimal) else KeyboardOptions.Default,
-
-        )
+        shape = MaterialTheme.shapes.medium
+    )
 }

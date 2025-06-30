@@ -38,6 +38,10 @@ interface PrintOcrdDao {
     @Query("SELECT * FROM p_ocrd WHERE cardName = :name")
     suspend fun findByName(name: String): POcrdEntity?
 
+    // Obtener uno por código
+    @Query("SELECT * FROM p_ocrd WHERE cardCode = :code")
+    suspend fun findByCode(code: String): POcrdEntity?
+
     // Actualizar un registro
     @Update
     suspend fun actualizar(socio: POcrdEntity)

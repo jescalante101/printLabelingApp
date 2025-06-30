@@ -82,12 +82,12 @@ fun PrintIncScreen(
             }
         }
 
-        viewModel.message.collect { error ->
-            when(error){
-                "successPrint"->snackbarHostState.showSnackbar("Etiqueta Impresa")
-                else->snackbarHostState.showSnackbar(error)
-            }
-        }
+//        viewModel.message.collect { error ->
+//            when(error){
+//                "successPrint"->snackbarHostState.showSnackbar("Etiqueta Impresa")
+//                else->snackbarHostState.showSnackbar(error)
+//            }
+//        }
     }
 
     Scaffold(

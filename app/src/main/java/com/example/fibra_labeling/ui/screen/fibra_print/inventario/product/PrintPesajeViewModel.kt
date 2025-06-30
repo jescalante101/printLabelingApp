@@ -1,13 +1,10 @@
-package com.example.fibra_labeling.ui.screen.fibra_print.etiqueta.products
+package com.example.fibra_labeling.ui.screen.fibra_print.inventario.product
 
-import androidx.compose.runtime.collectAsState
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.fibra_labeling.data.local.dao.fibraprint.PrintOitmDao
-import com.example.fibra_labeling.data.local.entity.fibrafil.FibOITMEntity
+import com.example.fibra_labeling.data.local.dao.fibraprint.PesajeDao
 import com.example.fibra_labeling.data.local.entity.fibraprint.POITMEntity
+import com.example.fibra_labeling.data.local.entity.fibraprint.PesajeEntity
 import com.example.fibra_labeling.datastore.UserLoginPreference
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,24 +12,22 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class PrintProductViewModel(
-    private val printOitmDao: PrintOitmDao
+class PrintPesajeViewModel(
+    private val pesajeDao: PesajeDao,
+    private val userLoginPreference: UserLoginPreference
 ): ViewModel() {
 
     val _filtro = MutableStateFlow<String>("")
     val filtro= _filtro.asStateFlow()
 
-    val _totalResult = MutableStateFlow<Int>(0)
-
 
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val productos: StateFlow<List<POITMEntity>> = _filtro
+    val productos: StateFlow<List<PesajeEntity>> = _filtro
         .flatMapLatest { filtroRaw ->
             // Limpiamos y obtenemos el primer término del usuario
             val term = filtroRaw.split("\\s+".toRegex())
@@ -48,14 +43,29 @@ class PrintProductViewModel(
                 // Si el término NO contiene '*', lo envolvemos con '%' para búsqueda "contiene"
                 "%$term%"
             }
-            printOitmDao.searchProduct(filter)
-                .catch { e ->
-                    _totalResult.value = 0
-                }
+
+            pesajeDao.searchPesaje(filter)
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+
+
     fun setFiltro(filtro: String) {
         _filtro.value = filtro
     }
+
+    fun updateUser(){
+        viewModelScope.launch {
+            userLoginPreference.saveUserLogin("", name = "", docEntry = "")
+        }
+
+    }
+
+//    fun findByCodeBar(){
+//        viewModelScope.launch {
+//            val productos = pesajeDao.getById(filtro.value)
+//
+//        }
+//    }
 
 }

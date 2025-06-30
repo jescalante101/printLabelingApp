@@ -18,6 +18,10 @@ interface PrintIncDao {
     @Query("SELECT * FROM p_inc WHERE doc_entry = :docEntry")
     suspend fun getByDocEntry(docEntry: Int): List<PIncEntity>
 
+    // find by codebar
+    @Query("SELECT * FROM p_inc WHERE u_codeBar = :codeBar")
+    suspend fun getByCodeBar(codeBar: String): PIncEntity?
+
     @Query("""
         SELECT * FROM p_inc
         WHERE doc_entry = :docEntry and ( item_code LIKE '%' || :filter || '%'
@@ -35,4 +39,8 @@ interface PrintIncDao {
     //Update
     @Update
     suspend fun update(printInc: PIncEntity)
+
+    // update isSync  by docEntry
+    @Query("UPDATE p_inc SET isSynced = 1 WHERE doc_entry = :docEntry")
+    suspend fun updateIsSync( docEntry: Int)
 }

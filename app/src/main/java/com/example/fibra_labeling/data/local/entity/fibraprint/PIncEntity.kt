@@ -1,10 +1,8 @@
 package com.example.fibra_labeling.data.local.entity.fibraprint
 
-import android.R
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-
 @Entity(tableName = "p_inc")
 data class PIncEntity(
     @PrimaryKey(autoGenerate = true)

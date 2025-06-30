@@ -9,13 +9,21 @@ import com.example.fibra_labeling.data.local.dao.fibraprint.PrintOwhsDao
 import com.example.fibra_labeling.data.local.entity.fibraprint.PIncEntity
 import com.example.fibra_labeling.data.local.entity.fibraprint.POcrdEntity
 import com.example.fibra_labeling.data.local.entity.fibraprint.POwhsEntity
+import com.example.fibra_labeling.data.local.entity.fibraprint.PesajeEntity
 import com.example.fibra_labeling.datastore.UserLoginPreference
 import com.example.fibra_labeling.ui.screen.fibra_print.inventario.details.register.form.DetailsFormState
 import com.example.fibra_labeling.ui.util.generateStringCodeBar
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -28,6 +36,15 @@ class PrintRegisterIncDetailsViewModel(
 ): ViewModel() {
     private val _formState = MutableStateFlow(DetailsFormState())
     val formState: StateFlow<DetailsFormState> = _formState.asStateFlow()
+
+    val _filterProveedor= MutableStateFlow<String?>(null)
+    val _filterAlmacen= MutableStateFlow<String?>(null)
+
+    val _loading = MutableStateFlow(false)
+    val loading: StateFlow<Boolean> = _loading.asStateFlow()
+
+    private val _eventoNavegacion = MutableSharedFlow<String>()
+    val eventoNavegacion = _eventoNavegacion.asSharedFlow()
 
     fun onObservacionChange(newObservacion: String) {
         _formState.update { currentState ->
@@ -73,79 +90,159 @@ class PrintRegisterIncDetailsViewModel(
         }
     }
 
-    // Funciones para los botones de conteo
-    fun incrementarConteo() {
+    fun onChangeMetroL(metro: String){
         _formState.update { currentState ->
-            val currentCount = currentState.conteo.toIntOrNull() ?: 0
-            currentState.copy(conteo = (currentCount + 1).toString())
+            currentState.copy(metroLineal = metro)
+
         }
     }
 
-    fun decrementarConteo() {
+    fun onChangeUnidad(unidad: String) {
         _formState.update { currentState ->
-            val currentCount = currentState.conteo.toIntOrNull() ?: 0
-            if (currentCount > 0) {
-                currentState.copy(conteo = (currentCount - 1).toString())
-            } else {
-                currentState
+            currentState.copy(unidad = unidad)
+        }
+    }
+        // Funciones para los botones de conteo
+        fun incrementarConteo() {
+            _formState.update { currentState ->
+                val currentCount = currentState.conteo.toIntOrNull() ?: 0
+                currentState.copy(conteo = (currentCount + 1).toString())
             }
         }
-    }
 
-    fun setCodeBar(codeBar: String){
-        _formState.update { currentState ->
-            currentState.copy(codeBar = codeBar)
-        }
-    }
-
-    fun resetForm() {
-        _formState.value = DetailsFormState()
-    }
-
-    ///Init
-    init {
-        loadData()
-    }
-    ///
-    private fun loadData(){
-        viewModelScope.launch {
-            val codeBar = _formState.value.codeBar
-            val pesaje= pesajeDao.getById(codeBar)
-            if(pesaje == null){
-                return@launch
+        fun decrementarConteo() {
+            _formState.update { currentState ->
+                val currentCount = currentState.conteo.toIntOrNull() ?: 0
+                if (currentCount > 0) {
+                    currentState.copy(conteo = (currentCount - 1).toString())
+                } else {
+                    currentState
+                }
             }
-            val almacen=owhsDao.findByName(pesaje.almacen!!.trim())
-            val proveedor=ocrDao.findByName(pesaje.proveedor!!.trim())
+        }
 
-            setAlmacen(almacen!!)
-            setProveedor(proveedor!!)
+        fun setCodeBar(codeBar: String) {
+            _formState.update { currentState ->
+                currentState.copy(codeBar = codeBar)
+            }
+        }
 
+        fun resetForm() {
+            _formState.value = DetailsFormState()
+        }
+
+        fun setFilter(filter: String) {
+            _filterProveedor.value = filter
+        }
+
+        fun setFilterAlmacen(filter: String) {
+            _filterAlmacen.value = filter
+        }
+
+    fun setPesaje(pesaje: PesajeEntity){
+        _formState.update { currentState ->
+            currentState.copy(pesaje = pesaje)
+        }
+    }
+    fun setInc(inc: PIncEntity){
+        _formState.update { currentState ->
+            currentState.copy(inc = inc)
         }
     }
 
-    fun saveInc(){
-        viewModelScope.launch {
-            val docEntry = userLoginPreference.docEntry.firstOrNull()
-
-            val diference = 0.0.minus(formState.value.conteo.toDoubleOrNull() ?: 0.0)
-
-            val inc= PIncEntity(
-                docEntry = docEntry?.toLong() ?: 0,
-                itemCode = formState.value.codigo,
-                itemName = formState.value.nombreProducto,
-                whsCode = formState.value.almacen?.whsCode ?:"",
-                inWhsQty = 0.0,
-                countQty = formState.value.conteo.toDoubleOrNull() ?: 0.0,
-                difference = diference,
-                binLocation = formState.value.pesaje?.ubicacion,
-                uarea = formState.value.pesaje?.u_area,
-                codeBar = _formState.value.codeBar,
-
+        @OptIn(ExperimentalCoroutinesApi::class)
+        val allAlmacenes: StateFlow<List<POwhsEntity>> = _filterAlmacen
+            .flatMapLatest { query ->
+                owhsDao.buscarPorCodigoONombre(filtro = query ?: "")
+            }
+            .stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(5000),
+                emptyList()
             )
-            printIncDao.insert(inc)
 
-            resetForm()
+        ///Init
+
+        ///
+        fun loadData() {
+            viewModelScope.launch {
+                val codeBar = _formState.value.codeBar
+
+                val pesaje = pesajeDao.getById(codeBar)
+
+                val inc = printIncDao.getByCodeBar(codeBar)
+
+                if (pesaje == null) {
+                    return@launch
+                }
+
+
+                val almacen = owhsDao.findByName(pesaje?.almacen!!.trim())
+                val proveedor = ocrDao.findByName(pesaje.proveedor!!.trim())
+
+                onChangeUnidad("${pesaje.unidad}")
+                setAlmacen(almacen!!)
+                setProveedor(proveedor!!)
+                setPesaje(pesaje)
+                if(inc!=null){
+                    setInc(inc)
+                }
+
+            }
         }
-    }
+
+        fun saveInc() {
+            viewModelScope.launch {
+                _loading.value=true
+                val docEntry = userLoginPreference.docEntry.firstOrNull()
+
+                val diference = 0.0.minus(formState.value.conteo.toDoubleOrNull() ?: 0.0)
+                var inc= formState.value.inc
+                if (inc!=null){
+                    inc = inc.copy(
+                        itemCode = formState.value.codigo,
+                        itemName = formState.value.nombreProducto,
+                        whsCode = formState.value.almacen?.whsCode ?: "",
+                        inWhsQty = 0.0,
+                        countQty = formState.value.conteo.toDoubleOrNull() ?: 0.0,
+                        difference = diference,
+                        binLocation = formState.value.pesaje?.ubicacion,
+                        uarea = formState.value.pesaje?.u_area,
+                        codeBar = _formState.value.codeBar,
+                        ref2 = _formState.value.unidad,
+                        ref1 = _formState.value.observacion
+                    )
+                    printIncDao.update(inc)
+
+                }else{
+                    val newInc = PIncEntity(
+                        docEntry = docEntry!!.toLong(),
+                        itemCode = formState.value.codigo,
+                        itemName = formState.value.nombreProducto,
+                        whsCode = formState.value.almacen?.whsCode ?: "",
+                        inWhsQty = 0.0,
+                        countQty = formState.value.conteo.toDoubleOrNull() ?: 0.0,
+                        difference = diference,
+                        binLocation = formState.value.pesaje?.ubicacion,
+                        uarea = formState.value.pesaje?.u_area,
+                        codeBar = _formState.value.codeBar,
+                        ref2 = _formState.value.unidad,
+                        ref1 = _formState.value.observacion
+                    )
+                    printIncDao.insert(newInc)
+                }
+                //Update Pesaje
+                val pesaje= formState.value.pesaje?.copy(
+                    metroLineal = formState.value.metroLineal,
+                    peso = formState.value.conteo.toDoubleOrNull() ?: 0.0
+                )
+                pesajeDao.update(pesaje!!)
+
+                delay(100)
+                resetForm()
+                _eventoNavegacion.emit("saved")
+                _loading.value=false
+            }
+        }
 
 }

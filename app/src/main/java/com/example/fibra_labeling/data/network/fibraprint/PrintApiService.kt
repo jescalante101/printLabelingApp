@@ -2,7 +2,7 @@ package com.example.fibra_labeling.data.network.fibraprint
 
 import com.example.fibra_labeling.data.model.AlmacenResponse
 import com.example.fibra_labeling.data.model.CodeBarRequest
-import com.example.fibra_labeling.data.model.ImobPasaje
+import com.example.fibra_labeling.data.model.ImobPesaje
 import com.example.fibra_labeling.data.model.IsPrintOnlineResponse
 import com.example.fibra_labeling.data.model.OITMData
 import com.example.fibra_labeling.data.model.OitmResponse
@@ -10,8 +10,10 @@ import com.example.fibra_labeling.data.model.PesajeRequest
 import com.example.fibra_labeling.data.model.PesajeResponse
 import com.example.fibra_labeling.data.model.PrintResponse
 import com.example.fibra_labeling.data.model.ProveedorResponse
+import com.example.fibra_labeling.data.model.fibrafil.OncInsertResponse
 import com.example.fibra_labeling.data.model.fibrafil.users.FilUserResponse
 import com.example.fibra_labeling.data.model.fibraprint.OcrdResponse
+import com.example.fibra_labeling.data.model.fibraprint.onicbody.OincFormatBody
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -22,7 +24,7 @@ interface PrintApiService {
 
 
     @GET("bycodebar/{codeBar}")
-    suspend fun getPesaje(@Path("codeBar") codeBar: String): ImobPasaje
+    suspend fun getPesaje(@Path("codeBar") codeBar: String): ImobPesaje
 
     @POST("print-etiqueta")
     suspend fun printPesaje(@Body codeBarValue: CodeBarRequest): PrintResponse
@@ -50,6 +52,13 @@ interface PrintApiService {
 
     @GET("fibraprint/users")
     suspend fun getUsers() : List<FilUserResponse>
+
+    @POST("fibraprint/insertar-cabecera-oinc")
+    suspend fun sendOincWithDetails(@Body oincRequest: OincFormatBody) : OncInsertResponse
+    
+    @POST("insertar-pesajes-en-bloque")
+    suspend fun sendPesajeEnBloque(@Body pesajes: List<PesajeRequest>): OncInsertResponse
+
 
 
 }
