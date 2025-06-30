@@ -54,22 +54,27 @@ class PSyncRepositoryImpl(
     }
 
     override suspend fun syncEtiquetaDetalle() {
-
         try {
-            val pesajes= pesajeDao.getPendingSync()
+            val pesajes = pesajeDao.getPendingSync()
             if (pesajes.isEmpty()) return
-            val response=api.sendPesajeEnBloque(pesajes.map { it.toPesajeRequest() })
 
-            if (response.success!!){
-                pesajeDao.updateSyncStatus(pesajes.map { it.id })
+            val batchSize = 20
+            val batches = pesajes.chunked(batchSize)
+
+            for (batch in batches) {
+                val response = api.sendPesajeEnBloque(batch.map { it.toPesajeRequest() })
+
+                if (response.success == true) {
+                    pesajeDao.updateSyncStatus(batch.map { it.id })
+                } else {
+                     throw Exception("Error al sincronizar lote: ${response.message}")
+                }
             }
-        }catch (e:Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
             throw e
         }
-
     }
-
     override suspend fun sycOinc(docEntry: Long): OncInsertResponse {
         try {
             val oincWithDetalles = printOincDao.getOincWithDetailsByDocEntry(docEntry)

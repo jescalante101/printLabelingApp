@@ -5,8 +5,11 @@ import androidx.lifecycle.viewModelScope
 import com.example.fibra_labeling.data.local.dao.fibraprint.PrintOincDao
 import com.example.fibra_labeling.data.local.entity.fibraprint.POincEntity
 import com.example.fibra_labeling.data.local.entity.fibraprint.POincWithDetails
+import com.example.fibra_labeling.data.remote.fibrafil.SyncRepository
+import com.example.fibra_labeling.data.remote.fibraprint.PSyncRepository
 import com.example.fibra_labeling.datastore.UserLoginPreference
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -17,7 +20,8 @@ import kotlinx.coroutines.launch
 
 class PrintOncViewModel(
     private val oincDao: PrintOincDao,
-    private val userLoginPreference: UserLoginPreference
+    private val userLoginPreference: UserLoginPreference,
+    private val syncRepository: PSyncRepository
 ): ViewModel() {
     private val _searchUser = MutableStateFlow<String?>(null)
     fun onSearch(query: String){
@@ -52,6 +56,42 @@ class PrintOncViewModel(
         viewModelScope.launch {
             oincDao.eliminar(oinc.header)
             oincDao.deletePOincDetails(oinc.details)
+        }
+    }
+
+    fun syncData(docEntry: Long){
+        viewModelScope.launch {
+            _loading.value = true
+            try {
+                val response = syncRepository.sycOinc(docEntry)
+                if (response.success==true) {
+                    _syncMessage.value = response.message
+                    _loading.value = false
+
+                    delay(150)
+                    syncPesaje()
+
+                } else {
+                    _syncMessage.value = "Error en la sincronización: ${response.message}"
+                    _loading.value = false
+                }
+
+
+
+            }catch (e: Exception){
+                _syncMessage.value = "Error al sincronizar: ${e.message}"
+                _loading.value = false
+            }
+        }
+    }
+
+    private fun syncPesaje(){
+        viewModelScope.launch {
+           try {
+               syncRepository.syncEtiquetaDetalle()
+           }catch (e: Exception){
+               _syncMessage.value = "Error al sincronizar: ${e.message}"
+           }
         }
     }
 

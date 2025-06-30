@@ -35,11 +35,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.fibra_labeling.R
 import com.example.fibra_labeling.data.local.entity.fibrafil.FibOincEntity
+import com.example.fibra_labeling.data.local.entity.fibraprint.POincEntity
 import com.example.fibra_labeling.ui.screen.component.CustomEmptyMessage
 import com.example.fibra_labeling.ui.screen.component.CustomSearch
 import com.example.fibra_labeling.ui.screen.component.CustomSwipeableItem
 import com.example.fibra_labeling.ui.screen.fibra_print.inventario.component.PrintFioriCardConteoCompact
 import com.example.fibra_labeling.ui.screen.fibra_print.inventario.register.PrintOncRegister
+import com.example.fibra_labeling.ui.screen.fibrafil.inventario.component.ConfirmSyncDialog
 import com.example.fibra_labeling.ui.theme.FioriBackground
 import org.koin.androidx.compose.koinViewModel
 
@@ -59,6 +61,7 @@ fun PrintOncScreen(
     val loading by viewModel.loading.collectAsState()
     val allUser by viewModel.allUsers.collectAsState()
     val syncMessage by viewModel.syncMessage.collectAsState()
+    var itemToSync by remember { mutableStateOf<POincEntity?>(null) }
 
     LaunchedEffect(loading) {
         if (!loading) {
@@ -71,8 +74,8 @@ fun PrintOncScreen(
         }
     }
 
-    fun onConfirmSync(dto: FibOincEntity) {
-        viewModel.syncEtiquetaEncabezado(dto.docEntry)
+    fun onConfirmSync(dto: POincEntity) {
+        viewModel.syncData(dto.docEntry)
     }
 
     fun onDismissDialog() {
@@ -190,8 +193,8 @@ fun PrintOncScreen(
                                 },
 
                                 onSyncClick = {
-                                    //showDialog = true
-                                    //itemToSync = inc.cabecera
+                                    showDialog = true
+                                    itemToSync = oinc.header
                                 },
 
                                 onClick = { oinc->
@@ -217,6 +220,19 @@ fun PrintOncScreen(
         }
 
     }
+
+    if (showDialog) {
+        ConfirmSyncDialog(
+            isVisible = showDialog,
+            onConfirm = {
+                itemToSync?.let {
+                    onConfirmSync(it)
+                }
+            },
+            onDismiss = { onDismissDialog() }
+        )
+    }
+
 
     // Bottom sheet para el registro
     PrintOncRegister (
