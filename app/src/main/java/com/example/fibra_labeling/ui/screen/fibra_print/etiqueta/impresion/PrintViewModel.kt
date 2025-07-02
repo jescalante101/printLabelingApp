@@ -3,15 +3,21 @@ package com.example.fibra_labeling.ui.screen.fibra_print.etiqueta.impresion
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.fibra_labeling.data.local.dao.fibrafil.ZplLabelDao
 import com.example.fibra_labeling.data.local.dao.fibraprint.PesajeDao
 import com.example.fibra_labeling.data.local.entity.fibraprint.PesajeEntity
 import com.example.fibra_labeling.data.local.mapper.fibraprint.toImobPesaje
+import com.example.fibra_labeling.data.local.mapper.fibraprint.toMap
 import com.example.fibra_labeling.data.local.mapper.fibraprint.toOitmData
 import com.example.fibra_labeling.data.model.CodeBarRequest
 import com.example.fibra_labeling.data.model.ImobPesaje
 import com.example.fibra_labeling.data.model.PrintResponse
+import com.example.fibra_labeling.data.model.fibrafil.ZplPrintRequest
 import com.example.fibra_labeling.data.remote.PesajeRepository
+import com.example.fibra_labeling.data.remote.fibrafil.FillRepository
+import com.example.fibra_labeling.data.utils.ZplTemplateMapper
 import com.example.fibra_labeling.datastore.ImpresoraPreferences
+import com.example.fibra_labeling.datastore.UserLoginPreference
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,7 +30,10 @@ const val BARCODE_SCAN_RESULT_KEY = "barcode_scan_result"
 class PrintViewModel(
     private val pesajeRepository: PesajeRepository,
     private val impresoraPrefs: ImpresoraPreferences,
-    private val pesajeDao: PesajeDao
+    private val pesajeDao: PesajeDao,
+    private val userLoginPreference: UserLoginPreference,
+    private val zplLabelDao: ZplLabelDao,
+    private val fillRepository: FillRepository
 ): ViewModel() {
     // Estado de resultado de la consulta
     private val _pesajeResult = MutableStateFlow<Result<ImobPesaje>>(
@@ -49,6 +58,12 @@ class PrintViewModel(
             updateDate = ""
         ))
     )
+
+    init {
+        viewModelScope.launch {
+            userLoginPreference.saveUserLogin("","","")
+        }
+    }
     val pesajeResult: StateFlow<Result<ImobPesaje>> = _pesajeResult
 
     private val _lastScannedBarcode = MutableStateFlow<String?>("")
@@ -76,6 +91,10 @@ class PrintViewModel(
 
     private val _eventoNavegacion = MutableSharedFlow<String>() // O usa un sealed class para destinos
     val eventoNavegacion = _eventoNavegacion.asSharedFlow()
+
+    private val _printMessage = MutableSharedFlow<String>() // O usa un sealed class para destinos
+    val printMessage = _printMessage.asSharedFlow()
+
 
 
     // Función para obtener el pesaje desde el repo
@@ -109,7 +128,7 @@ class PrintViewModel(
     private fun inserPesaje(imobPesaje: ImobPesaje){
         val pesaje= PesajeEntity(
             peso = imobPesaje.peso ?: 0.0,
-            fecha = imobPesaje.createDate,
+            fecha = imobPesaje.createDate ?: "",
             codigoBarra = imobPesaje.codeBar,
             almacen = imobPesaje.almacen,
             usuario = imobPesaje.userCreate,
@@ -130,6 +149,7 @@ class PrintViewModel(
     }
 
     fun printPesaje(codeBar: String) {
+
         viewModelScope.launch {
 
             _isPrintLoading.value = true
@@ -143,22 +163,44 @@ class PrintViewModel(
                 return@launch
             }
 
+            val zpl=zplLabelDao.getSelectedLabel()
+
+            if (zpl==null){
+                _eventoNavegacion.emit("zplSetting")
+                _loading.value=false
+                return@launch
+            }
+
+            val etiqueta = pesajeDao.getById( codeBar)
+
+            val data= etiqueta?.toMap()
+
+            val zplContentLocal= ZplTemplateMapper.mapCustomTemplate(
+                zpl.zplFile,
+                data!!
+            )
+            val dataBody= ZplPrintRequest(
+                ip=ip,
+                port=puerto.toInt(),
+                zplContent = zplContentLocal
+            )
+
+            fillRepository.filCustomPrintZpl(
+                dataBody
+            ).catch {e->
+                Log.e("Error", e.message.toString());
+               _printMessage.emit("PrintError")
+                _isPrintLoading.value = false
+            }.collect {
+                _eventoNavegacion.emit("successPrint")
+                _printMessage.emit("successPrint")
+                _isPrintLoading.value = false
+            }
 
 
-            val codeBarValue = CodeBarRequest(codeBar,ip,puerto.toInt())
-
-            pesajeRepository.printPesaje(codeBarValue)
-                .catch { e ->
-                    _printResult.value = Result.failure(e)
-                    _isPrintLoading.value = false
-                }
-                .collect {
-
-                    Log.e("PRINT",it.toString())
-                    _printResult.value = Result.success(it)
-                    _isPrintLoading.value = false
-                }
         }
+
+
 
 
     }

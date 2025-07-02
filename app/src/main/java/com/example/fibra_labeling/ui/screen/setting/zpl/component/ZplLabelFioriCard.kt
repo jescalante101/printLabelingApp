@@ -4,6 +4,7 @@ import androidx.compose.material3.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
@@ -22,7 +23,8 @@ fun ZplLabelFioriCard(
     label: ZplLabel,
     onEdit: (ZplLabel) -> Unit,
     onDelete: (ZplLabel) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onSelected: (ZplLabel) -> Unit
 ) {
     Card(
         shape = RoundedCornerShape(16.dp),
@@ -32,6 +34,12 @@ fun ZplLabelFioriCard(
             .padding(vertical = 6.dp, horizontal = 12.dp)
             .fillMaxWidth()
             .clickable { onEdit(label) }
+            .selectable(
+                selected = label.selected,
+                onClick = { onSelected(label) }
+            )
+        ,
+
     ) {
         Column(
             Modifier
@@ -108,6 +116,7 @@ fun PreviewCardZpl(){
             zplFile = "Código ZPL de la etiqueta"
         ),
         onEdit = {},
-        onDelete = {}
+        onDelete = {},
+        onSelected = {}
     )
 }

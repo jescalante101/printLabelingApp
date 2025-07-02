@@ -7,10 +7,14 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -19,6 +23,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -46,6 +51,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
+import com.example.fibra_labeling.ui.screen.component.CustomEmptyMessage
 import com.example.fibra_labeling.ui.screen.setting.printer.form.isFormValid
 import com.example.fibra_labeling.ui.theme.Fibra_labelingTheme
 import org.koin.androidx.compose.koinViewModel
@@ -54,7 +61,8 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun PrintSettingScreen(
     onBack: () -> Unit,
-    viewModel: PrinterSettingScreenViewModel = koinViewModel()
+    viewModel: PrinterSettingScreenViewModel = koinViewModel(),
+    onNavigateTozplTemplate: () -> Unit,
 ) {
     val formState = viewModel.formState
     val errorState = viewModel.errorState
@@ -99,179 +107,216 @@ fun PrintSettingScreen(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         containerColor = background
     ) { innerPadding ->
-        Column(
+        LazyColumn (
             modifier = Modifier
                 .fillMaxSize()
                 .padding(18.dp)
                 .padding(innerPadding),
+                //.verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.Top
         ) {
             // Card para toda la sección de datos (estilo Fiori)
-            Card (
-                shape = RoundedCornerShape(18.dp),
-                colors = CardDefaults.cardColors(containerColor = sectionCard),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp)
-            ) {
-                Column(Modifier.padding(24.dp)) {
-                    Text("Datos de conexión", color = accentBlue, fontWeight = FontWeight.Bold)
-                    Spacer(Modifier.height(12.dp))
+            item {
+                Card (
+                    shape = RoundedCornerShape(18.dp),
+                    colors = CardDefaults.cardColors(containerColor = sectionCard),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp)
+                ) {
+                    Column(Modifier.padding(24.dp)) {
+                        Text("Datos de conexión", color = accentBlue, fontWeight = FontWeight.Bold)
+                        Spacer(Modifier.height(12.dp))
 
-                    OutlinedTextField(
-                        value = formState.printerName,
-                        onValueChange = viewModel::onPrinterNameChange,
-                        label = { Text("Nombre de la impresora") },
-                        isError = errorState.printerNameError != null,
-                        singleLine = true,
-                        modifier = Modifier.fillMaxWidth(),
-                        placeholder = { Text("Ej: Zebra ZT230") }
-                    )
-                    errorState.printerNameError?.let {
-                        Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.labelMedium)
-                    }
+                        OutlinedTextField(
+                            value = formState.printerName,
+                            onValueChange = viewModel::onPrinterNameChange,
+                            label = { Text("Nombre de la impresora") },
+                            isError = errorState.printerNameError != null,
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth(),
+                            placeholder = { Text("Ej: Zebra ZT230") }
+                        )
+                        errorState.printerNameError?.let {
+                            Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.labelMedium)
+                        }
 
-                    Spacer(Modifier.height(18.dp))
+                        Spacer(Modifier.height(18.dp))
 
-                    OutlinedTextField(
-                        value = formState.ip,
-                        onValueChange = viewModel::onIpChange,
-                        label = { Text("Dirección IP de la impresora") },
-                        isError = errorState.ipError != null,
-                        singleLine = true,
-                        modifier = Modifier.fillMaxWidth(),
-                        placeholder = { Text("Ej: 192.168.1.150") }
-                    )
-                    errorState.ipError?.let {
-                        Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.labelMedium)
-                    }
+                        OutlinedTextField(
+                            value = formState.ip,
+                            onValueChange = viewModel::onIpChange,
+                            label = { Text("Dirección IP de la impresora") },
+                            isError = errorState.ipError != null,
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth(),
+                            placeholder = { Text("Ej: 192.168.1.150") }
+                        )
+                        errorState.ipError?.let {
+                            Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.labelMedium)
+                        }
 
-                    Spacer(Modifier.height(18.dp))
+                        Spacer(Modifier.height(18.dp))
 
-                    OutlinedTextField(
-                        value = formState.port,
-                        onValueChange = viewModel::onPortChange,
-                        label = { Text("Puerto") },
-                        isError = errorState.portError != null,
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        modifier = Modifier.fillMaxWidth(),
-                        placeholder = { Text("9100") }
-                    )
-                    errorState.portError?.let {
-                        Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.labelMedium)
+                        OutlinedTextField(
+                            value = formState.port,
+                            onValueChange = viewModel::onPortChange,
+                            label = { Text("Puerto") },
+                            isError = errorState.portError != null,
+                            singleLine = true,
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            modifier = Modifier.fillMaxWidth(),
+                            placeholder = { Text("9100") }
+                        )
+                        errorState.portError?.let {
+                            Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.labelMedium)
+                        }
                     }
                 }
             }
 
-            Spacer(Modifier.height(18.dp))
+            item {
+                Spacer(Modifier.height(18.dp))
+            }
 
             // Card separada para sección de plantilla ZPL (al estilo Fiori)
-            Card(
-                shape = RoundedCornerShape(18.dp),
-                colors = CardDefaults.cardColors(containerColor = sectionCard),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp)
-            ) {
-                Column(Modifier.padding(24.dp)) {
-                    Text("Plantilla de etiqueta", color = accentBlue, fontWeight = FontWeight.Bold)
-                    Spacer(Modifier.height(10.dp))
+            item {
+                Card(
+                    shape = RoundedCornerShape(18.dp),
+                    colors = CardDefaults.cardColors(containerColor = sectionCard),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp)
+                ) {
+                    Column(Modifier.padding(24.dp)) {
+                        Text("Plantilla de etiqueta", color = accentBlue, fontWeight = FontWeight.Bold)
+                        Spacer(Modifier.height(10.dp))
 
-                    // Combo Fiori style
-                    ExposedDropdownMenuBox(
-                        expanded = expanded,
-                        onExpandedChange = { expanded = !expanded }
-                    ) {
-                        OutlinedTextField(
-                            readOnly = true,
-                            value = selectedLabel?.name ?: "Selecciona una plantilla",
-                            onValueChange = {},
-                            label = { Text("Plantilla ZPL") },
-                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
-                            modifier = Modifier
-                                .menuAnchor()
-                                .fillMaxWidth(),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = accentBlue,
-                                unfocusedBorderColor = Color(0xFFB0BEC5),
-                                cursorColor = accentBlue
-                            )
-                        )
-                        ExposedDropdownMenu(
-                            expanded = expanded,
-                            onDismissRequest = { expanded = false }
-                        ) {
-                            zplLabels.forEach { label ->
-                                DropdownMenuItem(
-                                    text = { Text(label.name) },
-                                    onClick = {
-                                        viewModel.onLabelSelected(label.id)
-                                        expanded = false
-                                    },
-                                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                        // Combo Fiori style
+                        if (zplLabels.isNotEmpty()){
+                            ExposedDropdownMenuBox(
+                                expanded = expanded,
+                                onExpandedChange = { expanded = !expanded }
+                            ) {
+                                OutlinedTextField(
+                                    readOnly = true,
+                                    value = selectedLabel?.name ?: "Selecciona una plantilla",
+                                    onValueChange = {},
+                                    label = { Text("Plantilla ZPL") },
+                                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
+                                    modifier = Modifier
+                                        .menuAnchor()
+                                        .fillMaxWidth(),
+                                    colors = OutlinedTextFieldDefaults.colors(
+                                        focusedBorderColor = accentBlue,
+                                        unfocusedBorderColor = Color(0xFFB0BEC5),
+                                        cursorColor = accentBlue
+                                    )
                                 )
+                                ExposedDropdownMenu(
+                                    expanded = expanded,
+                                    onDismissRequest = { expanded = false }
+                                ) {
+                                    zplLabels.forEach { label ->
+                                        DropdownMenuItem(
+                                            text = { Text(label.name) },
+                                            onClick = {
+                                                viewModel.onLabelSelected(label.id)
+                                                expanded = false
+                                            },
+                                            contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                                        )
+                                    }
+                                }
+                            }
+                            // Preview SAP Fiori style
+                            selectedLabel?.let {
+                                Spacer(Modifier.height(10.dp))
+                                Text(
+                                    "Vista previa:",
+                                    color = Color(0xFF374151),
+                                    style = MaterialTheme.typography.labelMedium,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                                Surface(
+                                    color = Color(0xFFF5F7FA),
+                                    shape = RoundedCornerShape(12.dp),
+                                    tonalElevation = 1.dp,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 4.dp)
+                                ) {
+                                    Text(
+                                        it.zplFile.take(200) + if (it.zplFile.length > 200) "..." else "",
+                                        color = Color(0xFF5E6D7A),
+                                        style = MaterialTheme.typography.bodySmall,
+                                        modifier = Modifier.padding(12.dp)
+                                    )
+                                }
+                            }
+                        }else{
+                            Column(
+                                horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally,
+                                modifier = Modifier.fillMaxWidth().
+                                heightIn(min = 100.dp, max = 250.dp),
+                            ) {
+                                CustomEmptyMessage(
+                                    title = "No hay plantillas configuradas",
+                                    message = "Crea una plantilla en la sección de plantillas"
+                                )
+                                Spacer(Modifier.height(10.dp))
+                                // tonal icon button para navegar a la sección de plantillas
+                                FilledTonalButton(
+                                    onClick = { onNavigateTozplTemplate() },
+                                    colors = ButtonDefaults.filledTonalButtonColors(
+                                        containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
+                                    )
+                                ) {
+                                    Text("Ir", fontWeight = FontWeight.Bold)
+                                }
                             }
                         }
-                    }
-                    // Preview SAP Fiori style
-                    selectedLabel?.let {
-                        Spacer(Modifier.height(10.dp))
-                        Text(
-                            "Vista previa:",
-                            color = Color(0xFF374151),
-                            style = MaterialTheme.typography.labelMedium,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                        Surface(
-                            color = Color(0xFFF5F7FA),
-                            shape = RoundedCornerShape(12.dp),
-                            tonalElevation = 1.dp,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 4.dp)
-                        ) {
-                            Text(
-                                it.zplFile.take(200) + if (it.zplFile.length > 200) "..." else "",
-                                color = Color(0xFF5E6D7A),
-                                style = MaterialTheme.typography.bodySmall,
-                                modifier = Modifier.padding(12.dp)
-                            )
-                        }
+
                     }
                 }
             }
 
-            Spacer(Modifier.height(16.dp))
+           item {
+               Spacer(Modifier.height(16.dp))
+           }
 
             // Botones SAP Fiori style
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 6.dp),
-                horizontalArrangement = Arrangement.End
-            ) {
-                Button(
-                    onClick = { viewModel.probarConexion() },
-                    enabled = !loading,
-                    colors = ButtonDefaults.buttonColors(containerColor = accentBlue)
-                ) { Text("Probar conexión", color = Color.White) }
+            item {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 6.dp),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    Button(
+                        onClick = { viewModel.probarConexion() },
+                        enabled = !loading,
+                        colors = ButtonDefaults.buttonColors(containerColor = accentBlue)
+                    ) { Text("Probar conexión", color = Color.White) }
 
-                Spacer(Modifier.width(12.dp))
+                    Spacer(Modifier.width(12.dp))
 
-                Button(
-                    onClick = { viewModel.guardar() },
-                    enabled = isFormValid(errorState) && !loading,
-                    colors = ButtonDefaults.buttonColors(containerColor = accentBlue)
-                ) { Text("Guardar", color = Color.White) }
+                    Button(
+                        onClick = { viewModel.guardar() },
+                        enabled = isFormValid(errorState) && !loading,
+                        colors = ButtonDefaults.buttonColors(containerColor = accentBlue)
+                    ) { Text("Guardar", color = Color.White) }
+                }
             }
 
-            if (loading) {
-                Spacer(Modifier.height(18.dp))
-                LinearProgressIndicator(
-                    modifier = Modifier.fillMaxWidth(),
-                    color = accentBlue
-                )
+            item {
+                if (loading) {
+                    Spacer(Modifier.height(18.dp))
+                    LinearProgressIndicator(
+                        modifier = Modifier.fillMaxWidth(),
+                        color = accentBlue
+                    )
+                }
             }
         }
     }
@@ -282,7 +327,8 @@ fun PrintSettingScreen(
 fun PreviewSetting(){
     Fibra_labelingTheme {
         PrintSettingScreen(
-            onBack = {}
+            onBack = {},
+            onNavigateTozplTemplate = {}
         )
     }
 }

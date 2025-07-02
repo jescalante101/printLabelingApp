@@ -1,5 +1,6 @@
 package com.example.fibra_labeling.data.model
 
+import com.example.fibra_labeling.data.local.entity.fibraprint.PesajeEntity
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -36,7 +37,7 @@ data class ImobPesaje(
     val metroLineal: String,
 
     @SerialName("equivalente")
-    val equivalente: String,
+    val equivalente: String?="",
 
     @SerialName("peso")
     val peso: Double? = 0.0,
@@ -45,10 +46,10 @@ data class ImobPesaje(
     val codeBar: String,
 
     @SerialName("userCreate")
-    val userCreate: String,
+    val userCreate: String?="",
 
     @SerialName("createDate")
-    val createDate: String,
+    val createDate: String?="",
 
     @SerialName("status")
     val status: String? = "",
@@ -62,3 +63,23 @@ data class ImobPesaje(
     @SerialName("area")
     val area: String? =""
 )
+
+
+fun ImobPesaje.toEntity(): PesajeEntity {
+    return PesajeEntity(
+        codigo = this.itemCode,
+        nombre = this.name,
+        proveedor = this.proveedor,
+        lote = this.lote,
+        almacen = this.almacen,
+        ubicacion = this.ubicacion,
+        piso = this.piso,
+        metroLineal = this.metroLineal,
+        peso = peso ?:0.0,
+        codigoBarra = this.codeBar,
+        usuario = this.userCreate,
+        fecha = this.createDate ?: "",
+        unidad = "",
+        u_area = this.area
+    )
+}

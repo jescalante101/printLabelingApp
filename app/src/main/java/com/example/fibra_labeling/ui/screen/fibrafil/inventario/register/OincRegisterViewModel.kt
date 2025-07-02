@@ -8,6 +8,7 @@ import com.example.fibra_labeling.data.local.entity.fibrafil.FilUserEntity
 import com.example.fibra_labeling.data.local.repository.fibrafil.oinc.FibOincRepository
 import com.example.fibra_labeling.data.local.repository.fibrafil.user.FUserRepository
 import com.example.fibra_labeling.ui.screen.fibrafil.inventario.register.form.OncForm
+import com.example.fibra_labeling.ui.util.getLocalDateNow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -84,14 +85,14 @@ class OincRegisterViewModel(private val fUserRepository: FUserRepository,private
             val dateFormate= DateTimeFormatter.ofPattern("dd-MM-yyyy")
             val now= LocalDateTime.now()
             val oinc = FibOincEntity(
-                u_CountDate = now.format(dateFormate),
+                u_CountDate = getLocalDateNow,
                 u_Ref = formState.value.referencia,
                 u_Remarks = formState.value.remarks,
                 u_StartTime =now.format(hoursFormatter),
                 u_UserNameCount = formState.value.usuario?.uNAME,
                 u_userCodeCount = formState.value.usuario?.useRCODE
             )
-            var isInsert= fibOincRepository.insert(oinc)
+            val isInsert= fibOincRepository.insert(oinc)
             if(isInsert>0){
                 _eventoNavegacion.emit("inventory")
             }else{

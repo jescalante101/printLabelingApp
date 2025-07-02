@@ -59,6 +59,8 @@ interface PrintApiService {
     @POST("insertar-pesajes-en-bloque")
     suspend fun sendPesajeEnBloque(@Body pesajes: List<PesajeRequest>): OncInsertResponse
 
+    @GET("fibraprint/pesajes")
+    suspend fun getPesajes():List<ImobPesaje>
 
 
 }

@@ -13,6 +13,7 @@ import com.example.fibra_labeling.data.local.mapper.fibraprint.toEntity
 
 import com.example.fibra_labeling.data.model.fibrafil.OncInsertResponse
 import com.example.fibra_labeling.data.model.fibraprint.onicbody.toApiResponse
+import com.example.fibra_labeling.data.model.toEntity
 import com.example.fibra_labeling.data.model.toPesajeRequest
 import com.example.fibra_labeling.data.network.fibraprint.PrintApiService
 import java.io.IOException
@@ -79,6 +80,7 @@ class PSyncRepositoryImpl(
         try {
             val oincWithDetalles = printOincDao.getOincWithDetailsByDocEntry(docEntry)
                 ?.toApiResponse()
+
             Log.e("Error syncOincWithDocEntry ",oincWithDetalles.toString())
             if (oincWithDetalles==null){
                 return OncInsertResponse(
@@ -87,12 +89,13 @@ class PSyncRepositoryImpl(
                     success = false
                 )
             }
+
             val response = api.sendOincWithDetails(oincWithDetalles)
             Log.e("Error syncOincWithDocEntry ",response.toString())
             if (response.success!!) {
                 val fechaSync = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(
                     Date())
-                printOincDao.actualizarPorDocEntry(docEntry, response.data?.docNum!!,fechaSync)
+                printOincDao.actualizarPorDocEntry(docEntry, fechaSync,response.data?.docNum!!)
                 printincDao.updateIsSync(docEntry.toInt())
             }
             return response
@@ -133,6 +136,17 @@ class PSyncRepositoryImpl(
             if (proveedor.isNotEmpty()) ocrdDao.eliminarTodos()
             ocrdDao.insertarLista(proveedor.map { it.toEntity() })
 
+        }catch (e:Exception){
+            e.printStackTrace()
+            throw e
+        }
+    }
+
+    override suspend fun syncPesajes() {
+        try{
+            val pesajes = api.getPesajes()
+            if (pesajes.isNotEmpty()) pesajeDao.deleteAll()
+            pesajeDao.insertAll(pesajes.map { it.toEntity().copy(isSynced = true) })
         }catch (e:Exception){
             e.printStackTrace()
             throw e

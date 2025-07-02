@@ -24,9 +24,9 @@ interface PrintIncDao {
 
     @Query("""
         SELECT * FROM p_inc
-        WHERE doc_entry = :docEntry and ( item_code LIKE '%' || :filter || '%'
-           OR item_name LIKE '%' || :filter || '%'
-           OR ref1 LIKE '%' || :filter || '%')
+        WHERE doc_entry = :docEntry and ( item_code LIKE :filter 
+           OR item_name LIKE :filter 
+           OR ref1 LIKE  :filter )
     """)
     fun filterByText(docEntry: Int,filter: String): Flow<List<PIncEntity>>
 

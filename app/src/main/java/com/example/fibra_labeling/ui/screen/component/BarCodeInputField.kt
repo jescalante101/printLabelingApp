@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -30,8 +32,10 @@ fun BarcodeInputField(
     onScanClick: () -> Unit,
     modifier: Modifier = Modifier,
     focusRequester: FocusRequester = remember { FocusRequester() },
-    editable: Boolean = false
+    editable: Boolean = false,
+    scanComplete: ()->Unit ={}
 ) {
+
     OutlinedTextField(
         value = barcodeValue,
         onValueChange = {
@@ -45,13 +49,6 @@ fun BarcodeInputField(
             )
         },
         leadingIcon = {
-            Icon(
-                painter = painterResource(R.drawable.barcode_scan),
-                contentDescription = "Barcode Icon",
-                tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
-            )
-        },
-        trailingIcon = {
             IconButton (onClick = onScanClick) {
                 Icon(
                     painter = painterResource(R.drawable.camera),
@@ -60,7 +57,17 @@ fun BarcodeInputField(
                 )
             }
         },
+        trailingIcon = {
+            IconButton (onClick = scanComplete) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = "clear",
+                    tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
+                )
+            }
+        },
         readOnly = !editable,
+        maxLines = 1,
         enabled = true,
         singleLine = true,
         shape = RoundedCornerShape(16.dp),
@@ -79,6 +86,7 @@ fun BarcodeInputField(
             .focusRequester(focusRequester)
             .padding(horizontal = 20.dp)
     )
+
 }
 
 @Preview(showBackground = true)

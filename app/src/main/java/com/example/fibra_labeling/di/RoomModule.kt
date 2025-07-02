@@ -32,6 +32,7 @@ val roomModule = module {
             )
             .fallbackToDestructiveMigrationOnDowngrade(true)
             .build()
+
     }
 
     //FIBRAFIL DAOS

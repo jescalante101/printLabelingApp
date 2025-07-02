@@ -149,6 +149,10 @@ fun ZplTemplateScreen(
                                     onDelete = {
                                         viewModel.deleteLabel(label)
                                         labelToEdit = null
+                                    },
+                                    onSelected = {
+                                        viewModel.setSelectedLabel(label)
+                                        onBack()
                                     }
                                 )
                             }

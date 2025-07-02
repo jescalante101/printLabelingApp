@@ -31,8 +31,9 @@ interface PrintOincDao {
     @Transaction
     @Query("""
         SELECT * FROM p_oinc
-        WHERE u_Ref LIKE '%' || :filtro || '%'
-           OR u_UserNameCount LIKE '%' || :filtro || '%'
+        WHERE u_Ref LIKE :filtro
+           OR u_UserNameCount like :filtro 
+           order by docEntry desc
     """)
     fun buscarPorReferenciaONombre(filtro: String): Flow<List<POincWithDetails>>
 
@@ -63,7 +64,7 @@ interface PrintOincDao {
 
     // transaction by docEntry
     @Transaction
-    @Query("SELECT * FROM p_oinc WHERE docEntry = :docEntry")
+    @Query("SELECT * FROM p_oinc WHERE docEntry = :docEntry order by docEntry desc")
     suspend fun getOincWithDetailsByDocEntry(docEntry: Long): POincWithDetails?
 
     @Delete

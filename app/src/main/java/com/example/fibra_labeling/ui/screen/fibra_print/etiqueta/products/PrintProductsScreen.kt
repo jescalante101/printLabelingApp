@@ -91,7 +91,7 @@ fun PrintProductScreen(
             SearchBar(
                 searchText = filtro,
                 onSearchTextChange = {text->
-                    viewModel.setFiltro(text.toUpperCase(Locale.current))
+                    viewModel.setFiltro(text)
                 },
                 modifier = Modifier.padding(bottom = 20.dp),
                 onSearch = {search->

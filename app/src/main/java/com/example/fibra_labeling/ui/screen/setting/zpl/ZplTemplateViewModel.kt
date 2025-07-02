@@ -33,6 +33,10 @@ class ZplTemplateViewModel(
     fun deleteLabel(label: ZplLabel) = viewModelScope.launch {
         dao.deleteLabel(label)
     }
+    fun setSelectedLabel(label: ZplLabel)=viewModelScope.launch {
+        dao.unselectAllLabels()
+        dao.setSelectedLabel(label.id)
+    }
 
     suspend fun getLabelById(id: Long): ZplLabel? = dao.getLabelById(id)
 

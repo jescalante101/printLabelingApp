@@ -15,4 +15,6 @@ interface PSyncRepository {
 
     suspend fun syncProveedor()
 
+    suspend fun syncPesajes()
+
 }

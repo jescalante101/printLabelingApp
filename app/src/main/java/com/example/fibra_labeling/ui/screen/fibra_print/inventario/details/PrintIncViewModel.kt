@@ -35,7 +35,7 @@ class PrintIncViewModel(
     private val fillRepository: FillRepository,// mientras
 ): ViewModel() {
     private val _docEntry = MutableStateFlow<Int>(0)
-    private val _search = MutableStateFlow<String?>(null)
+    private val _search = MutableStateFlow<String?>("")
 
     private val _selectedItem = MutableStateFlow<PIncEntity?>(null)
     val selectedItem: StateFlow<PIncEntity?> = _selectedItem
@@ -64,8 +64,22 @@ class PrintIncViewModel(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val incData: StateFlow<List<PIncEntity>> = _search
-        .flatMapLatest { filter ->
-            printIncDao.filterByText(_docEntry.value, _search.value ?: "")
+        .flatMapLatest { filtroRaw ->
+            // Limpiamos y obtenemos el primer término del usuario
+            val term = filtroRaw?.split("\\s+".toRegex())
+                ?.filter { it.isNotBlank() }
+                ?.getOrNull(0) // Tomamos solo el primer término, como en tu código original
+
+            val filter: String = if (term.isNullOrBlank()) {
+                "%" // Si el usuario no ha escrito nada, buscamos todo ("%")
+            } else if (term.contains("*")) {
+                // Si el término contiene '*', solo reemplazamos '*' por '%'
+                term.replace("*", "%")
+            } else {
+                // Si el término NO contiene '*', lo envolvemos con '%' para búsqueda "contiene"
+                "%$term%"
+            }
+            printIncDao.filterByText(_docEntry.value, filter)
         }
         .stateIn(
             viewModelScope,
@@ -103,7 +117,7 @@ class PrintIncViewModel(
             val zpl=zplLabelDao.getSelectedLabel()
 
             if (zpl==null){
-                _eventoNavegacion.emit("printSetting")
+                _eventoNavegacion.emit("zplSetting")
                 _loading.value=false
                 return@launch
             }

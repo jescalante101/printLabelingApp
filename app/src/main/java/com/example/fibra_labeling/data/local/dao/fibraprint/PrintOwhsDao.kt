@@ -38,7 +38,7 @@ interface PrintOwhsDao {
     suspend fun obtenerPorCodigo(codigo: String): POwhsEntity?
 
     // Obtener uno por nombre (clave primaria)
-    @Query("SELECT * FROM p_owhs WHERE whsName = :nombre")
+    @Query("SELECT * FROM p_owhs WHERE whsName = :nombre or whsCode = :nombre")
     suspend fun findByName(nombre: String): POwhsEntity?
 
     // Actualizar un registro

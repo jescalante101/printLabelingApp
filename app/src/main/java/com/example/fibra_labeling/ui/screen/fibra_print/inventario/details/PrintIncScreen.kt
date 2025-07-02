@@ -68,26 +68,28 @@ fun PrintIncScreen(
     var showSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val itemSelected by viewModel.selectedItem.collectAsState()
+    var query by remember { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
         viewModel.setDocEntry(docEntry)
-        viewModel.setSearch("")
-
+        viewModel.setSearch("*")
     }
 
     LaunchedEffect(Unit) {
         viewModel.eventoNavegacion.collect { destino ->
             when (destino) {
                 "printSetting"->navController.navigate(Screen.PrintSetting.route)
+                "zplSetting" ->navController.navigate(Screen.ZplTemplateScreen.route)
             }
         }
-
-//        viewModel.message.collect { error ->
-//            when(error){
-//                "successPrint"->snackbarHostState.showSnackbar("Etiqueta Impresa")
-//                else->snackbarHostState.showSnackbar(error)
-//            }
-//        }
+    }
+    LaunchedEffect(Unit) {
+                viewModel.message.collect { error ->
+            when(error){
+                "successPrint"->snackbarHostState.showSnackbar("Etiqueta Impresa con exito")
+                else->snackbarHostState.showSnackbar(error)
+            }
+        }
     }
 
     Scaffold(
@@ -128,9 +130,10 @@ fun PrintIncScreen(
 
             item {
                 CustomSearch(
-                    value = "search",
+                    value = query,
                     onChangeValue = {
-                        //viewModel.setSearch(it)
+                        query=it
+                        viewModel.setSearch(it)
                     },
                     placeholder = "Buscar",
                     focusRequester = FocusRequester.Default,
@@ -171,7 +174,7 @@ fun PrintIncScreen(
                     CustomSwipeableItem(
                         item = inc,
                         itemId = inc,
-                        canSwipe = {true},
+                        canSwipe = {!inc.isSynced},
 
                         onDelete = {
                             viewModel.deleteItem(inc)
@@ -192,7 +195,7 @@ fun PrintIncScreen(
                             dto = inc,
                             onClick = { item ->
                                 viewModel.selectItem(item)
-                                showSheet = true
+//                                showSheet = true
                             },
                             enabled = !inc.isSynced,
                             onPrintClick = {data->

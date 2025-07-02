@@ -32,7 +32,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.unit.dp
 import com.example.fibra_labeling.ui.screen.component.CustomFioriTextField
 import com.example.fibra_labeling.ui.screen.fibra_print.etiqueta.component.PrintFioriDropdownUser
@@ -40,6 +42,7 @@ import com.example.fibra_labeling.ui.screen.fibra_print.inventario.register.form
 import com.example.fibra_labeling.ui.screen.fibra_print.inventario.register.form.TipoRegistro
 import com.example.fibra_labeling.ui.theme.FioriBackground
 import kotlinx.coroutines.launch
+import okio.utf8Size
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -206,7 +209,7 @@ fun PrintOncRegister(
                     onValueChange = {
                         viewModel.onReferenciaChange(it)
                     },
-                    label = "Referencia",
+                    label = "Zona",
                     modifier = Modifier.fillMaxWidth()
                 )
 
@@ -214,9 +217,9 @@ fun PrintOncRegister(
                 CustomFioriTextField(
                  value = formState.observaciones,
                     onValueChange = {
-                        viewModel.onObservacionesChange(it)
+                        viewModel.onObservacionesChange(it.toUpperCase(Locale.current))
                     },
-                    label = "Observaciones",
+                    label = "Mueble",
                     modifier = Modifier.fillMaxWidth()
                 )
 

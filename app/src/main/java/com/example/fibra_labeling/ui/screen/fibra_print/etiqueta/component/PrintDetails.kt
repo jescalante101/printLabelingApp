@@ -84,8 +84,8 @@ fun SapFioriDetailCard(item: ImobPesaje, modifier: Modifier = Modifier) {
             }
             HorizontalDivider(Modifier.padding(vertical = 12.dp))
             // Auditoría
-            GroupRowFiori("Creado por", item.userCreate)
-            GroupRowFiori("Fecha creación", item.createDate)
+            GroupRowFiori("Creado por", item.userCreate!!)
+            GroupRowFiori("Fecha creación", item.createDate!!)
 //            item.userUpdate?.let {
 //                GroupRowFiori("Actualizado por", it)
 //            }

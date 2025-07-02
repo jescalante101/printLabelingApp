@@ -19,8 +19,7 @@ val gradientBrush = Brush.verticalGradient(
 
 // Fecha actual
 private val fechaActual = LocalDate.now()
-val getLocalDateNow: String? = fechaActual.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
-
+val getLocalDateNow: String? = fechaActual.format(DateTimeFormatter.ofPattern("YYYY-MM-dd"))
 
 
 // Hora actual

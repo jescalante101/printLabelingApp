@@ -197,7 +197,7 @@ class NewPrintViewModel(
                 codigoBarra = codebar,
                 proveedor = formState.proveedor?.cardName,
                 lote = formState.lote,
-                almacen = formState.almacen?.whsName,
+                almacen = formState.almacen?.whsCode,
                 ubicacion = formState.ubicacion,
                 piso = formState.piso,
                 metroLineal = formState.metroLineal,

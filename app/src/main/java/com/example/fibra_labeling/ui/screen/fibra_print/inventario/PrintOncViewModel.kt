@@ -21,9 +21,15 @@ import kotlinx.coroutines.launch
 class PrintOncViewModel(
     private val oincDao: PrintOincDao,
     private val userLoginPreference: UserLoginPreference,
-    private val syncRepository: PSyncRepository
+    private val syncRepository: PSyncRepository,
 ): ViewModel() {
-    private val _searchUser = MutableStateFlow<String?>(null)
+
+    init {
+        viewModelScope.launch {
+            userLoginPreference.saveUserLogin("","","")
+        }
+    }
+    private val _searchUser = MutableStateFlow<String?>("")
     fun onSearch(query: String){
         _searchUser.value = query
     }
@@ -36,8 +42,22 @@ class PrintOncViewModel(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val allUsers: StateFlow<List<POincWithDetails>> = _searchUser
-        .flatMapLatest { query ->
-            oincDao.buscarPorReferenciaONombre(filtro = query ?:"")
+        .flatMapLatest { filtroRaw ->
+            // Limpiamos y obtenemos el primer término del usuario
+            val term = filtroRaw?.split("\\s+".toRegex())
+                ?.filter { it.isNotBlank() }
+                ?.getOrNull(0) // Tomamos solo el primer término, como en tu código original
+
+            val filter: String = if (term.isNullOrBlank()) {
+                "%" // Si el usuario no ha escrito nada, buscamos todo ("%")
+            } else if (term.contains("*")) {
+                // Si el término contiene '*', solo reemplazamos '*' por '%'
+                term.replace("*", "%")
+            } else {
+                // Si el término NO contiene '*', lo envolvemos con '%' para búsqueda "contiene"
+                "%$term%"
+            }
+            oincDao.buscarPorReferenciaONombre(filtro = filter)
         }
         .stateIn(
     viewModelScope,
@@ -67,17 +87,12 @@ class PrintOncViewModel(
                 if (response.success==true) {
                     _syncMessage.value = response.message
                     _loading.value = false
-
                     delay(150)
                     syncPesaje()
-
                 } else {
                     _syncMessage.value = "Error en la sincronización: ${response.message}"
                     _loading.value = false
                 }
-
-
-
             }catch (e: Exception){
                 _syncMessage.value = "Error al sincronizar: ${e.message}"
                 _loading.value = false
@@ -90,6 +105,7 @@ class PrintOncViewModel(
            try {
                syncRepository.syncEtiquetaDetalle()
            }catch (e: Exception){
+               _loading.value = false
                _syncMessage.value = "Error al sincronizar: ${e.message}"
            }
         }

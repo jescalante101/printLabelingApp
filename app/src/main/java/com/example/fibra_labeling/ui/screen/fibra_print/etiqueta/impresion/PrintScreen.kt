@@ -24,6 +24,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -35,6 +37,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -76,6 +79,7 @@ fun PrintScreen(
     var messagePrint by remember { mutableStateOf("") }
 
     val activity = LocalContext.current as ComponentActivity
+    val snackbarHostState = remember { SnackbarHostState() }
     val barcodeViewModel: BarcodeViewModel = koinViewModel(
         viewModelStoreOwner = activity
     )
@@ -94,7 +98,14 @@ fun PrintScreen(
     }
 
     LoadingDialog(show = isPrintLoading)
-
+    LaunchedEffect(Unit) {
+        viewModel.printMessage.collect { error ->
+            when(error){
+                "successPrint"->snackbarHostState.showSnackbar("Etiqueta Impresa con exito")
+                else->snackbarHostState.showSnackbar(error)
+            }
+        }
+    }
 
 
     LaunchedEffect(currentBackStackEntry) {
@@ -188,6 +199,7 @@ fun PrintScreen(
                                 viewModel.printPesaje(
                                     lastBarcode.toString().trim()
                                 )
+                                viewModel.actualizarCodeBar("")
                             }
 
                         },
@@ -235,7 +247,8 @@ fun PrintScreen(
             }
 
         },
-        containerColor = FioriBackground
+        containerColor = FioriBackground,
+        snackbarHost = { SnackbarHost(snackbarHostState) }
     ) {padding->
         LazyColumn (
             modifier = Modifier
@@ -247,7 +260,13 @@ fun PrintScreen(
                 BarcodeInputField(
                     barcodeValue =lastBarcode.toString(),
                     onValueChange = {
+
+                        viewModel.actualizarCodeBar("")
                         viewModel.actualizarCodeBar(it)
+                        if (it.length>=17){
+
+                            viewModel.obtenerPesaje(it)
+                        }
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -255,8 +274,13 @@ fun PrintScreen(
                     onScanClick = {
                         onNavigateToScan()
                     },
-                    editable = false,
-                    focusRequester = focusRequester
+                    scanComplete = {
+                        if(lastBarcode!=null){
+                            viewModel.actualizarCodeBar("")
+                        }
+                    },
+                    editable = true,
+                   // focusRequester = focusRequester
 
                 )
 
@@ -322,7 +346,8 @@ fun PrintScreen(
 
 
         }
-        LaunchedEffect(Unit) { focusRequester.requestFocus() }
+
+        //LaunchedEffect(Unit) { focusRequester.requestFocus() }
 
     }
 

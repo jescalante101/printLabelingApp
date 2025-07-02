@@ -33,7 +33,6 @@ class PrintPesajeViewModel(
             val term = filtroRaw.split("\\s+".toRegex())
                 .filter { it.isNotBlank() }
                 .getOrNull(0) // Tomamos solo el primer término, como en tu código original
-
             val filter: String = if (term.isNullOrBlank()) {
                 "%" // Si el usuario no ha escrito nada, buscamos todo ("%")
             } else if (term.contains("*")) {
@@ -41,14 +40,11 @@ class PrintPesajeViewModel(
                 term.replace("*", "%")
             } else {
                 // Si el término NO contiene '*', lo envolvemos con '%' para búsqueda "contiene"
-                "%$term%"
+                "$term%"
             }
-
             pesajeDao.searchPesaje(filter)
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
-
-
 
     fun setFiltro(filtro: String) {
         _filtro.value = filtro
@@ -58,7 +54,6 @@ class PrintPesajeViewModel(
         viewModelScope.launch {
             userLoginPreference.saveUserLogin("", name = "", docEntry = "")
         }
-
     }
 
 //    fun findByCodeBar(){

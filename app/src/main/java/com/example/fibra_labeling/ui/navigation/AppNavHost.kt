@@ -54,9 +54,13 @@ fun AppNavHost(navController: NavHostController = rememberNavController(), start
                 onEmpresaSeleccionada = {
                     // Navegar a la pantalla SELECCIONADA Y ALMACENAR LA EMPRESA SELECCIONADA
                     if(it == "Print"){
-                        navController.navigate(Screen.HomePrint.route)
+                        navController.navigate(Screen.HomePrint.route){
+                            popUpTo(Screen.Welcome.route) { inclusive = true }
+                        }
                     }else{
-                        navController.navigate(Screen.Home.route)
+                        navController.navigate(Screen.Home.route){
+                            popUpTo(Screen.Welcome.route) { inclusive = true }
+                        }
                     }
                 }
             )
@@ -371,6 +375,9 @@ fun AppNavHost(navController: NavHostController = rememberNavController(), start
              PrintSettingScreen(
                  onBack = {
                      navController.popBackStack()
+                 },
+                 onNavigateTozplTemplate = {
+                     navController.navigate(Screen.ZplTemplateScreen.route)
                  }
              )
          }

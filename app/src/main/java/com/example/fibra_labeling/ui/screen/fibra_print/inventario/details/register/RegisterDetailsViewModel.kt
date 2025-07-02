@@ -1,5 +1,6 @@
 package com.example.fibra_labeling.ui.screen.fibra_print.inventario.details.register
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fibra_labeling.data.local.dao.fibraprint.PesajeDao
@@ -166,27 +167,43 @@ class PrintRegisterIncDetailsViewModel(
         ///
         fun loadData() {
             viewModelScope.launch {
-                val codeBar = _formState.value.codeBar
+                try {
+                    val codeBar = _formState.value.codeBar
 
-                val pesaje = pesajeDao.getById(codeBar)
+                    val pesaje = pesajeDao.getById(codeBar)
 
-                val inc = printIncDao.getByCodeBar(codeBar)
+                    val inc = printIncDao.getByCodeBar(codeBar)
 
-                if (pesaje == null) {
-                    return@launch
-                }
+                    if (pesaje == null) {
+                        return@launch
+                    }
 
 
-                val almacen = owhsDao.findByName(pesaje?.almacen!!.trim())
-                val proveedor = ocrDao.findByName(pesaje.proveedor!!.trim())
 
-                onChangeUnidad("${pesaje.unidad}")
-                setAlmacen(almacen!!)
-                setProveedor(proveedor!!)
-                setPesaje(pesaje)
-                if(inc!=null){
-                    setInc(inc)
-                }
+                    val proveedor = ocrDao.findByName(pesaje.proveedor!!.trim())
+                    val almacen = owhsDao.findByName(pesaje.almacen!!.trim())
+
+                    onChangeUnidad("${pesaje.unidad}")
+
+                    if (almacen != null) {
+                        setAlmacen(almacen)
+                        Log.e("Almacen",almacen.toString())
+
+                    }
+                    if (proveedor!=null){
+                        setProveedor(proveedor)
+                    }
+
+//                setAlmacen(almacen!!)
+//                setProveedor(proveedor!!)
+                    setPesaje(pesaje)
+                    if(inc!=null){
+                        setInc(inc)
+                    }
+                }catch (
+                    e: Exception
+                ){}
+
 
             }
         }
@@ -232,11 +249,11 @@ class PrintRegisterIncDetailsViewModel(
                     printIncDao.insert(newInc)
                 }
                 //Update Pesaje
-                val pesaje= formState.value.pesaje?.copy(
-                    metroLineal = formState.value.metroLineal,
-                    peso = formState.value.conteo.toDoubleOrNull() ?: 0.0
-                )
-                pesajeDao.update(pesaje!!)
+//                val pesaje= formState.value.pesaje?.copy(
+//                    metroLineal = formState.value.metroLineal,
+//                    peso = formState.value.conteo.toDoubleOrNull() ?: 0.0
+//                )
+//                pesajeDao.update(pesaje!!)
 
                 delay(100)
                 resetForm()

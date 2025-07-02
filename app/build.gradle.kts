@@ -8,14 +8,15 @@ plugins {
 
 android {
     namespace = "com.example.fibra_labeling"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.fibra_labeling"
         minSdk = 26
+        //noinspection OldTargetApi
         targetSdk = 35
-        versionCode = 4
-        versionName = "1.0.5"
+        versionCode = 5
+        versionName = "1.0.6"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 

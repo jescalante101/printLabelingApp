@@ -15,11 +15,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -44,6 +47,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.fibra_labeling.R
@@ -84,11 +88,41 @@ fun HomePrintScreen(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
-    var showSheet by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
 
     var menuExpanded by remember { mutableStateOf(false) }
     var selectedMenu by remember { mutableStateOf("Impresora") }
+
+    val configState by viewModel.configState.collectAsState()
+
+//    if(configState){
+//        AlertDialog(
+//            onDismissRequest = {},
+//            title = { Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+//                Text("Aviso", fontWeight = FontWeight.Bold) } },
+//            text = {
+//                Column(
+//                    modifier = Modifier.fillMaxWidth(),
+//                    horizontalAlignment = Alignment.CenterHorizontally
+//                ) {
+//                    Text(
+//                        "configure una impresora antes de continuar",
+//                        textAlign = TextAlign.Center
+//                    )
+//                    Spacer(Modifier.height(16.dp))
+//                    FilledTonalButton(
+//                        onClick = { onNavigateToSetting() },
+//                        colors = ButtonDefaults.filledTonalButtonColors(
+//                            containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
+//                        ),
+//                    ) {
+//                        Text("Ir", fontWeight = FontWeight.Bold,color = Color.White)
+//                    }
+//                }
+//            },
+//            confirmButton = {}
+//        )
+//    }
 
     if (isSyncing) {
         AlertDialog(
@@ -121,6 +155,7 @@ fun HomePrintScreen(
                     scope.launch {
                         snackbarHostState.showSnackbar("Sincronización completada con éxito.")
                     }
+                    viewModel.vericarConfiguracion()
                 }
             }
         }
@@ -161,7 +196,7 @@ fun HomePrintScreen(
                     },
                     title = {
                         Image(
-                            painter = painterResource(R.drawable.ic_logo2),
+                            painter = painterResource(R.drawable.ic_logo3),
                             contentDescription = "Logo",
                             modifier = Modifier.size(150.dp)
                         )
@@ -208,12 +243,10 @@ fun HomePrintScreen(
             containerColor = FioriBackground,
             snackbarHost = { SnackbarHost(snackbarHostState) }
         ) { padding ->
-
             Column(
                 modifier = Modifier
                     .padding(padding)
                     .fillMaxSize()
-
             ) {
                 Text(
                     text = "Warehouse Management",
@@ -246,7 +279,7 @@ fun HomePrintScreen(
                                     "inventory" -> onNavigateToInventory()
                                     "packingList" -> onNavigateToPackingList()
                                     "production" -> onNavigateToProduction()
-                                    "sync" -> {}//viewModel.getDataFromApiManual()
+                                    "sync" -> {viewModel.getDataFromApiManual()}
                                 }
                             },
                         )

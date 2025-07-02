@@ -30,7 +30,7 @@ val viewModelModule= module {
     }
 
 
-    viewModel{ PrintViewModel(get(),get(),get()) }
+    viewModel{ PrintViewModel(get(),get(),get(),get(),get(),get()) }
     viewModel{ RegisterViewModel(get(),get(),get()) }
     viewModel{ NewPrintViewModel(get(),get(),get(),get(),get(),get(),get(),get(),get()) }
 
@@ -69,13 +69,13 @@ val viewModelModule= module {
     }
 
     viewModel{
-        HomePrintViewModel(get())
+        HomePrintViewModel(get(),get())
     }
 
 
     //FIBRAPRINT VIEW MODEL
     viewModel{
-        PrintOncViewModel(get(),get())
+        PrintOncViewModel(get(),get(),get())
     }
     viewModel{
         PrintRegisterOIncViewModel(get(),get())

@@ -27,8 +27,8 @@ interface PrintOitmDao {
 
     @Query("""
     SELECT * FROM p_oitm
-    WHERE codesap LIKE :filter OR `desc` LIKE :filter
+    WHERE `desc` is not null and (`desc` LIKE :filter or  codesap LIKE :filter)
     """)
-    fun searchProduct(filter:String): Flow<List<POITMEntity>>
+    suspend fun searchProduct(filter:String): List<POITMEntity>
 
 }

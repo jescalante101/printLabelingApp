@@ -16,9 +16,9 @@ data class Detalle(
     @SerialName("u_CodeBar")
     val uCodeBar: String,
     @SerialName("u_CountQty")
-    val uCountQty: Int,
+    val uCountQty: Double,
     @SerialName("u_Difference")
-    val uDifference: Int,
+    val uDifference: Double,
     @SerialName("u_FIB_BinLocation")
     val uFIBBinLocation: String,
     @SerialName("u_FIB_MachineCode")
@@ -28,7 +28,7 @@ data class Detalle(
     @SerialName("u_FIB_Ref2")
     val uFIBRef2: String,
     @SerialName("u_InWhsQty")
-    val uInWhsQty: Int,
+    val uInWhsQty: Double,
     @SerialName("u_ItemCode")
     val uItemCode: String,
     @SerialName("u_ItemName")
@@ -43,13 +43,13 @@ fun PIncEntity.toDetalle(lineId: Int = 1): Detalle {
         lineId = lineId, // Este campo no existe en Room, se debe proporcionar
         uArea = this.uarea ?: "", // String? -> String (manejo de null)
         uCodeBar = this.codeBar ?: "", // String? -> String
-        uCountQty = this.countQty?.toInt() ?: 0, // Double? -> Int
-        uDifference = this.difference?.toInt() ?: 0, // Double? -> Int
+        uCountQty = this.countQty ?: 0.0, // Double? -> Int
+        uDifference = this.difference ?: 0.0, // Double? -> Int
         uFIBBinLocation = this.binLocation ?: "", // String? -> String
         uFIBMachineCode = this.machineCode ?: "", // String? -> String
         uFIBRef1 = this.ref1 ?: "", // String? -> String
         uFIBRef2 = this.ref2 ?: "", // String? -> String
-        uInWhsQty = this.inWhsQty?.toInt() ?: 0, // Double? -> Int
+        uInWhsQty = this.inWhsQty ?: 0.0, // Double? -> Int
         uItemCode = this.itemCode, // String -> String
         uItemName = this.itemName, // String -> String
         uWhsCode = this.whsCode // String -> String

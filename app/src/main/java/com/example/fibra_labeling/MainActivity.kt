@@ -36,7 +36,10 @@ class MainActivity : ComponentActivity() {
 
     @SuppressLint("RestrictedApi")
     override fun superDispatchKeyEvent(event: KeyEvent): Boolean {
-
+        Log.d("KEYEVET", "Código escaneado: ${event}")
+        Log.d("KEYEVET", "Código escaneado1: ${event.scanCode}")
+        Log.d("KEYEVET", "Código escaneado2: ${event.characters}")
+        Log.d("KEYEVET", "Código escaneado3: ${event.keyCode}")
         if (event.action == KeyEvent.ACTION_MULTIPLE && event.characters != null) {
             val scannedCode = event.characters // Aquí tienes el código de barras completo
             Log.d("KEYEVET", "Código escaneado: $scannedCode")
