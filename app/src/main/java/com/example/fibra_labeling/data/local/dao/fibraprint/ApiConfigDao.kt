@@ -32,6 +32,9 @@ interface ApiConfigDao {
     @Query("UPDATE api_config SET isSelect = 0 WHERE empresa = :empresa")
     suspend fun deseleccionarConfigsPorEmpresa(empresa: String)
 
+    @Query("SELECT * FROM api_config WHERE empresa = :empresa AND isSelect = 1 LIMIT 1")
+    fun getSelectedConfigByEmpresaFlow(empresa: String): Flow<ApiConfigEntity?>
+
     @Query("UPDATE api_config SET isSelect = 1 WHERE id = :id")
     suspend fun seleccionarConfigPorId(id: Int)
 }

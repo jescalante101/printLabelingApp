@@ -1,5 +1,6 @@
 package com.example.fibra_labeling.di
 
+import android.util.Log
 import com.example.fibra_labeling.data.local.dao.fibraprint.ApiConfigDao
 import com.example.fibra_labeling.data.network.fibrafil.ApiService
 import com.example.fibra_labeling.data.network.fibraprint.PrintApiService
@@ -45,15 +46,24 @@ val networkModule = module {
             .writeTimeout(400, TimeUnit.SECONDS)
             .build()
     }
-    single {
+
+    factory {
         val dao = get<ApiConfigDao>()
-        val empresaStore = get<EmpresaPrefs>() // o tu DataStore
+        val empresaStore = get<EmpresaPrefs>()
         val contentType = "application/json".toMediaType()
 
-        // Obtener empresa y config seleccionada (bloqueante aquí porque es single)
-        val empresaSeleccionada = runBlocking { empresaStore.empresaSeleccionada.first() }
-        val configSeleccionada = runBlocking { dao.getSelectedConfigByEmpresa(empresaSeleccionada) }
+        // Mejor manejo para obtener la configuración
+        val configSeleccionada = try {
+            val empresa = runBlocking { empresaStore.empresaSeleccionada.first() }
+            runBlocking { dao.getSelectedConfigByEmpresa(empresa) }
+        } catch (e: Exception) {
+            Log.e("RetrofitModule", "Error obteniendo configuración: ${e.message}")
+            null
+        }
+
         val url = configSeleccionada?.urlBase ?: "http://192.168.1.7:8080/backend/"
+
+        Log.d("RetrofitModule", "URL configurada: $url")
 
         Retrofit.Builder()
             .baseUrl(url)

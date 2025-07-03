@@ -54,7 +54,7 @@ fun AppNavHost(navController: NavHostController = rememberNavController(), start
             WelcomeScreen (
                 onEmpresaSeleccionada = {
                     // Navegar a la pantalla SELECCIONADA Y ALMACENAR LA EMPRESA SELECCIONADA
-                    if(it == "Fibraprint"){
+                    if(it == "FibraPrint"){
                         navController.navigate(Screen.HomePrint.route){
                             popUpTo(Screen.Welcome.route) { inclusive = true }
                         }

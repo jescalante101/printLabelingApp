@@ -1,6 +1,7 @@
 package com.example.fibra_labeling.ui.screen.fibra_print.home_print
 
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -52,6 +53,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import com.example.fibra_labeling.R
 import com.example.fibra_labeling.ui.navigation.Screen
@@ -60,6 +64,7 @@ import com.example.fibra_labeling.ui.screen.fibrafil.home.component.FioriMenuDra
 import com.example.fibra_labeling.ui.screen.fibrafil.home.component.HomeCategories
 import com.example.fibra_labeling.ui.theme.FioriBackground
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
@@ -81,23 +86,21 @@ fun HomePrintScreen(
 
     val isSyncing by viewModel.isSyncing.collectAsState()
     val syncMessage by viewModel.syncMessage.collectAsState()
+    val hasSelectedConfig by viewModel.hasSelectedConfig.collectAsState()
+    val configState by viewModel.configState.collectAsState()
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-
     val snackbarHostState = remember { SnackbarHostState() }
+    val lifecycleOwner = LocalLifecycleOwner.current
 
     var menuExpanded by remember { mutableStateOf(false) }
     var selectedMenu by remember { mutableStateOf("Impresora") }
-
-    val configState by viewModel.configState.collectAsState()
-    val apiCount by viewModel.apiCount.collectAsState()
-
     var backPressedOnce by remember { mutableStateOf(false) }
 
+    // Manejo del back button
     BackHandler {
         if (backPressedOnce) {
-            // Cierra la app al presionar dos veces
             android.os.Process.killProcess(android.os.Process.myPid())
         } else {
             backPressedOnce = true
@@ -109,61 +112,22 @@ fun HomePrintScreen(
         }
     }
 
-    LaunchedEffect(Unit) {
-        viewModel.getApiSetting()
-        viewModel.getDataFromApi()
-    }
-
-    if(apiCount==null || apiCount==0){
-        AlertDialog(
-            onDismissRequest = {},
-            title = { Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                Text("Aviso", fontWeight = FontWeight.Bold) } },
-            text = {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        "Tiene que configurar una conexión al servidor antes de continuar",
-                        textAlign = TextAlign.Center
-                    )
-                    Spacer(Modifier.height(16.dp))
-                    FilledTonalButton(
-                        onClick = { navController.navigate(Screen.ServerSettingScren.route) },
-                        colors = ButtonDefaults.filledTonalButtonColors(
-                            containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
-                        ),
-                    ) {
-                        Text("Ir", fontWeight = FontWeight.Bold,color = Color.White)
-                    }
-                }
-            },
-            confirmButton = {}
-        )
-    }
-
-    apiCount?.let {
-        if (isSyncing && (it >0)) {
-            AlertDialog(
-                onDismissRequest = {},
-                title = { Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                    Text("Sincronizando...", fontWeight = FontWeight.Bold) } },
-                text = {
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        CircularProgressIndicator()
-                        Spacer(Modifier.height(16.dp))
-                        Text(syncMessage)
-                    }
-                },
-                confirmButton = {}
-            )
+    // Efecto que se ejecuta cuando la pantalla se vuelve visible
+    LaunchedEffect(lifecycleOwner) {
+        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+            val hasCompletedInitialSync = viewModel.hasInitialSyncCompleted.first()
+            if (!hasCompletedInitialSync) {
+                Log.d("HomePrintScreen", "Primera vez - ejecutando sync inicial")
+                viewModel.refreshOnResume()
+                viewModel.markInitialSyncCompleted()
+            } else {
+                Log.d("HomePrintScreen", "Sync inicial ya completada - solo verificando configuración")
+                viewModel.vericarConfiguracion() // Solo verifica config, no sincroniza
+            }
         }
     }
 
+    // Observar errores de sincronización
     LaunchedEffect(Unit) {
         viewModel.syncError.collect { error ->
             when (error) {
@@ -182,135 +146,205 @@ fun HomePrintScreen(
         }
     }
 
-    ModalNavigationDrawer(
-        drawerContent = {
-            ModalDrawerSheet {
-                FioriMenuDrawerSheet(
-                    selectedMenu = selectedMenu,
-                    onSelect = { selectedMenu = it },
-                    navController=navController
-                )
+    // UI States
+    when (hasSelectedConfig) {
+        null -> {
+            // Estado de carga inicial
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    CircularProgressIndicator()
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text("Verificando configuración...")
+                }
             }
-        },
-        drawerState = drawerState
-    ) {
-        Scaffold(
-            topBar = {
-                TopAppBar(
+        }
 
-                    navigationIcon = {
-                        IconButton (
-                            onClick = {
-                                scope.launch {
-                                    if (drawerState.isClosed) drawerState.open()
-                                    else drawerState.close()
-                                }
-                            }
-                        ){
-                            Icon(
-                                painter = painterResource(R.drawable.ic_menu),
-                                contentDescription = "Menu",
-                                tint = MaterialTheme.colorScheme.primary
-                            )
-                        }
-                    },
-                    title = {
-                        Image(
-                            painter = painterResource(R.drawable.ic_logo3),
-                            contentDescription = "Logo",
-                            modifier = Modifier.size(150.dp)
+        false -> {
+            // Mostrar diálogo de configuración necesaria
+            AlertDialog(
+                onDismissRequest = {},
+                title = {
+                    Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                        Text("Aviso", fontWeight = FontWeight.Bold)
+                    }
+                },
+                text = {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            "Tiene que seleccionar una conexión al servidor antes de continuar",
+                            textAlign = TextAlign.Center
                         )
-                    },
-                    actions = {
-                        IconButton(onClick = { menuExpanded = true }) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_user),
-                                contentDescription = "user",
-                                tint = MaterialTheme.colorScheme.primary
-                            )
-
-                        }
-                        DropdownMenu (
-                            expanded = menuExpanded,
-                            onDismissRequest = { menuExpanded = false }
+                        Spacer(Modifier.height(16.dp))
+                        FilledTonalButton(
+                            onClick = { navController.navigate(Screen.ServerSettingScren.route) },
+                            colors = ButtonDefaults.filledTonalButtonColors(
+                                containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
+                            ),
                         ) {
-
-                            DropdownMenuItem(
-                                text = { Text("Syncronizar") },
-                                trailingIcon = {
-                                    Icon(
-                                        painter = painterResource(R.drawable.sync_svgrepo_com),
-                                        contentDescription = "sync",
-                                        tint = Color.Black
-                                    )
-                                },
-                                onClick = {
-                                    menuExpanded = false
-                                    //viewModel.getDataFromApiManual()
-                                }
-                            )
-                            DropdownMenuItem(
-                                text = { Text("Cerrar sesión") },
-                                onClick = {
-                                    menuExpanded = false
-                                }
-                            )
+                            Text("Configurar", fontWeight = FontWeight.Bold, color = Color.White)
                         }
                     }
+                },
+                confirmButton = {}
+            )
+        }
 
-                )
-            },
-            containerColor = FioriBackground,
-            snackbarHost = { SnackbarHost(snackbarHostState) }
-
-        ) { padding ->
-            Column(
-                modifier = Modifier
-                    .padding(padding)
-                    .fillMaxSize()
+        true -> {
+            // Mostrar contenido principal
+            ModalNavigationDrawer(
+                drawerContent = {
+                    ModalDrawerSheet {
+                        FioriMenuDrawerSheet(
+                            selectedMenu = selectedMenu,
+                            onSelect = { selectedMenu = it },
+                            navController = navController
+                        )
+                    }
+                },
+                drawerState = drawerState
             ) {
-                Text(
-                    text = "Warehouse Management",
-                    style = MaterialTheme.typography.headlineSmall.copy(
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary
-                    ),
-                    modifier = Modifier.padding(start = 24.dp, top = 32.dp, bottom = 16.dp)
-                )
-
-                LazyVerticalStaggeredGrid(
-                    columns = StaggeredGridCells.Adaptive(160.dp),
-                    verticalItemSpacing = 20.dp,
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-                    modifier = Modifier
-                        .padding(horizontal = 20.dp)
-                        .fillMaxSize()
-                ) {
-                    items(
-                        categories.size,
-                        key = { categories[it].name },
-                    ) { index ->
-                        CustomPrintCard(
-                            category = categories[index],
-                            onClick = {
-                                when (categories[index].navigation) {
-                                    "print" ->  navController.navigate(Screen.Print.route)
-                                    "reception" -> navController.navigate(Screen.Reception.route)
-                                    "transfer" -> navController.navigate(Screen.Transfer.route)
-                                    "inventory" -> navController.navigate(Screen.PrintOncScreen.route)
-                                    "packingList" -> navController.navigate(Screen.PackingList.route)
-                                    "production" -> navController.navigate(Screen.Production.route)
-                                    "sync" -> {viewModel.getDataFromApiManual()}
+                Scaffold(
+                    topBar = {
+                        TopAppBar(
+                            navigationIcon = {
+                                IconButton(
+                                    onClick = {
+                                        scope.launch {
+                                            if (drawerState.isClosed) drawerState.open()
+                                            else drawerState.close()
+                                        }
+                                    }
+                                ) {
+                                    Icon(
+                                        painter = painterResource(R.drawable.ic_menu),
+                                        contentDescription = "Menu",
+                                        tint = MaterialTheme.colorScheme.primary
+                                    )
                                 }
                             },
+                            title = {
+                                Image(
+                                    painter = painterResource(R.drawable.ic_logo3),
+                                    contentDescription = "Logo",
+                                    modifier = Modifier.size(150.dp)
+                                )
+                            },
+                            actions = {
+                                IconButton(onClick = { menuExpanded = true }) {
+                                    Icon(
+                                        painter = painterResource(R.drawable.ic_user),
+                                        contentDescription = "user",
+                                        tint = MaterialTheme.colorScheme.primary
+                                    )
+                                }
+                                DropdownMenu(
+                                    expanded = menuExpanded,
+                                    onDismissRequest = { menuExpanded = false }
+                                ) {
+                                    DropdownMenuItem(
+                                        text = { Text("Sincronizar") },
+                                        trailingIcon = {
+                                            Icon(
+                                                painter = painterResource(R.drawable.sync_svgrepo_com),
+                                                contentDescription = "sync",
+                                                tint = Color.Black
+                                            )
+                                        },
+                                        onClick = {
+                                            menuExpanded = false
+                                            viewModel.getDataFromApiManual()
+                                        }
+                                    )
+                                    DropdownMenuItem(
+                                        text = { Text("Cerrar sesión") },
+                                        onClick = {
+                                            menuExpanded = false
+                                        }
+                                    )
+                                }
+                            }
                         )
+                    },
+                    containerColor = FioriBackground,
+                    snackbarHost = { SnackbarHost(snackbarHostState) }
+                ) { padding ->
+                    Column(
+                        modifier = Modifier
+                            .padding(padding)
+                            .fillMaxSize()
+                    ) {
+                        Text(
+                            text = "Warehouse Management",
+                            style = MaterialTheme.typography.headlineSmall.copy(
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
+                            ),
+                            modifier = Modifier.padding(start = 24.dp, top = 32.dp, bottom = 16.dp)
+                        )
+
+                        LazyVerticalStaggeredGrid(
+                            columns = StaggeredGridCells.Adaptive(160.dp),
+                            verticalItemSpacing = 20.dp,
+                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            modifier = Modifier
+                                .padding(horizontal = 20.dp)
+                                .fillMaxSize()
+                        ) {
+                            items(
+                                categories.size,
+                                key = { categories[it].name },
+                            ) { index ->
+                                CustomPrintCard(
+                                    category = categories[index],
+                                    onClick = {
+                                        when (categories[index].navigation) {
+                                            "print" -> navController.navigate(Screen.Print.route)
+                                            "reception" -> navController.navigate(Screen.Reception.route)
+                                            "transfer" -> navController.navigate(Screen.Transfer.route)
+                                            "inventory" -> navController.navigate(Screen.PrintOncScreen.route)
+                                            "packingList" -> navController.navigate(Screen.PackingList.route)
+                                            "production" -> navController.navigate(Screen.Production.route)
+                                            "sync" -> { viewModel.getDataFromApiManual() }
+                                        }
+                                    },
+                                )
+                            }
+                        }
                     }
                 }
             }
 
+            // Diálogo de sincronización - mostrar solo cuando está sincronizando
+            if (isSyncing) {
+                AlertDialog(
+                    onDismissRequest = {},
+                    title = {
+                        Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                            Text("Sincronizando...", fontWeight = FontWeight.Bold)
+                        }
+                    },
+                    text = {
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            CircularProgressIndicator()
+                            Spacer(Modifier.height(16.dp))
+                            Text(syncMessage, textAlign = TextAlign.Center)
+                        }
+                    },
+                    confirmButton = {}
+                )
+            }
         }
-
-
     }
 }
 

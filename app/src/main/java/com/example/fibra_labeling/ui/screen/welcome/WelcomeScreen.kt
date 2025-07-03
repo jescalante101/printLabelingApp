@@ -123,8 +123,8 @@ fun WelcomeScreen(
                             nombre = "Fibraprint",
                             descripcion = "Diseño e impresión",
                             onClick = {
-                                viewModel.saveEmpresa("Fibraprint")
-                                onEmpresaSeleccionada("Fibraprint")
+                                viewModel.saveEmpresa("FibraPrint")
+                                onEmpresaSeleccionada("FibraPrint")
                             },
                             backgroundColor = LightColors.background,
                             textColor = LightColors.onSurface,
