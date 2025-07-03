@@ -33,6 +33,7 @@ import com.example.fibra_labeling.ui.screen.packing.PackingScreen
 import com.example.fibra_labeling.ui.screen.production.ProductionScreen
 import com.example.fibra_labeling.ui.screen.reception.ReceptionScreen
 import com.example.fibra_labeling.ui.screen.setting.printer.PrintSettingScreen
+import com.example.fibra_labeling.ui.screen.setting.servidor.ServerSettingScreen
 import com.example.fibra_labeling.ui.screen.transfer.TransferScreen
 import com.example.fibra_labeling.ui.screen.welcome.WelcomeScreen
 
@@ -53,10 +54,11 @@ fun AppNavHost(navController: NavHostController = rememberNavController(), start
             WelcomeScreen (
                 onEmpresaSeleccionada = {
                     // Navegar a la pantalla SELECCIONADA Y ALMACENAR LA EMPRESA SELECCIONADA
-                    if(it == "Print"){
+                    if(it == "Fibraprint"){
                         navController.navigate(Screen.HomePrint.route){
                             popUpTo(Screen.Welcome.route) { inclusive = true }
                         }
+
                     }else{
                         navController.navigate(Screen.Home.route){
                             popUpTo(Screen.Welcome.route) { inclusive = true }
@@ -75,16 +77,7 @@ fun AppNavHost(navController: NavHostController = rememberNavController(), start
 
         ){
             HomeScreen(
-                onNavigateToReception = { navController.navigate(Screen.Reception.route) },
-                onNavigateToTransfer = { navController.navigate(Screen.Transfer.route) },
-                onNavigateToInventory = { navController.navigate(Screen.InventarioOnc.route) },
-                onNavigateToPackingList = { navController.navigate(Screen.PackingList.route) },
-                onNavigateToProduction = { navController.navigate(Screen.Production.route) },
-                onNavigateToSetting = { navController.navigate(Screen.PrintSetting.route) },
-                onNavigateToFill = {navController.navigate(Screen.FillImpresion.route)},
-                //zplTemplate
-                onNavigateToZplScreen = {navController.navigate(Screen.ZplTemplateScreen.route)}
-
+                navController = navController,
             )
 
         }
@@ -93,15 +86,7 @@ fun AppNavHost(navController: NavHostController = rememberNavController(), start
             Screen.HomePrint.route,
         ){
             HomePrintScreen(
-                onNavigateToPrint = { navController.navigate(Screen.Print.route) },
-                onNavigateToReception = { navController.navigate(Screen.Reception.route) },
-                onNavigateToTransfer = { navController.navigate(Screen.Transfer.route) },
-                onNavigateToInventory = { navController.navigate(Screen.PrintOncScreen.route) },
-                onNavigateToPackingList = { navController.navigate(Screen.PackingList.route) },
-                onNavigateToProduction = { navController.navigate(Screen.Production.route) },
-                onNavigateToSetting = { navController.navigate(Screen.PrintSetting.route) },
-                //zplTemplate
-                onNavigateToZplScreen = {navController.navigate(Screen.ZplTemplateScreen.route)}
+                navController = navController
             )
         }
         composable(
@@ -366,8 +351,6 @@ fun AppNavHost(navController: NavHostController = rememberNavController(), start
             )
         }
 
-
-
         ///SETTIG SCREEN
          composable(
              Screen.PrintSetting.route
@@ -382,7 +365,14 @@ fun AppNavHost(navController: NavHostController = rememberNavController(), start
              )
          }
 
-
+        composable(
+            Screen.ServerSettingScren.route
+        )
+        {
+            ServerSettingScreen(
+                onBack = {navController.popBackStack()}
+            )
+        }
 
 
 

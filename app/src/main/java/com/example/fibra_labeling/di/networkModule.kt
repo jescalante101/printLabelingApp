@@ -1,5 +1,6 @@
 package com.example.fibra_labeling.di
 
+import com.example.fibra_labeling.data.local.dao.fibraprint.ApiConfigDao
 import com.example.fibra_labeling.data.network.fibrafil.ApiService
 import com.example.fibra_labeling.data.network.fibraprint.PrintApiService
 import com.example.fibra_labeling.data.remote.fibrafil.FillRepository
@@ -10,7 +11,10 @@ import com.example.fibra_labeling.data.remote.PesajeRepositoryImpl
 import com.example.fibra_labeling.data.remote.PesajeRepository
 import com.example.fibra_labeling.data.remote.SettingRepository
 import com.example.fibra_labeling.data.remote.SettingRepositoryImpl
+import com.example.fibra_labeling.datastore.EmpresaPrefs
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -42,10 +46,17 @@ val networkModule = module {
             .build()
     }
     single {
-
+        val dao = get<ApiConfigDao>()
+        val empresaStore = get<EmpresaPrefs>() // o tu DataStore
         val contentType = "application/json".toMediaType()
+
+        // Obtener empresa y config seleccionada (bloqueante aquí porque es single)
+        val empresaSeleccionada = runBlocking { empresaStore.empresaSeleccionada.first() }
+        val configSeleccionada = runBlocking { dao.getSelectedConfigByEmpresa(empresaSeleccionada) }
+        val url = configSeleccionada?.urlBase ?: "http://192.168.1.7:8080/backend/"
+
         Retrofit.Builder()
-            .baseUrl("http://192.168.1.7:8080/backend/")
+            .baseUrl(url)
             .addConverterFactory(get<Json>().asConverterFactory(contentType))
             .client(get())
             .build()

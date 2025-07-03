@@ -86,8 +86,6 @@ fun ImpresionScreen(
 
     var showDialogCopies by remember { mutableStateOf(false) }
 
-    var selectedTemplateId by remember { mutableStateOf<Long?>(null) }
-
     val zplLabels = viewModel.labels.collectAsState().value
 
     LaunchedEffect(Unit) {

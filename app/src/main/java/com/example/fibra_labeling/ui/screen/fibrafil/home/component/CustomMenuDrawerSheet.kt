@@ -8,6 +8,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -16,13 +17,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.example.fibra_labeling.R
+import com.example.fibra_labeling.ui.navigation.Screen
+
 @Composable
 fun FioriMenuDrawerSheet(
     selectedMenu: String,
     onSelect: (String) -> Unit,
-    onNavigateToSetting: () -> Unit,
-    onNavigateToZplScreen: () -> Unit
+    navController: NavController
 ) {
     val fioriBlue = Color(0xFF0A6ED1)
     val sectionBg = Color.White
@@ -86,7 +90,7 @@ fun FioriMenuDrawerSheet(
             selected = selectedMenu == "Impresora",
             onClick = {
                 onSelect("Impresora")
-                onNavigateToSetting()
+                navController.navigate(Screen.PrintSetting.route)
             }
         )
         CustomDrawerMenuItem(
@@ -95,12 +99,16 @@ fun FioriMenuDrawerSheet(
             selected = selectedMenu == "Etiquetas ZPL",
             onClick = {
                 onSelect("Etiquetas ZPL")
-                onNavigateToZplScreen()
+                navController.navigate(Screen.ZplTemplateScreen.route)
             }
         )
 
         Spacer(Modifier.height(18.dp))
-        Divider(modifier = Modifier.padding(horizontal = 24.dp), color = Color(0xFFE7EAF3))
+        HorizontalDivider(
+            modifier = Modifier.padding(horizontal = 24.dp),
+            thickness = DividerDefaults.Thickness,
+            color = Color(0xFFE7EAF3)
+        )
         Spacer(Modifier.height(14.dp))
 
         // SECCIÓN 2
@@ -110,6 +118,15 @@ fun FioriMenuDrawerSheet(
             color = fioriBlue,
             style = MaterialTheme.typography.labelSmall,
             fontWeight = FontWeight.Bold
+        )
+        CustomDrawerMenuItem(
+            label = "Configurar Server",
+            icon = R.drawable.ic_setting,
+            selected = selectedMenu == "Configurar Server",
+            onClick = {
+                onSelect("Configurar Server")
+                navController.navigate(Screen.ServerSettingScren.route)
+            }
         )
 
         CustomDrawerMenuItem(

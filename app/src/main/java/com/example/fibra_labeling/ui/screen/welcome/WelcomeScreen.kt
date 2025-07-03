@@ -8,6 +8,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -26,11 +27,13 @@ import androidx.compose.ui.unit.sp
 import com.example.fibra_labeling.ui.screen.welcome.component.EmpresaCard
 import com.example.fibra_labeling.ui.theme.LightColors
 import com.example.fibra_labeling.R
+import org.koin.androidx.compose.koinViewModel
 
-@OptIn(ExperimentalAnimationApi::class)
+@OptIn(ExperimentalAnimationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun WelcomeScreen(
-    onEmpresaSeleccionada: (String) -> Unit
+    onEmpresaSeleccionada: (String) -> Unit,
+    viewModel: WelcomeViewModel= koinViewModel()
 ) {
     val transitionState = remember { MutableTransitionState(false).apply { targetState = true } }
 
@@ -79,10 +82,8 @@ fun WelcomeScreen(
                             textAlign = TextAlign.Start
                         )
                         Spacer(modifier = Modifier.height(8.dp))
-                        // descrption
                         Text(
                             text = "Seleccione una empresa para gestionar el almacén",
-
                             style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.Normal,
                             color = LightColors.onSurface,
@@ -109,7 +110,10 @@ fun WelcomeScreen(
                         EmpresaCard(
                             nombre = "Fibrafil",
                             descripcion = "Producción y almacén",
-                            onClick = { onEmpresaSeleccionada("Fil") },
+                            onClick = {
+                                viewModel.saveEmpresa("Fibrafil")
+                                onEmpresaSeleccionada("Fibrafil")
+                            },
                             backgroundColor = LightColors.primary,
                             textColor = LightColors.surface,
                             modifier = Modifier.weight(1f),
@@ -118,7 +122,10 @@ fun WelcomeScreen(
                         EmpresaCard(
                             nombre = "Fibraprint",
                             descripcion = "Diseño e impresión",
-                            onClick = { onEmpresaSeleccionada("Print") },
+                            onClick = {
+                                viewModel.saveEmpresa("Fibraprint")
+                                onEmpresaSeleccionada("Fibraprint")
+                            },
                             backgroundColor = LightColors.background,
                             textColor = LightColors.onSurface,
                             modifier = Modifier.weight(1f),
@@ -127,12 +134,17 @@ fun WelcomeScreen(
                     }
                 }
             }
+
+
         }
     }
 }
 
+
 @Preview
 @Composable
 fun PreviewWelcome() {
-    WelcomeScreen { }
+    WelcomeScreen(
+        onEmpresaSeleccionada = {},
+    )
 }

@@ -47,6 +47,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.fibra_labeling.R
 import com.example.fibra_labeling.ui.component.CustomAppBar
 import com.example.fibra_labeling.ui.navigation.Screen
@@ -62,14 +63,15 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel= koinViewModel(),
-    onNavigateToFill: () -> Unit,
-    onNavigateToReception: () -> Unit,
-    onNavigateToTransfer: () -> Unit,
-    onNavigateToInventory: () -> Unit,
-    onNavigateToPackingList: () -> Unit,
-    onNavigateToProduction: () -> Unit,
-    onNavigateToSetting: () -> Unit,
-    onNavigateToZplScreen: () -> Unit
+//    onNavigateToFill: () -> Unit,
+//    onNavigateToReception: () -> Unit,
+//    onNavigateToTransfer: () -> Unit,
+//    onNavigateToInventory: () -> Unit,
+//    onNavigateToPackingList: () -> Unit,
+//    onNavigateToProduction: () -> Unit,
+//    onNavigateToSetting: () -> Unit,
+//    onNavigateToZplScreen: () -> Unit,
+    navController: NavController
 ){
     val categories = listOf(
         HomeCategories(R.drawable.ic_scan, "Generar etiquetas",Screen.Print.route),
@@ -149,12 +151,7 @@ fun HomeScreen(
                 FioriMenuDrawerSheet (
                     selectedMenu = selectedMenu,
                     onSelect = { selectedMenu = it },
-                    onNavigateToSetting = {
-                        onNavigateToSetting()
-                    },
-                    onNavigateToZplScreen = {
-                        onNavigateToZplScreen()
-                    }
+                   navController=navController
                 )
             }
         },
@@ -203,12 +200,12 @@ fun HomeScreen(
                             onClick = {
                                 println("Clicked on ${categories[category].name}")
                                 when(categories[category].navigation){
-                                    "print"  -> onNavigateToFill()//
-                                    "reception" -> onNavigateToReception()
-                                    "transfer" -> onNavigateToTransfer()
-                                    "inventory" -> onNavigateToInventory()
-                                    "packingList"-> onNavigateToPackingList()
-                                    "production"-> onNavigateToProduction()
+                                    "print" ->  navController.navigate(Screen.Print.route)
+                                    "reception" -> navController.navigate(Screen.Reception.route)
+                                    "transfer" -> navController.navigate(Screen.Transfer.route)
+                                    "inventory" -> navController.navigate(Screen.PrintOncScreen.route)
+                                    "packingList" -> navController.navigate(Screen.PackingList.route)
+                                    "production" -> navController.navigate(Screen.Production.route)
                                     "sync"->{viewModel.getDataFromApiManual()}
                                 }
                             },

@@ -34,4 +34,6 @@ sealed class Screen(val route:String) {
     object IncDetail: Screen("incDetail")
     object ZplTemplateScreen: Screen("zplTemplate")
 
+    object ServerSettingScren: Screen("serverSettingScree")
+
 }

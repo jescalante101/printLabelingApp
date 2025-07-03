@@ -50,28 +50,25 @@ fun <T> CustomFioriDropDown(
     var text by rememberSaveable(selected) { mutableStateOf(selected?.let { itemLabel(it) } ?: "") }
     var filterText by rememberSaveable { mutableStateOf("") }
     var isDropdownVisible by remember { mutableStateOf(false) }
-    val focusRequester = remember { FocusRequester() }
+    val fieldFocusRequester = remember { FocusRequester() }
+    // El flag para evitar reapertura por focus
+    var suppressDropdownOnNextFocus by remember { mutableStateOf(false) }
 
     Column(modifier = modifier) {
-        // Campo principal (CustomFioriTextField) para mostrar la selección
+        // Campo principal (solo muestra selección, no editable)
         CustomFioriTextField(
             value = text,
             singleLine = true,
             enabled = enabled,
-            onValueChange = { newText ->
-                text = newText
-                isDropdownVisible = true
-                onFilterChange(newText)
-            },
+            onValueChange = {}, // No editable desde aquí
             label = label,
             trailingIcon = {
                 IconButton(
                     onClick = {
-                        if (enabled){
+                        if (enabled) {
                             isDropdownVisible = !isDropdownVisible
-                            focusRequester.requestFocus()
+                            if (isDropdownVisible) fieldFocusRequester.requestFocus()
                         }
-
                     }
                 ) {
                     Icon(
@@ -82,12 +79,15 @@ fun <T> CustomFioriDropDown(
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .onFocusChanged() { focusState ->
-                    if (focusState.isFocused) {
+                .onFocusChanged { focusState ->
+                    if (focusState.isFocused && !suppressDropdownOnNextFocus) {
                         isDropdownVisible = true
                     }
+                    if (!focusState.isFocused) {
+                        suppressDropdownOnNextFocus = false
+                    }
                 }
-                .focusRequester(focusRequester),
+                .focusRequester(fieldFocusRequester),
             isError = isError,
             supportingText = supportingText,
             readOnly = true
@@ -97,7 +97,7 @@ fun <T> CustomFioriDropDown(
             Column(
                 Modifier
                     .fillMaxWidth()
-                    .heightIn(max = 300.dp) // <= clave
+                    .heightIn(max = 300.dp)
                     .border(
                         width = 1.dp,
                         color = MaterialTheme.colorScheme.outline,
@@ -105,7 +105,7 @@ fun <T> CustomFioriDropDown(
                     )
                     .background(MaterialTheme.colorScheme.surface)
             ) {
-                // Campo de búsqueda
+                // Campo de búsqueda (sin focusRequester aquí)
                 OutlinedTextField(
                     value = filterText,
                     onValueChange = {
@@ -126,7 +126,6 @@ fun <T> CustomFioriDropDown(
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .onFocusChanged { isDropdownVisible = true }
                         .padding(4.dp)
                 )
 
@@ -162,6 +161,7 @@ fun <T> CustomFioriDropDown(
                                         text = itemLabel(option)
                                         filterText = ""
                                         isDropdownVisible = false
+                                        suppressDropdownOnNextFocus = true // Evita reapertura
                                         onSelectedChange(option)
                                     }
                                     .padding(horizontal = 16.dp, vertical = 12.dp)

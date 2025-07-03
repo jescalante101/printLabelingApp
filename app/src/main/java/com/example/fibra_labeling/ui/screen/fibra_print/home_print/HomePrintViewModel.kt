@@ -4,22 +4,30 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fibra_labeling.data.local.dao.fibrafil.ZplLabelDao
+import com.example.fibra_labeling.data.local.dao.fibraprint.ApiConfigDao
+import com.example.fibra_labeling.data.local.entity.fibraprint.ApiConfigEntity
 import com.example.fibra_labeling.data.remote.fibraprint.PSyncRepository
+import com.example.fibra_labeling.datastore.EmpresaPrefs
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import java.net.SocketTimeoutException
 
 class HomePrintViewModel(
     private val pSyncRepository: PSyncRepository,
-    private val dao: ZplLabelDao
+    private val dao: ZplLabelDao,
+    private val apiConfigDao: ApiConfigDao,
+    private val empresaPrefs: EmpresaPrefs
 ): ViewModel() {
 
-
+    private val _apiCount= MutableStateFlow<Int?>(null)
+    val apiCount: StateFlow<Int?> = _apiCount
     private val _isSyncing = MutableStateFlow(false)
     val isSyncing: StateFlow<Boolean> = _isSyncing
 
@@ -33,10 +41,21 @@ class HomePrintViewModel(
     val configState: StateFlow<Boolean> = _configState
 
 
-    init {
-        getDataFromApi()
-    }
 
+
+    fun getApiSetting(){
+        viewModelScope.launch {
+            val empresa = empresaPrefs.empresaSeleccionada.firstOrNull() ?: ""
+            apiConfigDao.getConfigsByEmpresa(empresa)
+                .catch {
+                    _apiCount.value=0
+                }
+                .collect {
+                    print(it.size)
+                    _apiCount.value=it.size
+                }
+        }
+    }
 
     fun vericarConfiguracion()=viewModelScope.launch {
         dao.getAllLabels()
@@ -51,6 +70,9 @@ class HomePrintViewModel(
 
 
     fun getDataFromApi() {
+        if(apiCount.value==null || apiCount.value==0){
+            return
+        }
         viewModelScope.launch {
             _isSyncing.value = true
             _syncMessage.value = "Sincronizando datos con el servidor..."

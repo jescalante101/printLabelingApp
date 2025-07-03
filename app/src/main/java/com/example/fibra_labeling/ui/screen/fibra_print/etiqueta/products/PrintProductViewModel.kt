@@ -21,9 +21,6 @@ class PrintProductViewModel(
     val _filtro = MutableStateFlow<String>("")
     val filtro= _filtro.asStateFlow()
 
-    val _totalResult = MutableStateFlow<Int>(0)
-
-
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val productos: StateFlow<List<POITMEntity>> = _filtro

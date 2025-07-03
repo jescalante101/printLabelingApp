@@ -20,7 +20,10 @@ import com.example.fibra_labeling.ui.screen.fibrafil.inventario.register.OincReg
 import com.example.fibra_labeling.ui.screen.fibrafil.inventario.register.stock.StockViewModel
 
 import com.example.fibra_labeling.ui.screen.setting.printer.PrinterSettingScreenViewModel
+import com.example.fibra_labeling.ui.screen.setting.servidor.ServerSettingViewModel
 import com.example.fibra_labeling.ui.screen.setting.zpl.ZplTemplateViewModel
+import com.example.fibra_labeling.ui.screen.welcome.WelcomeScreen
+import com.example.fibra_labeling.ui.screen.welcome.WelcomeViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -69,7 +72,7 @@ val viewModelModule= module {
     }
 
     viewModel{
-        HomePrintViewModel(get(),get())
+        HomePrintViewModel(get(),get(),get(),get())
     }
 
 
@@ -92,4 +95,10 @@ val viewModelModule= module {
         PrintRegisterIncDetailsViewModel(get(),get(),get(),get(),get())
     }
 
+    viewModel{
+        WelcomeViewModel(get())
+    }
+    viewModel{
+        ServerSettingViewModel(get(),get())
+    }
 }

@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -89,6 +91,14 @@ fun PrintPesajeScreen(
         }
     }
 
+//    LaunchedEffect(Unit) {
+//        viewModel.productos.collect { data ->
+//            if (data.size<=1 && filtro.length>=17){
+//                viewModel.setFiltro("")
+//            }
+//        }
+//    }
+
     Scaffold (
         topBar = {
             CenterAlignedTopAppBar(
@@ -160,18 +170,23 @@ fun PrintPesajeScreen(
                         tint = MaterialTheme.colorScheme.primary
                     )
                 },
+                // mostrar solo si el filtro no está vacío
                 trailingIcon = {
-                    IconButton(
-                        onClick = {
-                            onNavigateToScan()
+                    if (filtro.isNotEmpty()) {
+                        IconButton(
+                            onClick = {
+//                                onNavigateToScan()
+                                viewModel.setFiltro("")
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = "clear",
+                                tint = MaterialTheme.colorScheme.primary
+                            )
                         }
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.camera),
-                            contentDescription = "camera",
-                            tint = MaterialTheme.colorScheme.primary
-                        )
                     }
+
                 },
             )
 

@@ -53,5 +53,6 @@ val roomModule = module {
     single { get<PrintDatabase>().pOincDao() }
     single{get<PrintDatabase>().pIncDao()}
     single{get<PrintDatabase>().pesajeDao()}
+    single{get<PrintDatabase>().apiConfigDao()}
 
 }

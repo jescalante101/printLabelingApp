@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
@@ -33,12 +34,16 @@ fun BarcodeInputField(
     modifier: Modifier = Modifier,
     focusRequester: FocusRequester = remember { FocusRequester() },
     editable: Boolean = false,
-    scanComplete: ()->Unit ={}
+    readOnly: Boolean = false,
+    scanComplete: ()->Unit ={},
+    keyboardOptions: KeyboardOptions= KeyboardOptions.Default
 ) {
 
     OutlinedTextField(
+        keyboardOptions = keyboardOptions,
         value = barcodeValue,
         onValueChange = {
+
             if (editable) onValueChange(it)
         },
         placeholder = {
@@ -66,7 +71,7 @@ fun BarcodeInputField(
                 )
             }
         },
-        readOnly = !editable,
+        readOnly = readOnly,
         maxLines = 1,
         enabled = true,
         singleLine = true,

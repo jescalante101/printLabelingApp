@@ -30,17 +30,15 @@ class PrintPesajeViewModel(
     val productos: StateFlow<List<PesajeEntity>> = _filtro
         .flatMapLatest { filtroRaw ->
             // Limpiamos y obtenemos el primer término del usuario
-            val term = filtroRaw.split("\\s+".toRegex())
-                .filter { it.isNotBlank() }
-                .getOrNull(0) // Tomamos solo el primer término, como en tu código original
-            val filter: String = if (term.isNullOrBlank()) {
+             // Tomamos solo el primer término, como en tu código original
+            val filter: String = if (filtroRaw.isBlank()) {
                 "%" // Si el usuario no ha escrito nada, buscamos todo ("%")
-            } else if (term.contains("*")) {
+            } else if (filtroRaw.contains("*")) {
                 // Si el término contiene '*', solo reemplazamos '*' por '%'
-                term.replace("*", "%")
+                filtroRaw.replace("*", "%")
             } else {
                 // Si el término NO contiene '*', lo envolvemos con '%' para búsqueda "contiene"
-                "$term%"
+                "$filtroRaw%"
             }
             pesajeDao.searchPesaje(filter)
         }

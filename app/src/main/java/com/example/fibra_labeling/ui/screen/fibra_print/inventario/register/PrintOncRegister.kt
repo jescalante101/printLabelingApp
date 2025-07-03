@@ -36,6 +36,7 @@ import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.unit.dp
+import com.example.fibra_labeling.ui.screen.component.CustomFioriDropDown
 import com.example.fibra_labeling.ui.screen.component.CustomFioriTextField
 import com.example.fibra_labeling.ui.screen.fibra_print.etiqueta.component.PrintFioriDropdownUser
 import com.example.fibra_labeling.ui.screen.fibra_print.inventario.register.form.PrintOincFormState
@@ -176,10 +177,9 @@ fun PrintOncRegister(
                     )
                 }
 
-
                 // Mostrar dinámicamente según selección
                 if (formState.selectedOption== TipoRegistro.USUARIO) {
-                    PrintFioriDropdownUser(
+                    CustomFioriDropDown(
                         label = "Usuario",
                         options = allUsers,
                         selected = formState.selectedUser,
@@ -189,7 +189,10 @@ fun PrintOncRegister(
                         onFilterChange = {
                             viewModel.onSearchChange(it)
                         },
-                        modifier = Modifier.fillMaxWidth().heightIn(max=250.dp)
+                        modifier = Modifier.fillMaxWidth().heightIn(max=250.dp),
+                        itemLabel = {
+                            "${it.uNAME}"
+                        }
                     )
                 } else {
                     // Aquí puedes reemplazar por tu dropdown de empleados si tienes otro

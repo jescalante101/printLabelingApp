@@ -1,6 +1,7 @@
 package com.example.fibra_labeling.ui.screen.fibra_print.home_print
 
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -33,6 +34,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -50,12 +52,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.fibra_labeling.R
 import com.example.fibra_labeling.ui.navigation.Screen
 import com.example.fibra_labeling.ui.screen.fibra_print.home_print.component.CustomPrintCard
 import com.example.fibra_labeling.ui.screen.fibrafil.home.component.FioriMenuDrawerSheet
 import com.example.fibra_labeling.ui.screen.fibrafil.home.component.HomeCategories
 import com.example.fibra_labeling.ui.theme.FioriBackground
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
@@ -63,14 +67,7 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun HomePrintScreen(
     viewModel: HomePrintViewModel = koinViewModel(),
-    onNavigateToPrint: () -> Unit,
-    onNavigateToReception: () -> Unit,
-    onNavigateToTransfer: () -> Unit,
-    onNavigateToInventory: () -> Unit,
-    onNavigateToPackingList: () -> Unit,
-    onNavigateToProduction: () -> Unit,
-    onNavigateToSetting: () -> Unit,
-    onNavigateToZplScreen: () -> Unit
+    navController: NavController
 ) {
     val categories = listOf(
         HomeCategories(R.drawable.ic_scan, "Generar etiquetas", Screen.Print.route),
@@ -94,53 +91,77 @@ fun HomePrintScreen(
     var selectedMenu by remember { mutableStateOf("Impresora") }
 
     val configState by viewModel.configState.collectAsState()
+    val apiCount by viewModel.apiCount.collectAsState()
 
-//    if(configState){
-//        AlertDialog(
-//            onDismissRequest = {},
-//            title = { Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-//                Text("Aviso", fontWeight = FontWeight.Bold) } },
-//            text = {
-//                Column(
-//                    modifier = Modifier.fillMaxWidth(),
-//                    horizontalAlignment = Alignment.CenterHorizontally
-//                ) {
-//                    Text(
-//                        "configure una impresora antes de continuar",
-//                        textAlign = TextAlign.Center
-//                    )
-//                    Spacer(Modifier.height(16.dp))
-//                    FilledTonalButton(
-//                        onClick = { onNavigateToSetting() },
-//                        colors = ButtonDefaults.filledTonalButtonColors(
-//                            containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
-//                        ),
-//                    ) {
-//                        Text("Ir", fontWeight = FontWeight.Bold,color = Color.White)
-//                    }
-//                }
-//            },
-//            confirmButton = {}
-//        )
-//    }
+    var backPressedOnce by remember { mutableStateOf(false) }
 
-    if (isSyncing) {
+    BackHandler {
+        if (backPressedOnce) {
+            // Cierra la app al presionar dos veces
+            android.os.Process.killProcess(android.os.Process.myPid())
+        } else {
+            backPressedOnce = true
+            scope.launch {
+                snackbarHostState.showSnackbar("Presiona atrás otra vez para salir")
+                delay(2000)
+                backPressedOnce = false
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.getApiSetting()
+        viewModel.getDataFromApi()
+    }
+
+    if(apiCount==null || apiCount==0){
         AlertDialog(
             onDismissRequest = {},
             title = { Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                Text("Sincronizando...", fontWeight = FontWeight.Bold) } },
+                Text("Aviso", fontWeight = FontWeight.Bold) } },
             text = {
                 Column(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    CircularProgressIndicator()
+                    Text(
+                        "Tiene que configurar una conexión al servidor antes de continuar",
+                        textAlign = TextAlign.Center
+                    )
                     Spacer(Modifier.height(16.dp))
-                    Text(syncMessage)
+                    FilledTonalButton(
+                        onClick = { navController.navigate(Screen.ServerSettingScren.route) },
+                        colors = ButtonDefaults.filledTonalButtonColors(
+                            containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
+                        ),
+                    ) {
+                        Text("Ir", fontWeight = FontWeight.Bold,color = Color.White)
+                    }
                 }
             },
             confirmButton = {}
         )
+    }
+
+    apiCount?.let {
+        if (isSyncing && (it >0)) {
+            AlertDialog(
+                onDismissRequest = {},
+                title = { Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    Text("Sincronizando...", fontWeight = FontWeight.Bold) } },
+                text = {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        CircularProgressIndicator()
+                        Spacer(Modifier.height(16.dp))
+                        Text(syncMessage)
+                    }
+                },
+                confirmButton = {}
+            )
+        }
     }
 
     LaunchedEffect(Unit) {
@@ -167,8 +188,7 @@ fun HomePrintScreen(
                 FioriMenuDrawerSheet(
                     selectedMenu = selectedMenu,
                     onSelect = { selectedMenu = it },
-                    onNavigateToSetting = { onNavigateToSetting() },
-                    onNavigateToZplScreen = { onNavigateToZplScreen() }
+                    navController=navController
                 )
             }
         },
@@ -242,6 +262,7 @@ fun HomePrintScreen(
             },
             containerColor = FioriBackground,
             snackbarHost = { SnackbarHost(snackbarHostState) }
+
         ) { padding ->
             Column(
                 modifier = Modifier
@@ -273,12 +294,12 @@ fun HomePrintScreen(
                             category = categories[index],
                             onClick = {
                                 when (categories[index].navigation) {
-                                    "print" -> onNavigateToPrint()
-                                    "reception" -> onNavigateToReception()
-                                    "transfer" -> onNavigateToTransfer()
-                                    "inventory" -> onNavigateToInventory()
-                                    "packingList" -> onNavigateToPackingList()
-                                    "production" -> onNavigateToProduction()
+                                    "print" ->  navController.navigate(Screen.Print.route)
+                                    "reception" -> navController.navigate(Screen.Reception.route)
+                                    "transfer" -> navController.navigate(Screen.Transfer.route)
+                                    "inventory" -> navController.navigate(Screen.PrintOncScreen.route)
+                                    "packingList" -> navController.navigate(Screen.PackingList.route)
+                                    "production" -> navController.navigate(Screen.Production.route)
                                     "sync" -> {viewModel.getDataFromApiManual()}
                                 }
                             },
@@ -297,13 +318,6 @@ fun HomePrintScreen(
 @Composable
 fun PreviewHomePrintScreen(){
     HomePrintScreen(
-        onNavigateToPrint = {},
-        onNavigateToReception = {},
-        onNavigateToTransfer = {},
-        onNavigateToInventory = {},
-        onNavigateToPackingList = {},
-        onNavigateToProduction = {},
-        onNavigateToSetting = {},
-        onNavigateToZplScreen = {}
+        navController = TODO()
     )
 }

@@ -79,7 +79,9 @@ fun IncScreen(
                 "printSetting"->navController.navigate(Screen.PrintSetting.route)
             }
         }
+    }
 
+    LaunchedEffect(Unit) {
         viewModel.message.collect { error ->
             when(error){
                 "successPrint"->snackbarHostState.showSnackbar("Etiqueta Impresa")

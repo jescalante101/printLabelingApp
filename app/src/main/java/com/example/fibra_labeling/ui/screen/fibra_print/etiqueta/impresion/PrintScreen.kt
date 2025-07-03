@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -40,8 +41,11 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -86,6 +90,8 @@ fun PrintScreen(
     val lastBarcode by viewModel.lastScannedBarcode.collectAsState()
 
     val currentBackStackEntry = navController.currentBackStackEntryAsState().value
+
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     LaunchedEffect(Unit) {
         barcodeViewModel.barcode.collect { scannedCode ->
@@ -261,16 +267,25 @@ fun PrintScreen(
                     barcodeValue =lastBarcode.toString(),
                     onValueChange = {
 
-                        viewModel.actualizarCodeBar("")
                         viewModel.actualizarCodeBar(it)
                         if (it.length>=17){
-
                             viewModel.obtenerPesaje(it)
+                            viewModel.actualizarCodeBar("")
+                            focusRequester.requestFocus()
                         }
+//                        if(it.endsWith("\n")){
+//
+//                        }
+
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
+                        .padding(horizontal = 16.dp)
+                        .onFocusChanged{focusState->
+                            if(focusState.isFocused){
+                                keyboardController?.hide()
+                            }
+                        },
                     onScanClick = {
                         onNavigateToScan()
                     },
@@ -280,8 +295,12 @@ fun PrintScreen(
                         }
                     },
                     editable = true,
-                   // focusRequester = focusRequester
-
+                    //readOnly = true,
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Done
+                    ),
+                   focusRequester = focusRequester
                 )
 
 

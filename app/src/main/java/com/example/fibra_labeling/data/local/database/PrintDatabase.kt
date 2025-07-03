@@ -5,6 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.fibra_labeling.data.local.dao.fibrafil.EtiquetaDetalleDao
+import com.example.fibra_labeling.data.local.dao.fibraprint.ApiConfigDao
 import com.example.fibra_labeling.data.local.dao.fibraprint.PesajeDao
 import com.example.fibra_labeling.data.local.dao.fibraprint.PrintIncDao
 import com.example.fibra_labeling.data.local.dao.fibraprint.PrintOcrdDao
@@ -12,6 +13,7 @@ import com.example.fibra_labeling.data.local.dao.fibraprint.PrintOincDao
 import com.example.fibra_labeling.data.local.dao.fibraprint.PrintOitmDao
 import com.example.fibra_labeling.data.local.dao.fibraprint.PrintOusrDao
 import com.example.fibra_labeling.data.local.dao.fibraprint.PrintOwhsDao
+import com.example.fibra_labeling.data.local.entity.fibraprint.ApiConfigEntity
 import com.example.fibra_labeling.data.local.entity.fibraprint.PesajeEntity
 import com.example.fibra_labeling.data.local.entity.fibraprint.PIncEntity
 import com.example.fibra_labeling.data.local.entity.fibraprint.POITMEntity
@@ -28,7 +30,8 @@ import com.example.fibra_labeling.data.local.entity.fibraprint.POwhsEntity
         POwhsEntity::class,
         POusrEntity::class,
         POincEntity::class,
-        PIncEntity::class
+        PIncEntity::class,
+        ApiConfigEntity::class
     ],
     version = 1,
     exportSchema = false
@@ -42,6 +45,7 @@ abstract class PrintDatabase: RoomDatabase() {
     abstract fun pOincDao(): PrintOincDao
     abstract fun pIncDao(): PrintIncDao
     abstract fun pesajeDao(): PesajeDao
+    abstract fun apiConfigDao(): ApiConfigDao
 
     companion object {
         @Volatile private var INSTANCE: PrintDatabase? = null
