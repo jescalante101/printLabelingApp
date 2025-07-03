@@ -37,5 +37,11 @@ fun ServerSettingFormState.validate(): ServerSettingFormState {
 // Utilidad para validar URL simple
 fun isValidUrl(url: String): Boolean {
     // Puedes hacer una validación más avanzada si quieres
-    return url.startsWith("http://") || url.startsWith("https://")
+    return try {
+        val parsedUrl = java.net.URL(url)
+        parsedUrl.toURI()
+        true
+    }catch (e: Exception) {
+        false
+    }
 }

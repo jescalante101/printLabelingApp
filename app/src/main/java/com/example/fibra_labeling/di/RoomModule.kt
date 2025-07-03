@@ -5,6 +5,8 @@ import com.example.fibra_labeling.data.local.database.AppDatabase
 import com.example.fibra_labeling.data.local.database.PrintDatabase
 import com.example.fibra_labeling.data.migration.MIGRATION_3_4
 import com.example.fibra_labeling.data.migration.MIGRATION_4_5
+import com.example.fibra_labeling.data.migration.fibraprint.MIGRATION_1_2
+import com.example.fibra_labeling.data.migration.fibraprint.roomCallback
 import org.koin.dsl.module
 import kotlin.math.sin
 
@@ -31,6 +33,8 @@ val roomModule = module {
                 "fibra_print_db"
             )
             .fallbackToDestructiveMigrationOnDowngrade(true)
+            .addMigrations(MIGRATION_1_2)
+            .addCallback(roomCallback)
             .build()
 
     }

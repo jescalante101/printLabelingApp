@@ -21,6 +21,8 @@ import com.example.fibra_labeling.data.local.entity.fibraprint.POcrdEntity
 import com.example.fibra_labeling.data.local.entity.fibraprint.POincEntity
 import com.example.fibra_labeling.data.local.entity.fibraprint.POusrEntity
 import com.example.fibra_labeling.data.local.entity.fibraprint.POwhsEntity
+import com.example.fibra_labeling.data.migration.fibraprint.MIGRATION_1_2
+import com.example.fibra_labeling.data.migration.fibraprint.roomCallback
 
 @Database(
     entities = [
@@ -33,7 +35,7 @@ import com.example.fibra_labeling.data.local.entity.fibraprint.POwhsEntity
         PIncEntity::class,
         ApiConfigEntity::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class PrintDatabase: RoomDatabase() {
@@ -58,6 +60,8 @@ abstract class PrintDatabase: RoomDatabase() {
                     "fibra_print_db"
                 )
                     .fallbackToDestructiveMigrationOnDowngrade(true)
+                    .addMigrations(MIGRATION_1_2)
+                    .addCallback(roomCallback)
                     .build().also { INSTANCE = it }
             }
     }

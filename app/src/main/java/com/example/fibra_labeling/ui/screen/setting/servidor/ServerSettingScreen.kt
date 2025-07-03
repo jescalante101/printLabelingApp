@@ -12,28 +12,35 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.Card
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.fibra_labeling.R
 import com.example.fibra_labeling.ui.screen.component.CustomEmptyMessage
+import com.example.fibra_labeling.ui.screen.component.CustomSwipeableItem
 import com.example.fibra_labeling.ui.screen.setting.servidor.component.ServerSettingFormSheet
 import com.example.fibra_labeling.ui.theme.FioriBackground
 import com.example.fibra_labeling.ui.theme.LightColors
@@ -49,12 +56,34 @@ fun ServerSettingScreen(
     val configs by viewModel.configs.collectAsState()
     val empresaSeleccionada by viewModel.empresaSeleccionada.collectAsState()
 
+    //snackbar
+    val snackbarHostState = remember { SnackbarHostState() }
+
     //form
     val formState by viewModel.formState
     var showForm by remember { mutableStateOf(false) }
 
+    LaunchedEffect(Unit) {
+        viewModel.message.collect { message ->
+            when(message) {
+                "error_form"->{
+                    // show snackBar
+                    snackbarHostState.showSnackbar("Error en el formulario de configuración")
+                }
+                "error_url"->{
+                    snackbarHostState.showSnackbar("Error en la URL ingresada, debe ser válida")
+                }
+                "success_register"->{
+                    snackbarHostState.showSnackbar("Se registró correctamente")                }
+                else -> {
+                    snackbarHostState.showSnackbar(message)
+                }
+            }
+        }
+    }
 
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
@@ -78,7 +107,7 @@ fun ServerSettingScreen(
             )
         },
         floatingActionButton = {
-            androidx.compose.material3.FloatingActionButton(
+            FloatingActionButton(
                 onClick = {
                     showForm=true
                 },
@@ -114,52 +143,62 @@ fun ServerSettingScreen(
                         val setting = configs[index]
                         val selected = setting.isSelect
 
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 4.dp)
-                                .selectable(
-                                    selected = selected,
-                                    onClick = {
-                                        viewModel.onSeleccionar(setting)
-                                    }
-                                ),
-                            shape = MaterialTheme.shapes.medium,
-
+                        CustomSwipeableItem(
+                            item = setting,
+                            itemId = setting.id,
+                            canSwipe = {true},
+                            onDelete = {
+                                viewModel.onEliminar(setting)
+                            },
                         ) {
-                            Row (
+                            Card(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(vertical = 7.dp)
-                                    .padding(horizontal = 14.dp, vertical = 16.dp),
-                                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
-                            ) {
-                                Column(
-                                    modifier = Modifier.weight(1f)
+                                    .padding(vertical = 4.dp)
+                                    .selectable(
+                                        selected = selected,
+                                        onClick = {
+                                            viewModel.onSeleccionar(setting)
+                                        }
+                                    ),
+                                shape = MaterialTheme.shapes.medium,
+
                                 ) {
-                                    Text(
-                                        setting.nombre,
-                                        style = MaterialTheme.typography.titleMedium.copy(
-                                            color = if (selected) LightColors.primary else LightColors.onSurface,
-                                            fontWeight = if (selected) FontWeight.Bold else null
+                                Row (
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 7.dp)
+                                        .padding(horizontal = 14.dp, vertical = 16.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Column(
+                                        modifier = Modifier.weight(1f)
+                                    ) {
+                                        Text(
+                                            setting.nombre,
+                                            style = MaterialTheme.typography.titleMedium.copy(
+                                                color = if (selected) LightColors.primary else LightColors.onSurface,
+                                                fontWeight = if (selected) FontWeight.Bold else null
+                                            )
                                         )
-                                    )
-                                    Spacer(Modifier.height(3.dp))
-                                    Text(
-                                        setting.urlBase,
-                                        style = MaterialTheme.typography.bodySmall,
-                                    )
-                                }
-                                if (selected) {
-                                    Icon(
-                                        imageVector = androidx.compose.material.icons.Icons.Filled.CheckCircle,
-                                        contentDescription = "Seleccionada",
-                                        tint = LightColors.primary,
-                                        modifier = Modifier.padding(start = 6.dp)
-                                    )
+                                        Spacer(Modifier.height(3.dp))
+                                        Text(
+                                            setting.urlBase,
+                                            style = MaterialTheme.typography.bodySmall,
+                                        )
+                                    }
+                                    if (selected) {
+                                        Icon(
+                                            imageVector = Icons.Filled.CheckCircle,
+                                            contentDescription = "Seleccionada",
+                                            tint = LightColors.primary,
+                                            modifier = Modifier.padding(start = 6.dp)
+                                        )
+                                    }
                                 }
                             }
                         }
+
                     }
                 }
             }

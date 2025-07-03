@@ -10,9 +10,12 @@ import com.example.fibra_labeling.data.local.entity.fibraprint.ApiConfigEntity
 import com.example.fibra_labeling.datastore.EmpresaPrefs
 import com.example.fibra_labeling.ui.screen.setting.servidor.form.ServerSettingFormState
 import com.example.fibra_labeling.ui.screen.setting.servidor.form.validate
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
@@ -28,6 +31,10 @@ class ServerSettingViewModel(
 
     private val _formState = mutableStateOf(ServerSettingFormState())
     val formState: State<ServerSettingFormState> = _formState
+
+    //emit message with shareFlow
+    private val _message = MutableSharedFlow<String>()
+    val message = _message.asSharedFlow()
 
     val empresaSeleccionada = empresaPrefs.empresaSeleccionada.stateIn(
         viewModelScope, SharingStarted.Lazily, ""
@@ -54,8 +61,6 @@ class ServerSettingViewModel(
         }
     }
 
-
-
     fun onNombreChange(value: String) {
         _formState.value = _formState.value.copy(nombre = value).validate()
     }
@@ -65,15 +70,19 @@ class ServerSettingViewModel(
     }
 
     fun onGuardar() {
-        val validated = _formState.value.validate()
-        _formState.value = validated
-        if (validated.isValid) {
-            // Guardar datos aquí
 
-            viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
+            val validated = _formState.value.validate()
+            _formState.value = validated
+            if (validated.isValid){
+
+                val isReachable = isReachable(validated.url)
+                if (!isReachable) {
+                    _message.emit("error_url")
+                    return@launch
+                }
 
                 val empresa= empresaPrefs.empresaSeleccionada.firstOrNull() ?:""
-
                 apiConfigDao.insertConfig(
                     ApiConfigEntity(
                         nombre = validated.nombre,
@@ -82,6 +91,10 @@ class ServerSettingViewModel(
                         isSelect = false
                     )
                 )
+                _message.emit("success_register")
+                _formState.value = ServerSettingFormState()
+            }else{
+                _message.emit("error_form")
             }
         }
     }
@@ -89,6 +102,33 @@ class ServerSettingViewModel(
     fun onCancelar() {
         _formState.value = ServerSettingFormState()
     }
+
+    fun onEliminar(setting: ApiConfigEntity) {
+        viewModelScope.launch {
+            apiConfigDao.deleteConfig(setting)
+        }
+    }
+
+   fun updateConfig(setting: ApiConfigEntity) {
+        viewModelScope.launch {
+            apiConfigDao.updateConfig(setting)
+        }
+   }
+
+    fun isReachable(url: String, timeout: Int = 3000): Boolean {
+        return try {
+            val connection = java.net.URL(url).openConnection() as java.net.HttpURLConnection
+            connection.requestMethod = "GET"
+            connection.connectTimeout = timeout
+            connection.readTimeout = timeout
+            connection.connect()
+            val code = connection.responseCode
+            code in 200..399 // Si responde 2xx o 3xx, es válida/accesible
+        } catch (e: Exception) {
+            false
+        }
+    }
+
 
 
 }
