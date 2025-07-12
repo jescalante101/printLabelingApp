@@ -18,6 +18,7 @@ import com.example.fibra_labeling.ui.screen.fibrafil.inventario.RegisterCabecera
 import com.example.fibra_labeling.ui.screen.fibrafil.inventario.details.IncViewModel
 import com.example.fibra_labeling.ui.screen.fibrafil.inventario.register.OincRegisterViewModel
 import com.example.fibra_labeling.ui.screen.fibrafil.inventario.register.stock.StockViewModel
+import com.example.fibra_labeling.ui.screen.setting.general.GeneralSettingScreenViewModel
 
 import com.example.fibra_labeling.ui.screen.setting.printer.PrinterSettingScreenViewModel
 import com.example.fibra_labeling.ui.screen.setting.servidor.ServerSettingViewModel
@@ -35,9 +36,10 @@ val viewModelModule= module {
 
     viewModel{ PrintViewModel(get(),get(),get(),get(),get(),get()) }
     viewModel{ RegisterViewModel(get(),get(),get()) }
-    viewModel{ NewPrintViewModel(get(),get(),get(),get(),get(),get(),get(),get(),get()) }
+    viewModel{ NewPrintViewModel(get(),get(),get(),get(),get(),get(),get(),get(),get(),get()) }
 
     viewModel{ BarcodeViewModel() }
+
 
     viewModel {
         PrinterSettingScreenViewModel(get(),get(),get())
@@ -92,7 +94,7 @@ val viewModelModule= module {
     }
 
     viewModel{
-        PrintRegisterIncDetailsViewModel(get(),get(),get(),get(),get())
+        PrintRegisterIncDetailsViewModel(get(),get(),get(),get(),get(),get())
     }
 
     viewModel{
@@ -100,5 +102,9 @@ val viewModelModule= module {
     }
     viewModel{
         ServerSettingViewModel(get(),get())
+    }
+
+    viewModel{
+        GeneralSettingScreenViewModel(get())
     }
 }

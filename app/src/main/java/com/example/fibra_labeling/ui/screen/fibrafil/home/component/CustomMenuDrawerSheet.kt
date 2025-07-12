@@ -129,11 +129,15 @@ fun FioriMenuDrawerSheet(
             }
         )
 
+
         CustomDrawerMenuItem(
-            label = "Configuración",
+            label = "Configuración General",
             icon = R.drawable.ic_setting,
             selected = selectedMenu == "Configuración",
-            onClick = { onSelect("Configuración") }
+            onClick = {
+                onSelect("Configuración")
+                navController.navigate(Screen.GeneralSettingScreen.route)
+            }
         )
         CustomDrawerMenuItem(
             label = "Ayuda y feedback",
@@ -183,6 +187,64 @@ fun CustomDrawerMenuItem(
                 color = contentColor,
                 fontWeight = fontWeight,
                 style = MaterialTheme.typography.bodyLarge
+            )
+        }
+    }
+}
+
+@Composable
+fun CustomDrawerMenuItemSwitch(
+    label: String,
+    selected: Boolean,
+    isToggled: Boolean,
+    onClick: () -> Unit,
+    onToggle: (Boolean) -> Unit
+) {
+    val fioriBlue = Color(0xFF0A6ED1)
+    val selectedBg = Color(0xFFE3F0FA) // Azul muy claro para selección
+    val shape = RoundedCornerShape(16.dp)
+    val bg = if (selected) selectedBg else Color.Transparent
+    val contentColor = if (selected) fioriBlue else Color(0xFF2B2F38)
+    val fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal
+
+    Surface(
+        color = bg,
+        shape = shape,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 10.dp, vertical = 2.dp)
+            .height(52.dp)
+            .clip(shape)
+            .clickable { onClick() }
+    ) {
+        Row(
+            Modifier
+                .fillMaxSize()
+                .padding(start = 18.dp, end = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            // Texto del lado izquierdo
+            Text(
+                label,
+                color = contentColor,
+                fontWeight = fontWeight,
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.weight(1f)
+            )
+
+            // Switch del lado derecho
+            Switch(
+                checked = isToggled,
+                onCheckedChange = { newValue ->
+                    onToggle(newValue)
+                },
+                colors = SwitchDefaults.colors(
+                    checkedThumbColor = fioriBlue,
+                    checkedTrackColor = fioriBlue.copy(alpha = 0.5f),
+                    uncheckedThumbColor = Color.Gray,
+                    uncheckedTrackColor = Color.Gray.copy(alpha = 0.3f)
+                )
             )
         }
     }

@@ -7,7 +7,11 @@ import android.view.KeyEvent
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.runtime.getValue
 import androidx.navigation.compose.rememberNavController
+import com.example.fibra_labeling.datastore.ThemeManager
+import com.example.fibra_labeling.datastore.ThemeMode
 import com.example.fibra_labeling.ui.BarcodeViewModel
 import com.example.fibra_labeling.ui.navigation.AppNavHost
 import com.example.fibra_labeling.ui.navigation.Screen
@@ -16,14 +20,23 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : ComponentActivity() {
     private val barcodeViewModel: BarcodeViewModel by viewModel()
+    private lateinit var themeManager: ThemeManager
 
 
     @SuppressLint("ContextCastToActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        themeManager = ThemeManager(this)
         setContent {
-            Fibra_labelingTheme {
+            val themeMode by themeManager.themeMode
+            val darkTheme = when (themeMode) {
+                ThemeMode.LIGHT -> false
+                ThemeMode.DARK -> true
+                ThemeMode.SYSTEM -> isSystemInDarkTheme()
+            }
+            Fibra_labelingTheme(darkTheme = darkTheme) {
 
                val navController = rememberNavController()
                 AppNavHost(

@@ -11,6 +11,8 @@ import com.example.fibra_labeling.data.local.entity.fibraprint.PIncEntity
 import com.example.fibra_labeling.data.local.entity.fibraprint.POcrdEntity
 import com.example.fibra_labeling.data.local.entity.fibraprint.POwhsEntity
 import com.example.fibra_labeling.data.local.entity.fibraprint.PesajeEntity
+import com.example.fibra_labeling.datastore.EmpresaPrefs
+import com.example.fibra_labeling.datastore.GeneralPreference
 import com.example.fibra_labeling.datastore.UserLoginPreference
 import com.example.fibra_labeling.ui.screen.fibra_print.inventario.details.register.form.DetailsFormState
 import com.example.fibra_labeling.ui.util.generateStringCodeBar
@@ -22,8 +24,10 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -33,7 +37,9 @@ class PrintRegisterIncDetailsViewModel(
     private val pesajeDao: PesajeDao,
     private val ocrDao: PrintOcrdDao,
     private val owhsDao: PrintOwhsDao,
-    private val userLoginPreference: UserLoginPreference
+    private val userLoginPreference: UserLoginPreference,
+    private val empresaPrefs: GeneralPreference,
+
 ): ViewModel() {
     private val _formState = MutableStateFlow(DetailsFormState())
     val formState: StateFlow<DetailsFormState> = _formState.asStateFlow()
@@ -152,7 +158,7 @@ class PrintRegisterIncDetailsViewModel(
     }
 
         @OptIn(ExperimentalCoroutinesApi::class)
-        val allAlmacenes: StateFlow<List<POwhsEntity>> = _filterAlmacen
+    val allAlmacenes: StateFlow<List<POwhsEntity>> = _filterAlmacen
             .flatMapLatest { query ->
                 owhsDao.buscarPorCodigoONombre(filtro = query ?: "")
             }
@@ -161,6 +167,14 @@ class PrintRegisterIncDetailsViewModel(
                 SharingStarted.WhileSubscribed(5000),
                 emptyList()
             )
+
+    val conteoMode: StateFlow<Boolean> =flow {
+        empresaPrefs.conteoUseMode.catch {
+            emit(false)
+        }.collect {
+            emit(it)
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
 
         ///Init
 

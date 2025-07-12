@@ -12,6 +12,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,7 +20,9 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.net.SocketTimeoutException
 
@@ -52,6 +55,14 @@ class HomePrintViewModel(
         // Observa los cambios automáticamente desde el inicio
         observeSelectedConfig()
     }
+    val hasInitialSyncCompletedFlow = empresaPrefs.syncCompleted.stateIn(
+        viewModelScope,
+        SharingStarted.Eagerly,
+        false
+    )
+
+
+
 
     fun markInitialSyncCompleted() {
         _hasInitialSyncCompleted.value = true
@@ -76,11 +87,16 @@ class HomePrintViewModel(
                 // y no estamos ya sincronizando
                 if (hasConfig && !_isSyncing.value) {
                     Log.d("HomePrintViewModel", "Configuración encontrada, iniciando sincronización automática")
-                    getDataFromApi()
+                    val syncCompte= empresaPrefs.syncCompleted.firstOrNull()
+                    if (syncCompte==false){
+                        getDataFromApi()
+                    }
                 }
             }
         }
     }
+
+
 
     // Función para forzar verificación manual
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -124,6 +140,10 @@ class HomePrintViewModel(
             Log.d("HomePrintViewModel", "No hay configuración seleccionada, cancelando sincronización")
             return
         }
+        if (hasInitialSyncCompletedFlow.value){
+            Log.d("HomePrintViewModel", "Ya hay una sincronización en progreso")
+            return
+        }
 
         // Evitar múltiples sincronizaciones simultáneas
         if (_isSyncing.value) {
@@ -158,6 +178,10 @@ class HomePrintViewModel(
 
                 _syncMessage.value = "Sincronización completada."
                 _syncError.emit("success")
+
+                if(!hasInitialSyncCompletedFlow.value){
+                    empresaPrefs.setSyncCompleted(true)
+                }
 
             } catch (e: SocketTimeoutException) {
                 _syncMessage.value = "Error de conexión: Tiempo de espera agotado"
@@ -224,7 +248,7 @@ class HomePrintViewModel(
     // Función para refrescar cuando regresas a la pantalla
     fun refreshOnResume() {
         vericarConfiguracion()
-        getDataFromApi() // o como se llame tu método de sync
+        //getDataFromApi() // o como se llame tu método de sync
     }
 
 

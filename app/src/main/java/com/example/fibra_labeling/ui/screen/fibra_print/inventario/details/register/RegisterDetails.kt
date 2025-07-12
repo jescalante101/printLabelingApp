@@ -76,6 +76,8 @@ fun PrintRegisterIncDetailsScreen(
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val snackbarHostState = remember { SnackbarHostState() }
 
+    val conteoMode by viewModel.conteoMode.collectAsState()
+
     val loading by viewModel.loading.collectAsState()
 
 
@@ -296,9 +298,19 @@ fun PrintRegisterIncDetailsScreen(
                         onValueChange = {
                             viewModel.onConteoChange(it)
                         },
-                       // enabled = true,
-                        modifier = Modifier.weight(1f),
-                        //readOnly = true,
+                        enabled = !conteoMode,
+                        modifier = Modifier.weight(1f).clickable(
+                            onClick = {
+                                if (conteoMode) {
+                                    showSheet = true
+                                }
+                            }
+                        ).onFocusChanged {
+                            if (it.isFocused && conteoMode) {
+                                showSheet = true
+                            }
+                        },
+                        readOnly = conteoMode,
                         isOnlyNumber = true,
                         trailingIcon = {
                             Text(
@@ -321,7 +333,20 @@ fun PrintRegisterIncDetailsScreen(
                     onValueChange = {
                         viewModel.onChangeMetroL(it)
                     },
-                    modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+                    enabled = !conteoMode,
+                    readOnly = conteoMode,
+                    modifier = Modifier.fillMaxWidth().padding(top = 16.dp).clickable(
+                        onClick = {
+                            if (conteoMode) {
+                                showSheetMetro = true
+                            }
+                        }
+
+                    ).onFocusChanged {
+                        if (it.isFocused && conteoMode) {
+                            showSheetMetro = true
+                        }
+                    },
                     isOnlyNumber = true
                 )
             }

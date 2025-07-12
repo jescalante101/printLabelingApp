@@ -81,6 +81,8 @@ val LightColors = lightColorScheme(
     onPrimaryContainer = FioriOnPrimaryContainer,
 )
 
+
+
 private val DarkColors = darkColorScheme(
     primary = FioriDarkPrimary,
     onPrimary = FioriDarkOnPrimary,
@@ -93,6 +95,19 @@ private val DarkColors = darkColorScheme(
     outline = FioriDarkOutline
 )
 
+val DarkColors2 = darkColorScheme(
+    primary = Color(0xFF6BB6FF), // Azul más claro para modo oscuro
+    onPrimary = Color.Black,
+    secondary = Color(0xFF03DAC6),
+    onSecondary = Color.Black,
+    background = Color(0xFF121212),
+    onBackground = Color.White,
+    surface = Color(0xFF1E1E1E),
+    onSurface = Color.White,
+    primaryContainer = Color(0xFF003D75),
+    onPrimaryContainer = Color.White,
+)
+
 @Composable
 fun Fibra_labelingTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
@@ -101,13 +116,13 @@ fun Fibra_labelingTheme(
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
+//        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+//            val context = LocalContext.current
+//            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+//        }
 
         darkTheme -> darkScheme
-        else -> LightColorScheme
+        else -> LightColors
     }
 
     MaterialTheme(

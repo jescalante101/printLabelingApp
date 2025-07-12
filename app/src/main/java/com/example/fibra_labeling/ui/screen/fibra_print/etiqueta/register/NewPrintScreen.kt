@@ -93,6 +93,8 @@ fun NewPrintScreen(
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val loading by viewModel.loading.collectAsState()
 
+    val conteoMode by viewModel.conteoMode.collectAsState()
+
 
 
     LaunchedEffect (Unit) {
@@ -412,8 +414,20 @@ fun NewPrintScreen(
                     onValueChange = {
                         viewModel.onMetroLinealChange(it)
                     },
+                    enabled = !conteoMode,
+                    readOnly = conteoMode,
                     isOnlyNumber =  true,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().
+                    clickable {
+                        if(conteoMode) {
+                            showSheet = true
+                        }
+
+                    }.onFocusChanged {
+                        if(conteoMode) {
+                            showSheetMetro = true
+                        }
+                    },
                 )
 
             }
@@ -428,7 +442,19 @@ fun NewPrintScreen(
                     onValueChange = {
                         viewModel.onPesoBrutoChange(it)
                     },
-                    modifier = Modifier.fillMaxWidth(),
+                    enabled = !conteoMode,
+                    readOnly = conteoMode,
+                    modifier = Modifier.fillMaxWidth().
+                    clickable {
+                        if(conteoMode) {
+                            showSheet = true
+                        }
+
+                    }.onFocusChanged {
+                        if(conteoMode) {
+                            showSheetMetro = true
+                        }
+                    },
                     isOnlyNumber = true,
                     trailingIcon = {
                         Text(formState.unidad, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)

@@ -90,7 +90,6 @@ fun HomePrintScreen(
     val isSyncing by viewModel.isSyncing.collectAsState()
     val syncMessage by viewModel.syncMessage.collectAsState()
     val hasSelectedConfig by viewModel.hasSelectedConfig.collectAsState()
-    val configState by viewModel.configState.collectAsState()
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -223,7 +222,8 @@ fun HomePrintScreen(
                         FioriMenuDrawerSheet(
                             selectedMenu = selectedMenu,
                             onSelect = { selectedMenu = it },
-                            navController = navController
+                            navController = navController,
+
                         )
                     }
                 },

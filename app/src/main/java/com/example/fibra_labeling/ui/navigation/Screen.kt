@@ -19,6 +19,8 @@ sealed class Screen(val route:String) {
     object PrintPesajeScreen: Screen("printPesaje")
 
 
+
+
     object Transfer: Screen("transfer")
     object Reception: Screen("reception")
     object Inventory: Screen("inventory")
@@ -35,5 +37,7 @@ sealed class Screen(val route:String) {
     object ZplTemplateScreen: Screen("zplTemplate")
 
     object ServerSettingScren: Screen("serverSettingScree")
+
+    object GeneralSettingScreen: Screen("generalSetting")
 
 }

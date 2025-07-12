@@ -24,6 +24,7 @@ import com.example.fibra_labeling.data.model.fibrafil.toZplMap
 import com.example.fibra_labeling.data.remote.fibrafil.FillRepository
 import com.example.fibra_labeling.data.remote.fibrafil.SyncRepository
 import com.example.fibra_labeling.data.utils.ZplTemplateMapper
+import com.example.fibra_labeling.datastore.GeneralPreference
 import com.example.fibra_labeling.datastore.ImpresoraPreferences
 import com.example.fibra_labeling.datastore.UserLoginPreference
 import com.example.fibra_labeling.ui.screen.fibra_print.etiqueta.register.form.PrintFormStateNewLabel
@@ -42,6 +43,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -54,7 +56,8 @@ class NewPrintViewModel(
     private val userLoginPreference: UserLoginPreference,
     private val oitmDao: PrintOitmDao,
     private val zplLabelDao: ZplLabelDao,
-    private val repository: FillRepository
+    private val repository: FillRepository,
+    private val empresaPrefs: GeneralPreference,
     ): ViewModel() {
 
     private val _loading = MutableStateFlow(false)
@@ -182,6 +185,14 @@ class NewPrintViewModel(
             }
         }
     }
+
+    val conteoMode: StateFlow<Boolean> =flow {
+        empresaPrefs.conteoUseMode.catch {
+            emit(false)
+        }.collect {
+            emit(it)
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
 
     fun saveLocal(isPrint:Boolean=false){
         viewModelScope.launch {

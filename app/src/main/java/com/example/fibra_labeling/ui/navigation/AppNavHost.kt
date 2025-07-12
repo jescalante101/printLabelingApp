@@ -32,6 +32,7 @@ import com.example.fibra_labeling.ui.screen.fibrafil.inventario.details.IncScree
 import com.example.fibra_labeling.ui.screen.packing.PackingScreen
 import com.example.fibra_labeling.ui.screen.production.ProductionScreen
 import com.example.fibra_labeling.ui.screen.reception.ReceptionScreen
+import com.example.fibra_labeling.ui.screen.setting.general.GeneralSettingScreen
 import com.example.fibra_labeling.ui.screen.setting.printer.PrintSettingScreen
 import com.example.fibra_labeling.ui.screen.setting.servidor.ServerSettingScreen
 import com.example.fibra_labeling.ui.screen.transfer.TransferScreen
@@ -370,6 +371,14 @@ fun AppNavHost(navController: NavHostController = rememberNavController(), start
         )
         {
             ServerSettingScreen(
+                onBack = {navController.popBackStack()}
+            )
+        }
+
+        composable(
+            Screen.GeneralSettingScreen.route
+        ) {
+            GeneralSettingScreen(
                 onBack = {navController.popBackStack()}
             )
         }
