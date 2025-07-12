@@ -22,6 +22,7 @@ import com.example.fibra_labeling.data.local.entity.fibrafil.FilUserEntity
 import com.example.fibra_labeling.data.local.entity.fibrafil.ZplLabel
 import com.example.fibra_labeling.data.migration.MIGRATION_3_4
 import com.example.fibra_labeling.data.migration.MIGRATION_4_5
+import com.example.fibra_labeling.data.migration.fibrafil.roomCallbackZpl
 
 @Database(
     entities = [EtiquetaDetalleEntity::class,
@@ -60,6 +61,7 @@ abstract class AppDatabase: RoomDatabase()  {
                     .fallbackToDestructiveMigrationOnDowngrade(true)
                     .addMigrations(MIGRATION_3_4)
                     .addMigrations(MIGRATION_4_5)
+                    .addCallback(roomCallbackZpl)
                     .build().also { INSTANCE = it }
             }
     }

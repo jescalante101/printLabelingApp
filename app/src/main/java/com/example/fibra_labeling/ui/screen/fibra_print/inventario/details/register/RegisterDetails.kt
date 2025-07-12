@@ -133,23 +133,37 @@ fun PrintRegisterIncDetailsScreen(
                         )
                     }
                 },
+                actions = {
+                    Row {
+                        IconButton(
+                            onClick = {
+                                viewModel.saveInc()
+                            }
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_save),
+                                contentDescription = "Guardar",
+                            )
+                        }
+                    }
+                }
             )
         },
-        floatingActionButton = {
-            ExtendedFloatingActionButton (
-                onClick = {
-                    viewModel.saveInc()
-                },
-                containerColor = Color(0xFF2C3E50)
-            ){
-                Text(
-                    text = "Guardar",
-                    style = MaterialTheme.typography.labelLarge,
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-        },
+//        floatingActionButton = {
+//            ExtendedFloatingActionButton (
+//                onClick = {
+//                    viewModel.saveInc()
+//                },
+//                containerColor = Color(0xFF2C3E50)
+//            ){
+//                Text(
+//                    text = "Guardar",
+//                    style = MaterialTheme.typography.labelLarge,
+//                    color = Color.White,
+//                    fontWeight = FontWeight.Bold
+//                )
+//            }
+//        },
         containerColor = FioriBackground,
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { paddingValues ->
@@ -277,23 +291,14 @@ fun PrintRegisterIncDetailsScreen(
                     Spacer(Modifier.width(8.dp))
                     CustomFioriTextField(
                         label = "Conteo",
+                        placeholder = "0",
                         value = formState.conteo,
                         onValueChange = {
                             viewModel.onConteoChange(it)
                         },
-                        enabled = true,
-                        modifier = Modifier.weight(1f).clickable(
-                            onClick = {
-                                showSheet = true
-                            }
-                        ).onFocusChanged(
-                            onFocusChanged = {
-                                if (it.isFocused) {
-                                    showSheet = true
-                                }
-                            }
-                        ),
-                        readOnly = true,
+                       // enabled = true,
+                        modifier = Modifier.weight(1f),
+                        //readOnly = true,
                         isOnlyNumber = true,
                         trailingIcon = {
                             Text(
@@ -309,26 +314,14 @@ fun PrintRegisterIncDetailsScreen(
                 }
             }
             item{
+
                 CustomFioriTextField(
                     label = "Metro Lineal",
                     value = formState.metroLineal,
                     onValueChange = {
                         viewModel.onChangeMetroL(it)
                     },
-                    enabled = true,
-                    modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
-                        .clickable(
-                            onClick = {
-                                showSheetMetro = true
-                            }
-                        ).onFocusChanged(
-                            onFocusChanged = {
-                                if (it.isFocused) {
-                                    showSheetMetro = true
-                                }
-                            }
-                        ),
-                    readOnly = true,
+                    modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
                     isOnlyNumber = true
                 )
             }
@@ -342,8 +335,7 @@ fun PrintRegisterIncDetailsScreen(
                     },
                     enabled = true,
                     modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
-
-                    )
+                )
             }
 
         }

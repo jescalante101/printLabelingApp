@@ -189,70 +189,107 @@ fun PrintScreen(
                         fontWeight = FontWeight.Bold
                     )
                 },
+                actions = {
+                    Row {
+                        IconButton(
+                            onClick = {
+                                onNavigateToRegister()
+                            }
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_edit),
+                                contentDescription = "add",
+                                tint = Color.Black
+                            )
+                        }
+                        if (isPrint){
+                            IconButton(
+                                onClick = {
+                                    if(lastBarcode!=null){
+                                        viewModel.printPesaje(
+                                            lastBarcode.toString().trim()
+                                        )
+                                        viewModel.actualizarCodeBar("")
+                                    }
+                                }
+
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_print),
+                                    contentDescription = "print",
+                                    tint = Color.Black
+                                )
+                            }
+                        }
+
+                    }
+                }
 
             )
         },
-        floatingActionButton = {
-            Column(
-                modifier = Modifier.padding(bottom = 16.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.End
-            ) {
-                if (isPrint) {
-                    FloatingActionButton(
-                        onClick = {
-                            if(lastBarcode!=null){
-                                viewModel.printPesaje(
-                                    lastBarcode.toString().trim()
-                                )
-                                viewModel.actualizarCodeBar("")
-                            }
 
-                        },
-                        //containerColor = Color(0xFF2C3E50),
-                        //containerColor = MaterialTheme.colorScheme.secondaryContainer
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_print),
-                            contentDescription = "Menu",
-                            tint = Color.Black
-                        )
-                    }
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-                ExtendedFloatingActionButton(
-                    onClick = {
-                        onNavigateToRegister()
-                    },
-                    containerColor = Color(0xFF2C3E50).copy(0.9f),
-                   // containerColor = MaterialTheme.colorScheme.primary
-
-                ){
-                    Row(
-                        modifier = Modifier
-                            .padding(horizontal = 16.dp)
-                            .background(Color.Transparent),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "Nuevo Etiqueta",
-                            color =  MaterialTheme.colorScheme.surface,
-                            style = MaterialTheme.typography.titleSmall
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Icon(
-                            painter = painterResource(R.drawable.ic_new),
-                            contentDescription = "Menu",
-                            tint = MaterialTheme.colorScheme.surface
-                        )
-                    }
-                }
-
-
-            }
-
-        },
+//        floatingActionButton = {
+//            Column(
+//                modifier = Modifier.padding(bottom = 16.dp),
+//                verticalArrangement = Arrangement.Center,
+//                horizontalAlignment = Alignment.End
+//            ) {
+//                if (isPrint) {
+//                    FloatingActionButton(
+//                        onClick = {
+//                            if(lastBarcode!=null){
+//                                viewModel.printPesaje(
+//                                    lastBarcode.toString().trim()
+//                                )
+//                                viewModel.actualizarCodeBar("")
+//                            }
+//
+//                        },
+//                        //containerColor = Color(0xFF2C3E50),
+//                        //containerColor = MaterialTheme.colorScheme.secondaryContainer
+//                    ) {
+//                        Icon(
+//                            painter = painterResource(R.drawable.ic_print),
+//                            contentDescription = "Menu",
+//                            tint = Color.Black
+//                        )
+//                    }
+//                }
+//                Spacer(modifier = Modifier.height(16.dp))
+//                ExtendedFloatingActionButton(
+//                    onClick = {
+//                        onNavigateToRegister()
+//                    },
+//                    containerColor = Color(0xFF2C3E50).copy(0.9f),
+//                   // containerColor = MaterialTheme.colorScheme.primary
+//
+//                ){
+//                    Row(
+//                        modifier = Modifier
+//                            .padding(horizontal = 16.dp)
+//                            .background(Color.Transparent),
+//                        horizontalArrangement = Arrangement.Center,
+//                        verticalAlignment = Alignment.CenterVertically
+//                    ) {
+//                        Text(
+//                            text = "Nuevo Etiqueta",
+//                            color =  MaterialTheme.colorScheme.surface,
+//                            style = MaterialTheme.typography.titleSmall
+//                        )
+//                        Spacer(modifier = Modifier.width(8.dp))
+//                        Icon(
+//                            painter = painterResource(R.drawable.ic_new),
+//                            contentDescription = "Menu",
+//                            tint = MaterialTheme.colorScheme.surface
+//                        )
+//                    }
+//                }
+//
+//
+//            }
+//
+//        },
+//
         containerColor = FioriBackground,
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) {padding->
@@ -295,7 +332,7 @@ fun PrintScreen(
                         }
                     },
                     editable = true,
-                    //readOnly = true,
+                    readOnly = true,
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Text,
                         imeAction = ImeAction.Done

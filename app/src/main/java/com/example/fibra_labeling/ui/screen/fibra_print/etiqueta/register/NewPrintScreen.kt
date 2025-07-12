@@ -183,71 +183,102 @@ fun NewPrintScreen(
                         fontWeight = FontWeight.Bold,
                     )
                 },
+                actions = {
+                    Row {
 
-                )
-        },
-        floatingActionButton = {
-            Column{
-                FloatingActionButton(
-                    containerColor = Color(0xFF2C3E50),
-                    onClick = {
-                        viewModel.saveLocal()
-                    }
-                ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 16.dp),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
-                    ) {
+                        IconButton(
+                            onClick = {
+                                viewModel.saveLocal()
+                            }
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_save),
+                                contentDescription = "Save",
 
-                        Text(
-                            "Guardar",
+                            )
+                        }
+                        IconButton(
+                            onClick = {
+                                viewModel.saveLocal(true)
+                            }
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_print),
+                                contentDescription = "Print",
 
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = Color.White
-                        )
-
-                        Spacer(Modifier.width(8.dp))
-
-                        Icon(
-                            painter = painterResource(R.drawable.ic_save),
-                            contentDescription = "Print",
-                            tint = Color.White
-                        )
+                                )
+                        }
                     }
                 }
-                Spacer(Modifier.height(16.dp))
-                FloatingActionButton(
-                    containerColor = Color(0xFF2C3E50),
-                    onClick = {
-                       viewModel.saveLocal(true)
-                    }
-                ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 16.dp),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
-                    ) {
 
-                        Text(
-                            "Guardar e Imprimir",
-
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = Color.White
-                        )
-
-                        Spacer(Modifier.width(8.dp))
-
-                        Icon(
-                            painter = painterResource(R.drawable.ic_print),
-                            contentDescription = "Print",
-                            tint = Color.White
-                        )
-                    }
-                }
-            }
-
+            )
         },
+
+//
+//        floatingActionButton = {
+//            Column{
+//                FloatingActionButton(
+//                    containerColor = Color(0xFF2C3E50),
+//                    onClick = {
+//                        viewModel.saveLocal()
+//                    }
+//                ) {
+//                    Row(
+//                        modifier = Modifier.padding(horizontal = 16.dp),
+//                        horizontalArrangement = Arrangement.Center,
+//                        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+//                    ) {
+//
+//                        Text(
+//                            "Guardar",
+//
+//                            style = MaterialTheme.typography.bodyMedium,
+//                            color = Color.White
+//                        )
+//
+//                        Spacer(Modifier.width(8.dp))
+//
+//                        Icon(
+//                            painter = painterResource(R.drawable.ic_save),
+//                            contentDescription = "Print",
+//                            tint = Color.White
+//                        )
+//                    }
+//                }
+//                Spacer(Modifier.height(16.dp))
+//                FloatingActionButton(
+//                    containerColor = Color(0xFF2C3E50),
+//                    onClick = {
+//                       viewModel.saveLocal(true)
+//                    }
+//                ) {
+//                    Row(
+//                        modifier = Modifier.padding(horizontal = 16.dp),
+//                        horizontalArrangement = Arrangement.Center,
+//                        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+//                    ) {
+//
+//                        Text(
+//                            "Guardar e Imprimir",
+//
+//                            style = MaterialTheme.typography.bodyMedium,
+//                            color = Color.White
+//                        )
+//
+//                        Spacer(Modifier.width(8.dp))
+//
+//                        Icon(
+//                            painter = painterResource(R.drawable.ic_print),
+//                            contentDescription = "Print",
+//                            tint = Color.White
+//                        )
+//                    }
+//                }
+//            }
+//
+//        },
+
+
         snackbarHost = { SnackbarHost(snackbarHostState) },
         contentColor = FioriBackground
     ){ it ->
@@ -381,19 +412,8 @@ fun NewPrintScreen(
                     onValueChange = {
                         viewModel.onMetroLinealChange(it)
                     },
-                    enabled = true,
                     isOnlyNumber =  true,
-                    modifier = Modifier.fillMaxWidth().clickable(
-                        onClick = {
-                            showSheetMetro = true
-                        }
-                    ).onFocusChanged(
-                        onFocusChanged = {
-                            if (it.isFocused) {
-                                showSheetMetro = true
-                            }
-                        }
-                    ),
+                    modifier = Modifier.fillMaxWidth(),
                 )
 
             }
@@ -408,19 +428,7 @@ fun NewPrintScreen(
                     onValueChange = {
                         viewModel.onPesoBrutoChange(it)
                     },
-                    enabled = false,
-                    modifier = Modifier.fillMaxWidth().
-                    clickable(
-                        onClick = {
-                            showSheet = true
-                        }
-                    ).onFocusChanged(
-                        onFocusChanged = {
-                            if (it.isFocused) {
-                                showSheet = true
-                            }
-                        }
-                    ),
+                    modifier = Modifier.fillMaxWidth(),
                     isOnlyNumber = true,
                     trailingIcon = {
                         Text(formState.unidad, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)

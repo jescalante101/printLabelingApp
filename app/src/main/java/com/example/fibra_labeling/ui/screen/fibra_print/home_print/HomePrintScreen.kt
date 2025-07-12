@@ -1,6 +1,7 @@
 package com.example.fibra_labeling.ui.screen.fibra_print.home_print
 
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -48,6 +49,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -68,6 +70,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
+@SuppressLint("ConfigurationScreenWidthHeight")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun HomePrintScreen(
@@ -145,6 +148,21 @@ fun HomePrintScreen(
             }
         }
     }
+    // Opción 1: Usar Configuration para detectar el tamaño de pantalla
+    val configuration = LocalConfiguration.current
+    val screenWidthDp = configuration.screenWidthDp.dp
+    val isSmallScreen = screenWidthDp < 600.dp
+
+    // Calcular el tamaño de celda basado en el ancho de pantalla
+    val cellSize = when {
+        screenWidthDp < 320.dp -> 100.dp  // Pantallas muy pequeñas
+        screenWidthDp < 400.dp -> 140.dp  // Pantallas pequeñas
+        else -> 160.dp                    // Pantallas medianas/grandes
+    }
+
+    val horizontalPadding = if (isSmallScreen) 12.dp else 20.dp
+    val verticalSpacing = if (isSmallScreen) 12.dp else 20.dp
+    val horizontalSpacing = if (isSmallScreen) 8.dp else 16.dp
 
     // UI States
     when (hasSelectedConfig) {
@@ -283,17 +301,19 @@ fun HomePrintScreen(
                     ) {
                         Text(
                             text = "Warehouse Management",
-                            style = MaterialTheme.typography.headlineSmall.copy(
+                            style = MaterialTheme.typography.headlineMedium.copy(
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.primary
                             ),
-                            modifier = Modifier.padding(start = 24.dp, top = 32.dp, bottom = 16.dp)
+                            modifier = Modifier.padding(start = 24.dp, top = 12.dp, bottom = 16.dp).
+                            fillMaxWidth(),
+                            textAlign = TextAlign.Center
                         )
 
                         LazyVerticalStaggeredGrid(
-                            columns = StaggeredGridCells.Adaptive(160.dp),
-                            verticalItemSpacing = 20.dp,
-                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            columns = StaggeredGridCells.Adaptive(cellSize),
+                            verticalItemSpacing = verticalSpacing,
+                            horizontalArrangement = Arrangement.spacedBy(horizontalSpacing),
                             modifier = Modifier
                                 .padding(horizontal = 20.dp)
                                 .fillMaxSize()

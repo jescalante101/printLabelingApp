@@ -78,7 +78,7 @@ fun CustomPrintCard(
                 )
                 Text(
                     text = category.name,
-                    style = MaterialTheme.typography.titleMedium.copy(
+                    style = MaterialTheme.typography.titleLarge.copy(
                         fontWeight = FontWeight.Medium
                     ),
                     textAlign = TextAlign.Center,

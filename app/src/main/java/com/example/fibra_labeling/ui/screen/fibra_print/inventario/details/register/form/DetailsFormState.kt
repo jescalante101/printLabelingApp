@@ -13,7 +13,7 @@ data class DetailsFormState(
     val proveedor: POcrdEntity? = null,
     val almacen: POwhsEntity? =null ,
     val observacion: String = "",
-    val conteo: String = "0",
+    val conteo: String = "",
     val ubicacion: String = "",
     val codeBar: String ="",
     val pesaje: PesajeEntity? =null,

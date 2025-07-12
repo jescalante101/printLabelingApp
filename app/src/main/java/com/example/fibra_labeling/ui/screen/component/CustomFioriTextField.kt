@@ -32,7 +32,22 @@ fun CustomFioriTextField(
     OutlinedTextField(
 
         value = value,
-        onValueChange = onValueChange,
+        onValueChange = {newValue ->
+            if (isOnlyNumber) {
+                // Solo permite números, punto decimal y signo negativo al inicio
+                val filteredValue = newValue.filter { char ->
+                    char.isDigit() || char == '.' || (char == '-' && newValue.indexOf(char) == 0)
+                }
+
+                // Validación adicional para evitar múltiples puntos decimales
+                val decimalCount = filteredValue.count { it == '.' }
+                if (decimalCount <= 1) {
+                    onValueChange(filteredValue)
+                }
+            } else {
+                onValueChange(newValue)
+            }
+        },
         label = { Text(label, style = textStyle, fontWeight = fontWeight) },
         placeholder = placeholder?.let { { Text(it) } },
         modifier = modifier,
