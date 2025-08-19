@@ -15,6 +15,7 @@ import com.example.fibra_labeling.data.model.fibrafil.ZplPrintRequest
 import com.example.fibra_labeling.data.model.fibrafil.toZplMap
 import com.example.fibra_labeling.data.remote.fibrafil.FillRepository
 import com.example.fibra_labeling.data.utils.ZplTemplateMapper
+import com.example.fibra_labeling.datastore.EmpresaPrefs
 import com.example.fibra_labeling.datastore.ImpresoraPreferences
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,10 +32,16 @@ class ImpresionModelView(
     private val impresoraPrefs: ImpresoraPreferences,
     private val etiquetaDetalleRepository: EtiquetaDetalleRepository,
     private val fMaquinaRepository: FMaquinaRepository,
-    private val zplLabelDao: ZplLabelDao
+    private val zplLabelDao: ZplLabelDao,
+    private val empresaPrefs: EmpresaPrefs
 ): ViewModel() {
-
-    val labels: StateFlow<List<ZplLabel>> = zplLabelDao.getAllLabels()
+    // recuperamos la empresa,si es Fibrafil = 01 sino 02
+    val empresa = empresaPrefs.empresaId.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        "01"
+    )
+    val labels: StateFlow<List<ZplLabel>> = zplLabelDao.getAllLabels(empresa.value)
         .stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5000),
@@ -49,7 +56,7 @@ class ImpresionModelView(
             referencia = "",
             maquina = "",
             ubicacion = "",
-            codBar = ""
+            codeBar = ""
         ))
     )
     val productDetailResult: StateFlow<Result<ProductoDetalleUi>> = _productDetailResult
@@ -87,7 +94,7 @@ class ImpresionModelView(
                val maquina= fMaquinaRepository.getByCode(etiqueta.u_FIB_MachineCode.toString())
                val data=etiqueta.toProductoDetalleUi().copy(
                    maquina = maquina?.name ?:"",
-                   codBar = etiqueta.itemCode
+                   codeBar = etiqueta.itemCode
                )
                _productDetailResult.value = Result.success(data)
                _loading.value = false
@@ -139,7 +146,7 @@ class ImpresionModelView(
             val template = ZplTemplateMapper.mapCustomTemplate(
                 zplFile.toString(),
                 _productDetailResult.value.getOrNull()?.copy(
-                    codBar = lastScannedBarcode.value.toString()
+                    codeBar = lastScannedBarcode.value.toString()
                 )?.toZplMap() ?: emptyMap() ,copies)
 
 //            val codeBarValue = CodeBarRequest(codeBar,ip,puerto.toInt())

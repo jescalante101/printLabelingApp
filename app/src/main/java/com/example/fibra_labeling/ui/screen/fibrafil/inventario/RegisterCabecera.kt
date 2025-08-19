@@ -1,18 +1,18 @@
 package com.example.fibra_labeling.ui.screen.fibrafil.inventario
 
 import FioriCardConteoCompact
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -26,24 +26,23 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.fibra_labeling.R
 import com.example.fibra_labeling.data.local.entity.fibrafil.FibOincEntity
-import com.example.fibra_labeling.ui.component.CustomAppBar
-import com.example.fibra_labeling.ui.screen.component.CustomSearch
+import com.example.fibra_labeling.ui.screen.fibra_print.etiqueta.register.component.SearchBar
 import com.example.fibra_labeling.ui.screen.fibrafil.inventario.component.ConfirmSyncDialog
 import com.example.fibra_labeling.ui.screen.fibrafil.inventario.register.OncRegisterScreen
+import com.example.fibra_labeling.ui.theme.FioriBackground
 import org.koin.androidx.compose.koinViewModel
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterCabecera(
     onNavigateBack: () -> Unit,
@@ -56,15 +55,11 @@ fun RegisterCabecera(
     var showDialog by remember { mutableStateOf(false) }
 
     val oincs by viewModel.oincs.collectAsState()
-    val loading by viewModel.loading.collectAsState()  // Estado de carga (sincronización en curso)
+    val loading by viewModel.loading.collectAsState()
     val syncMessage by viewModel.syncMessage.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
 
     val snackbarHostState = remember { SnackbarHostState() }
-
-    val scope = rememberCoroutineScope()
-
-    // Confirmación de sincronización (cuando el usuario acepta)
 
     fun onConfirmSync(dto: FibOincEntity) {
         viewModel.syncEtiquetaEncabezado(dto.docEntry)
@@ -81,154 +76,108 @@ fun RegisterCabecera(
     }
     LaunchedEffect(loading) {
         if (!loading) {
-            showDialog = false // Cierra el diálogo de carga una vez que termina la sincronización
+            showDialog = false
         }
     }
 
-    Box {
-        Scaffold(
-            snackbarHost = { SnackbarHost(snackbarHostState) },
-            floatingActionButton = {
-                // Floating button para crear un nuevo registro
-                ExtendedFloatingActionButton(
-                    onClick = {
-                        showSheet = true
-                    },
-                    containerColor = Color(0xFF2C3E50),
-                ) {
-                    Text("Nuevo", color = Color.White)
-                }
-            }
-
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(it)
-                    .padding(top = 60.dp)
-            ) {
-                CustomSearch(
-                    value = searchQuery,
-
-                    onChangeValue = {
-                        text ->
-                        viewModel.updateSearchQuery(text)
-                    },
-
-                    placeholder = "Buscar",
-                    focusRequester = FocusRequester.Default,
-                    leadingIcon = {
-                        Icon(
-                            painter = painterResource(R.drawable.barcode_scan),
-                            contentDescription = "Barcode Icon",
-                        )
-                    },
-                    trailingIcon = {
-                        IconButton(
-                            onClick = {}
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_search),
-                                contentDescription = "Search",
-                            )
-                        }
-                    },
-                    isReadOnly = false,
-                    enabled = true
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-
-                LazyColumn {
-                    item { Spacer(modifier = Modifier.height(16.dp)) }
-                    item { Spacer(modifier = Modifier.height(8.dp)) }
-                    items(oincs.size) { index ->
-                        val inc = oincs[index]
-                        FioriCardConteoCompact(
-                            dto = inc.cabecera,
-                            isSyncing = loading,
-                            onClick = {
-                                viewModel.saveUserLogin(
-                                    userLogin = inc.cabecera.u_UserNameCount ?: "",
-                                    code = inc.cabecera.u_Ref ?: "",
-                                    docEntry = inc.cabecera.docEntry.toString()
-                                )
-                                onNavigateToFilEtiqueta(false)
-                            },
-
-                            onDetailsClick = {
-                                onNavigateToDetails(inc.cabecera.docEntry.toInt())
-                            },
-
-                            onSyncClick = {
-                                showDialog = true
-                                itemToSync = inc.cabecera
-                            },
-
-                            detailsEnabled = inc.detalles.isNotEmpty()
-                        )
-                    }
-                }
-            }
-
-        }
-
-        // Mostrar el modal de confirmación cuando el usuario quiere sincronizar
-        if (showDialog) {
-            ConfirmSyncDialog(
-                isVisible = showDialog,
-                onConfirm = {
-                    itemToSync?.let {
-                        onConfirmSync(it)
-                    }
-                },
-                onDismiss = { onDismissDialog() }
-            )
-        }
-
-        // **Bloqueo de pantalla durante la sincronización**:
-        if (loading) {
-
-            AlertDialog(
-                onDismissRequest = {},
-                title = { Text("Sincronización en curso") },
-                text = {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        CircularProgressIndicator(color = Color.White)
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Text("Estamos enviando los datos a SAP...")
-                    }
-                },
-                confirmButton = {}
-            )
-        }
-
-        // AppBar
-        Box(modifier = Modifier.padding(top = 32.dp)) {
-            CustomAppBar(
-                title = { Text("Toma de Inventario", color = Color.Black, style = MaterialTheme.typography.titleMedium) },
-                leadingIcon = {
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = { Text("Toma de Inventario", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold) },
+                navigationIcon = {
                     IconButton(onClick = { onNavigateBack() }) {
                         Icon(
                             painter = painterResource(R.drawable.ic_arrow_left),
                             contentDescription = "Back",
-                            tint = Color.Black
+                            tint = MaterialTheme.colorScheme.primary
                         )
                     }
                 },
-                trailingIcon = {
-                    IconButton(onClick = {}) {
+                actions = {
+                    IconButton(onClick = { showSheet = true }) {
                         Icon(
-                            imageVector = Icons.Default.AccountCircle,
-                            contentDescription = "user",
-                            tint = Color.Black
+                            painter = painterResource(R.drawable.ic_new),
+                            contentDescription = "Nuevo",
+                            tint = MaterialTheme.colorScheme.primary
                         )
                     }
                 }
             )
+        },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        containerColor = FioriBackground
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(horizontal = 16.dp)
+        ) {
+            Spacer(modifier = Modifier.height(16.dp))
+            SearchBar(
+                searchText = searchQuery,
+                onSearchTextChange = { text ->
+                    viewModel.updateSearchQuery(text)
+                },
+                modifier = Modifier.padding(bottom = 16.dp),
+                onSearch = { query -> viewModel.updateSearchQuery(query) }
+            )
+
+            LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                items(oincs.size) { index ->
+                    val inc = oincs[index]
+                    FioriCardConteoCompact(
+                        dto = inc.cabecera,
+                        isSyncing = loading,
+                        onClick = {
+                            viewModel.saveUserLogin(
+                                userLogin = inc.cabecera.u_UserNameCount ?: "",
+                                code = inc.cabecera.u_Ref ?: "",
+                                docEntry = inc.cabecera.docEntry.toString()
+                            )
+                            onNavigateToFilEtiqueta(false)
+                        },
+                        onDetailsClick = {
+                            onNavigateToDetails(inc.cabecera.docEntry.toInt())
+                        },
+                        onSyncClick = {
+                            showDialog = true
+                            itemToSync = inc.cabecera
+                        },
+                        detailsEnabled = inc.detalles.isNotEmpty()
+                    )
+                }
+            }
         }
     }
 
-    // Bottom sheet para el registro
+    if (showDialog) {
+        ConfirmSyncDialog(
+            isVisible = showDialog,
+            onConfirm = {
+                itemToSync?.let {
+                    onConfirmSync(it)
+                }
+            },
+            onDismiss = { onDismissDialog() }
+        )
+    }
+
+    if (loading) {
+        AlertDialog(
+            onDismissRequest = {},
+            title = { Text("Sincronización en curso") },
+            text = {
+                Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
+                    CircularProgressIndicator()
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text("Estamos enviando los datos a SAP...")
+                }
+            },
+            confirmButton = {}
+        )
+    }
+
     OncRegisterScreen(
         showSheet = showSheet,
         onDismiss = { showSheet = false },

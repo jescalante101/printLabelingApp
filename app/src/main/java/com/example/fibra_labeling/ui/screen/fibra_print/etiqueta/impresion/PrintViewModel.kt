@@ -34,6 +34,7 @@ class PrintViewModel(
     private val userLoginPreference: UserLoginPreference,
     private val zplLabelDao: ZplLabelDao,
     private val fillRepository: FillRepository
+
 ): ViewModel() {
     // Estado de resultado de la consulta
     private val _pesajeResult = MutableStateFlow<Result<ImobPesaje>>(

@@ -5,6 +5,7 @@ import com.example.fibra_labeling.data.local.database.AppDatabase
 import com.example.fibra_labeling.data.local.database.PrintDatabase
 import com.example.fibra_labeling.data.migration.MIGRATION_3_4
 import com.example.fibra_labeling.data.migration.MIGRATION_4_5
+import com.example.fibra_labeling.data.migration.fibrafil.MIGRATION_5_6
 import com.example.fibra_labeling.data.migration.fibrafil.roomCallbackZpl
 import com.example.fibra_labeling.data.migration.fibraprint.MIGRATION_1_2
 import com.example.fibra_labeling.data.migration.fibraprint.roomCallback
@@ -23,9 +24,11 @@ val roomModule = module {
             .fallbackToDestructiveMigrationOnDowngrade(true)
             .addMigrations(MIGRATION_3_4)
             .addMigrations(MIGRATION_4_5)
+            .addMigrations(MIGRATION_5_6)
             .addCallback(roomCallbackZpl)
             .build()
     }
+
 
     //FIBRA PRINT DATABASE
     single {

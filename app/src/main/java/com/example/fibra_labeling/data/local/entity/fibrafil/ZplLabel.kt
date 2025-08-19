@@ -23,6 +23,9 @@ data class ZplLabel(
 
     //selected
     @ColumnInfo(name = "selected")
-    val selected: Boolean = false
+    val selected: Boolean = false,
+
+    @ColumnInfo(name = "compania_id", defaultValue = "01") // Añadimos un default por seguridad
+    val companiaId: String="01"
 
 )

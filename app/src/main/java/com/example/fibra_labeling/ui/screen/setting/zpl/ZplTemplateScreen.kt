@@ -39,12 +39,14 @@ fun ZplTemplateScreen(
 
     // SAP Fiori style colors
     val background = Color(0xFFF7F7F7)
-    val sectionCard = Color.White
     val accentBlue = Color(0xFF0A6ED1)
 
 
     var showSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
+    // leemos la empresa seleccionada
+    val selectedCompany by viewModel.empresa.collectAsState()
 
     var labelToEdit by remember { mutableStateOf<ZplLabel?>(null) }
 
@@ -171,6 +173,7 @@ fun ZplTemplateScreen(
             dragHandle = { BottomSheetDefaults.DragHandle() }
         ) {
             ZplRegister(
+                company = selectedCompany,
                 label = labelToEdit, // si es null, es nuevo; si no, es editar
                 onSave = { label ->
                     if (labelToEdit == null) {

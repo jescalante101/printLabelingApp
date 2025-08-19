@@ -152,7 +152,7 @@ class IncViewModel(
                 port=puerto.toInt(),
                 zplContent = ZplTemplateMapper.mapCustomTemplate(zpl.zplFile, data?.copy(
                     maquina=maquina?.name ?:"",
-                    codBar = data.codigo
+                    codeBar = data.codigo
                 )!!.toZplMap() ,1)
             )
 

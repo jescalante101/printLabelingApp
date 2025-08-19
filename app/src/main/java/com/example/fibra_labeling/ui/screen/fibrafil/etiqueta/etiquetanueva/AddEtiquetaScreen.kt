@@ -1,5 +1,6 @@
 package com.example.fibra_labeling.ui.screen.fibrafil.etiqueta.etiquetanueva
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,8 +14,9 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalIconButton
@@ -44,6 +46,7 @@ import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.text.withStyle
@@ -52,12 +55,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.fibra_labeling.R
-import com.example.fibra_labeling.ui.component.CustomAppBar
 import com.example.fibra_labeling.ui.navigation.Screen
 import com.example.fibra_labeling.ui.screen.component.CustomTextFormField
 import com.example.fibra_labeling.ui.screen.component.FioriDropdownMaquina
 import com.example.fibra_labeling.ui.screen.fibra_print.etiqueta.register.component.FioriDropdownAlmacen
+import com.example.fibra_labeling.ui.screen.fibrafil.etiqueta.component.CopiesAndTemplateDialog
 import com.example.fibra_labeling.ui.screen.fibrafil.inventario.register.stock.ICountingScreen
+import com.example.fibra_labeling.ui.theme.FioriBackground
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -82,6 +86,11 @@ fun AddEtiquetaScreen(
 
     var showSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    var showDialogCopies by remember { mutableStateOf(false) }
+
+    val zplLabels = viewmodel.labels.collectAsState().value
+    
+    val conteoMode by viewmodel.conteoMode.collectAsState()
 
     LaunchedEffect(Unit) {
         viewmodel.onCodigoChange(itemCode)
@@ -115,7 +124,7 @@ fun AddEtiquetaScreen(
         viewmodel.eventoNavegacion.collect { destino ->
             when (destino) {
                 "printSetting" -> navController.navigate(Screen.PrintSetting.route)
-                "savedLocal"->viewmodel.printEtiqueta()
+                "savedLocal"->showDialogCopies=true
                 "successPrint" ->navController.popBackStack()
                 "savedLocalNoPrint"->{
                     snackbarHostState.showSnackbar("Etiqueta guardada localmente, ahora puede imprimir")
@@ -124,284 +133,44 @@ fun AddEtiquetaScreen(
         }
     }
 
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
 
-        if(loading){
-            CircularProgressIndicator(
-                modifier = Modifier.align(Alignment.Center)
+    CopiesAndTemplateDialog (
+        show = showDialogCopies,
+        onDismiss = { showDialogCopies = false },
+
+        onConfirm = { nroCopias,templateId ->
+            Log.e("Nro Copias",nroCopias.toString())
+            viewmodel.printEtiqueta(
+                nroCopias,templateId
             )
-        }else{
-            Scaffold(
-                floatingActionButton = {
-                    Column (
-                        horizontalAlignment = Alignment.End,
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ){
 
-                        FloatingActionButton(
-                            containerColor = Color(0xFF2C3E50),
-                            onClick =  {
-
-                                viewmodel.updateOitw(false)
-                            }
-                        ) {
-                            Row(
-                                modifier = Modifier.padding(horizontal = 16.dp),
-                                horizontalArrangement = Arrangement.Center,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    "Guardar",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = Color.White
-                                )
-                                Spacer(Modifier.width(8.dp))
-
-                                Icon(
-                                    painter = painterResource(R.drawable.ic_save),
-                                    contentDescription = "save",
-                                    tint = Color.White
-                                )
-                            }
-                        }
-                        Spacer(Modifier.height(8.dp))
-                        FloatingActionButton(
-                            containerColor = Color(0xFF2C3E50),
-                            onClick =  {
-                                viewmodel.updateOitw(true)
-                            }
-                        ) {
-                            Row(
-                                modifier = Modifier.padding(horizontal = 16.dp),
-                                horizontalArrangement = Arrangement.Center,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    "Guardar e Imprimir",
-
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = Color.White
-                                )
-                                Spacer(Modifier.width(8.dp))
-                                Icon(
-                                    painter = painterResource(R.drawable.ic_print),
-                                    contentDescription = "Print",
-                                    tint = Color.White
-                                )
-                            }
-                        }
-                    }
-                },
-                snackbarHost = { SnackbarHost(snackbarHostState) }
-            ){
-                LazyColumn (
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(it)
-                        .padding(horizontal = 24.dp, vertical = 16.dp)
-                        .nestedScroll(rememberNestedScrollInteropConnection())
-                        .imePadding()
+            showDialogCopies = false
+        },
+        templates = zplLabels,
+        selectedTemplateId = null,
+    )
+    if (loading) {
+        AlertDialog(
+            onDismissRequest = {},
+            title = { Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                Text("Guardando...", fontWeight = FontWeight.Bold) } },
+            text = {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    item {
-                        Spacer(Modifier.height(70.dp))
-                    }
-                    item{
-                        Text(
-                            buildAnnotatedString {
-                                withStyle(style= SpanStyle(color = Color.Black)) {
-                                    append("Código:")
-                                }
-                                withStyle(style= SpanStyle(color = Color.Black.copy(0.8f))) {
-                                     append(formState.codigo)
-                                }
-                            },
-                            style = MaterialTheme.typography.labelLarge,
-                        )
-                    }
-                    item {
-                        Text(
-                            buildAnnotatedString {
-                                withStyle(style= SpanStyle(color = Color.Black)) {
-                                    append("Producto:")
-                                }
-                                withStyle(style= SpanStyle(color = Color.Black.copy(0.8f))) {
-                                    append(formState.producto)
-                                }
-                            },
-                            style = MaterialTheme.typography.labelLarge,
-                        )
-                    }
-                    item {
-                        Spacer(Modifier.height(2.dp))
-                    }
-
-                    item {
-                        CustomTextFormField(
-                            label = "Lote",
-                            value = formState.lote,
-                            onValueChange = {
-//                                    lote = it
-                                    viewmodel.onLoteChange(it.toString().toUpperCase(Locale.current))
-                            },
-                            enabled = true,
-                            )
-                    }
-                    item {
-                        Spacer(Modifier.height(8.dp))
-                    }
-
-                    item {
-                        FioriDropdownAlmacen(
-                            label = "Almacén",
-                            options = almacenes,
-                            selected = formState.almacen,
-                            onSelectedChange = { viewmodel.onAlmacenChange(it) },
-                            isError = errorState.almacenError != null,
-                            supportingText = { errorState.almacenError?.let { Text(it, color = Color.Red, fontSize = 12.sp) } }
-                        )
-                    }
-                    item {
-                        Spacer(Modifier.height(8.dp))
-                    }
-
-                    // Fila 3: Ubicación, Piso, Metro Lineal, Equivalente
-                    item {
-                        CustomTextFormField(
-                            label = "Refenencia",
-                            value = formState.codigoReferencia,
-                            onValueChange = {
-                                viewmodel.onCodigoReferenciaChange(it.toString().toUpperCase(Locale.current))
-                            },
-                            enabled = true,
-                        )
-                    }
-                    item {
-                        Spacer(Modifier.height(8.dp))
-                    }
-                    item {
-
-                        FioriDropdownMaquina(
-                            label = "Máquina",
-                            options = maquinas,
-                            selected = formState.maquina,
-                            onSelectedChange = { viewmodel.onMaquinaChange(it) },
-                            onFilterChange = { text -> viewmodel.searchMaquina(text, text) },
-                            isError = errorState.maquinaError != null,
-                            supportingText = { errorState.maquinaError?.let { Text(it, color = Color.Red, fontSize = 12.sp) } }
-                        )
-
-                    }
-                    item { Spacer(Modifier.height(8.dp)) }
-                    item {
-                        CustomTextFormField(
-                            label = "Ubicacion",
-                            value = formState.ubicacion,
-                            onValueChange = {
-                                viewmodel.onUbicacionChange(it.toString().toUpperCase(Locale.current))
-                            },
-                            enabled = true,
-
-                            )
-                    }
-                    item {
-                        Spacer(modifier = Modifier.height(8.dp))
-                    }
-                    item {
-                        if(user.isNotBlank()){
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                               Row {
-                                   FilledTonalIconButton (
-                                       colors = IconButtonDefaults.iconButtonColors(
-                                           MaterialTheme.colorScheme.primary.copy(0.6f)
-                                       ),
-                                       onClick = {
-                                           //restar cantidad
-                                           val cantidad = formState.cantidad.toIntOrNull() ?: 0
-                                           if (cantidad > 0) {
-                                               viewmodel.onCantidadChange((cantidad - 1).toString())
-                                           }
-                                       }
-                                   ) {
-                                       Icon(
-                                           painter = painterResource(R.drawable.ic_minus),
-                                           contentDescription = "minus",
-
-                                       )
-                                   }
-                                   Spacer(Modifier.width(4.dp))
-                                   FilledTonalIconButton(
-                                       colors = IconButtonDefaults.iconButtonColors(
-                                           MaterialTheme.colorScheme.primary.copy(0.6f)
-                                       ),
-                                       onClick = {
-                                           //sumar cantidad
-                                           val cantidad = formState.cantidad.toIntOrNull() ?: 0
-                                           viewmodel.onCantidadChange((cantidad + 1).toString())
-                                       }
-                                   ) {
-                                       Icon(
-                                           painter = painterResource(R.drawable.ic_plus),
-                                           contentDescription = "plus",
-
-                                       )
-                                   }
-                               }
-                                Spacer(Modifier.width(8.dp))
-                                CustomTextFormField(
-                                    label = "Conteo",
-                                    value = formState.cantidad,
-                                    onValueChange = {
-                                        viewmodel.onCantidadChange(it)
-                                    },
-                                    enabled = false,
-                                    modifier = Modifier.weight(1f).clickable(
-                                        onClick = {
-                                            showSheet = true
-                                        }
-                                    ),
-                                    onlyNumbers = true
-                                )
-                                Spacer(Modifier.width(8.dp))
-                            }
-                        }
-                    }
-                    item {
-                        if (user.isNotBlank()){
-                            errorState.cantidadError?.let { Text(it, color = Color.Red, fontSize = 12.sp) }
-                        }
-                    }
+                    CircularProgressIndicator()
+                    Spacer(Modifier.height(16.dp))
                 }
-            }
-        }
+            },
+            confirmButton = {}
+        )
+    }
 
-        if (showSheet) {
-            ModalBottomSheet(
-                onDismissRequest = { showSheet = false },
-                sheetState = sheetState,
-            ) {
-                ICountingScreen(
-                    onSave = { cantidad, stock ->
-                        viewmodel.onCantidadChange(cantidad) // ← Aquí obtienes el valor cuando el usuario confirma
-                        viewmodel.onStockChange(stock.toString())
-                        showSheet = false
-                    },
-                    product = formState.producto,
-                    itemCode = formState.codigo,
-                    whsCode = formState.almacen?.whsCode ?: "CH3-RE"
-                )
-            }
-        }
-
-        Box(
-            modifier = Modifier.padding(top= 32.dp)
-        ){
-            CustomAppBar(
-                title = { Text("Nueva Etiqueta", color = Color.Black, style = MaterialTheme.typography.titleMedium ) },
-                leadingIcon = {
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                navigationIcon = {
                     IconButton(
                         onClick = {
                             onBack()
@@ -410,26 +179,244 @@ fun AddEtiquetaScreen(
                         Icon(
                             painter = painterResource(R.drawable.ic_arrow_left),
                             contentDescription = "Back",
-                            tint = Color.Black
+                            tint = MaterialTheme.colorScheme.primary
                         )
                     }
                 },
-                trailingIcon ={
-                    IconButton(
-                        onClick = {
+                title = {
+                    Text(
+                        text = "Nueva Etiqueta",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                    )
+                },
+                actions = {
+                    Row {
+                        IconButton(
+                            onClick = {
+                                viewmodel.updateOitw(false)
+                            }
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_save),
+                                contentDescription = "Save",
 
+                                )
                         }
-                    ){
-                        Icon(
-                            imageVector = Icons.Default.AccountCircle,
-                            contentDescription = "user",
-                            tint = Color.Black
-                        )
+                        IconButton(
+                            onClick = {
+                                viewmodel.updateOitw(true)
+                            }
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_print),
+                                contentDescription = "Print",
+
+                                )
+                        }
                     }
                 }
             )
-        }
+        },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        containerColor = FioriBackground
+    ) {
+        LazyColumn (
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(it)
+                .padding(horizontal = 24.dp, vertical = 16.dp)
+                .nestedScroll(rememberNestedScrollInteropConnection())
+                .imePadding()
+        ) {
+            item{
+                Text(
+                    buildAnnotatedString {
+                        withStyle(style= SpanStyle(color = Color.Black)) {
+                            append("Código:")
+                        }
+                        withStyle(style= SpanStyle(color = Color.Black.copy(0.8f))) {
+                            append(formState.codigo)
+                        }
+                    },
+                    style = MaterialTheme.typography.labelLarge,
+                )
+            }
+            item {
+                Text(
+                    buildAnnotatedString {
+                        withStyle(style= SpanStyle(color = Color.Black)) {
+                            append("Producto:")
+                        }
+                        withStyle(style= SpanStyle(color = Color.Black.copy(0.8f))) {
+                            append(formState.producto)
+                        }
+                    },
+                    style = MaterialTheme.typography.labelLarge,
+                )
+            }
+            item {
+                Spacer(Modifier.height(2.dp))
+            }
 
+            item {
+                CustomTextFormField(
+                    label = "Lote",
+                    value = formState.lote,
+                    onValueChange = {
+//                                    lote = it
+                        viewmodel.onLoteChange(it.toString().toUpperCase(Locale.current))
+                    },
+                    enabled = true,
+                )
+            }
+            item {
+                Spacer(Modifier.height(8.dp))
+            }
+
+            item {
+                FioriDropdownAlmacen(
+                    label = "Almacén",
+                    options = almacenes,
+                    selected = formState.almacen,
+                    onSelectedChange = { viewmodel.onAlmacenChange(it) },
+                    isError = errorState.almacenError != null,
+                    supportingText = { errorState.almacenError?.let { Text(it, color = Color.Red, fontSize = 12.sp) } }
+                )
+            }
+            item {
+                Spacer(Modifier.height(8.dp))
+            }
+
+            // Fila 3: Ubicación, Piso, Metro Lineal, Equivalente
+            item {
+                CustomTextFormField(
+                    label = "Refenencia",
+                    value = formState.codigoReferencia,
+                    onValueChange = {
+                        viewmodel.onCodigoReferenciaChange(it.toString().toUpperCase(Locale.current))
+                    },
+                    enabled = true,
+                )
+            }
+            item {
+                Spacer(Modifier.height(8.dp))
+            }
+            item {
+
+                FioriDropdownMaquina(
+                    label = "Máquina",
+                    options = maquinas,
+                    selected = formState.maquina,
+                    onSelectedChange = { viewmodel.onMaquinaChange(it) },
+                    onFilterChange = { text -> viewmodel.searchMaquina(text, text) },
+                    isError = errorState.maquinaError != null,
+                    supportingText = { errorState.maquinaError?.let { Text(it, color = Color.Red, fontSize = 12.sp) } }
+                )
+
+            }
+            item { Spacer(Modifier.height(8.dp)) }
+            item {
+                CustomTextFormField(
+                    label = "Ubicacion",
+                    value = formState.ubicacion,
+                    onValueChange = {
+                        viewmodel.onUbicacionChange(it.toString().toUpperCase(Locale.current))
+                    },
+                    enabled = true,
+
+                    )
+            }
+            item {
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+            item {
+                if(user.isNotBlank()){
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Row {
+                            FilledTonalIconButton (
+                                colors = IconButtonDefaults.iconButtonColors(
+                                    MaterialTheme.colorScheme.primary.copy(0.6f)
+                                ),
+                                onClick = {
+                                    //restar cantidad
+                                    val cantidad = formState.cantidad.toIntOrNull() ?: 0
+                                    if (cantidad > 0) {
+                                        viewmodel.onCantidadChange((cantidad - 1).toString())
+                                    }
+                                }
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_minus),
+                                    contentDescription = "minus",
+
+                                    )
+                            }
+                            Spacer(Modifier.width(4.dp))
+                            FilledTonalIconButton(
+                                colors = IconButtonDefaults.iconButtonColors(
+                                    MaterialTheme.colorScheme.primary.copy(0.6f)
+                                ),
+                                onClick = {
+                                    //sumar cantidad
+                                    val cantidad = formState.cantidad.toIntOrNull() ?: 0
+                                    viewmodel.onCantidadChange((cantidad + 1).toString())
+                                }
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_plus),
+                                    contentDescription = "plus",
+
+                                    )
+                            }
+                        }
+                        Spacer(Modifier.width(8.dp))
+                        CustomTextFormField(
+                            label = "Conteo",
+                            value = formState.cantidad,
+                            onValueChange = {
+                                viewmodel.onCantidadChange(it)
+                            },
+                            enabled = !conteoMode,
+                            modifier = Modifier.weight(1f).clickable(
+                                onClick = {
+                                    if (conteoMode) {
+                                        showSheet = true
+                                    }
+                                }
+                            ),
+                            onlyNumbers = true
+                        )
+                        Spacer(Modifier.width(8.dp))
+                    }
+                }
+            }
+            item {
+                if (user.isNotBlank()){
+                    errorState.cantidadError?.let { Text(it, color = Color.Red, fontSize = 12.sp) }
+                }
+            }
+        }
+    }
+
+    if (showSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showSheet = false },
+            sheetState = sheetState,
+        ) {
+            ICountingScreen(
+                onSave = { cantidad, stock ->
+                    viewmodel.onCantidadChange(cantidad) // ← Aquí obtienes el valor cuando el usuario confirma
+                    viewmodel.onStockChange(stock.toString())
+                    showSheet = false
+                },
+                product = formState.producto,
+                itemCode = formState.codigo,
+                whsCode = formState.almacen?.whsCode ?: "CH3-RE"
+            )
+        }
     }
 }
 

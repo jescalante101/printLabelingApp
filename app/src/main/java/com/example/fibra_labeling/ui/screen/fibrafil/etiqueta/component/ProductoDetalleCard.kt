@@ -85,7 +85,7 @@ fun PreviewProductoDetalleCard() {
             lote = "L20240612",
             referencia = "REF-ABC-01",
             maquina = "Cortadora A",
-            codBar = "1234567890123",
+            codeBar = "1234567890123",
             ubicacion = "Estante A"
         )
     )

@@ -19,6 +19,7 @@ import com.example.fibra_labeling.data.local.entity.fibrafil.ZplLabel
 @Composable
 fun ZplRegister(
     label: ZplLabel? = null,
+    company: String ,
     onSave: (ZplLabel) -> Unit,
     onCancel: () -> Unit
 ) {
@@ -175,7 +176,8 @@ fun ZplRegister(
                                         codeName = codeName.trim(),
                                         name = name.trim(),
                                         description = description.trim(),
-                                        zplFile = zplFile.trim()
+                                        zplFile = zplFile.trim(),
+                                        companiaId = company ?: ""
                                     )
                                 )
                             },
@@ -202,7 +204,8 @@ fun ZplRegister(
 fun PreviewREgister(){
     ZplRegister(
         onSave = {},
-        onCancel = {}
+        onCancel = {},
+        company = "1"
     )
 
 }

@@ -1,3 +1,4 @@
+
 package com.example.fibra_labeling.ui.screen.fibrafil.inventario.details
 
 

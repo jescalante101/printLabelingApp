@@ -90,6 +90,7 @@ fun AppNavHost(navController: NavHostController = rememberNavController(), start
                 navController = navController
             )
         }
+
         composable(
             Screen.Print.route,
             enterTransition = {

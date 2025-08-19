@@ -12,8 +12,8 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ZplLabelDao {
 
-    @Query("SELECT * FROM zpl_labels ORDER BY name ASC")
-    fun getAllLabels(): Flow<List<ZplLabel>>
+    @Query("SELECT * FROM zpl_labels WHERE compania_id= :idCompany ORDER BY name ASC")
+    fun getAllLabels(idCompany:String): Flow<List<ZplLabel>>
 
     @Query("SELECT * FROM zpl_labels WHERE id = :id")
     suspend fun getLabelById(id: Long): ZplLabel?

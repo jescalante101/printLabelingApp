@@ -42,14 +42,14 @@ val viewModelModule= module {
 
 
     viewModel {
-        PrinterSettingScreenViewModel(get(),get(),get())
+        PrinterSettingScreenViewModel(get(),get(),get(),get())
     }
 
     viewModel{
-        ImpresionModelView(get(),get(),get(),get(),get())
+        ImpresionModelView(get(),get(),get(),get(),get(),get())
     }
     viewModel{
-        FillEtiquetaViewModel(get(),get(),get(),get(),get(),get(),get(),get())
+        FillEtiquetaViewModel(get(),get(),get(),get(),get(),get(),get(),get(),get(),get())
     }
     viewModel{
         OincRegisterViewModel(get(),get())
@@ -66,7 +66,7 @@ val viewModelModule= module {
     }
 
     viewModel{
-        ZplTemplateViewModel(get())
+        ZplTemplateViewModel(get(),get())
     }
 
     viewModel{

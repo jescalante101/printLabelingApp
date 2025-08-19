@@ -12,15 +12,21 @@ class EmpresaPrefs(private val dataStore: DataStore<Preferences>) {
     companion object {
         val EMPRESA_KEY = stringPreferencesKey("empresa_seleccionada")
         val SyncCompletedKey = booleanPreferencesKey("sync_completed")
+
+        val EMPRESA_ID_KEY = stringPreferencesKey("empresa_id")
     }
 
     val empresaSeleccionada: Flow<String> = dataStore.data.map { it[EMPRESA_KEY] ?: "" }
+    val empresaId: Flow<String> = dataStore.data.map { it[EMPRESA_ID_KEY] ?: "" }
     val syncCompleted: Flow<Boolean> = dataStore.data.map { it[SyncCompletedKey] ?: false }
 
 
     suspend fun guardarEmpresa(empresa: String) {
+        //SI LA EMPRESA ES Fibrafil empresa_id=01
+        val empresaId = if (empresa == "Fibrafil") "01" else "02"
         dataStore.edit { prefs ->
             prefs[EMPRESA_KEY] = empresa
+            prefs[EMPRESA_ID_KEY] = empresaId
         }
     }
     suspend fun setSyncCompleted(completed: Boolean) {
@@ -28,9 +34,5 @@ class EmpresaPrefs(private val dataStore: DataStore<Preferences>) {
             prefs[SyncCompletedKey] = completed
         }
     }
-
-
-
-
 
 }

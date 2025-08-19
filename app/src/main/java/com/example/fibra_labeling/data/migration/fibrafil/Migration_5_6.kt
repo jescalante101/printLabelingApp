@@ -1,59 +1,82 @@
 package com.example.fibra_labeling.data.migration.fibrafil
 
 import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+
+
+
+val MIGRATION_5_6 = object : Migration(5, 6) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        // 1. Añadimos la nueva columna a la tabla existente.
+        // La definimos como TEXT, NOT NULL y con un valor por defecto para las filas existentes.
+        db.execSQL("""
+            ALTER TABLE `zpl_labels` 
+            ADD COLUMN `compania_id` TEXT NOT NULL DEFAULT '01'
+        """.trimIndent())
+
+        // 2. Actualizamos las filas existentes que fueron insertadas en la MIGRATION_4_5.
+        // Estas pertenecen a la compañía '01'.
+        db.execSQL("""
+            UPDATE `zpl_labels` 
+            SET `compania_id` = '01' 
+            WHERE `code_name` IN ('ZPL50X30', 'ZPL100X60')
+        """.trimIndent())
+
+        // 3. Actualizamos la fila que se inserta con el RoomDatabase.Callback.
+        // Esta pertenece a la compañía '02'.
+        // Nota: Esto solo afectará a las bases de datos que ya tuvieran este registro.
+        db.execSQL("""
+            UPDATE `zpl_labels` 
+            SET `compania_id` = '02' 
+            WHERE `code_name` = 'FIBRAPRINT_DEFAULT'
+        """.trimIndent())
+    }
+}
+
 
 val roomCallbackZpl = object : RoomDatabase.Callback() {
     override fun onCreate(db: SupportSQLiteDatabase) {
         super.onCreate(db)
+
+        // --- INSERTS PARA LA COMPAÑÍA '01' ---
+
         db.execSQL("""
-                INSERT INTO zpl_labels (code_name, name, description, zpl_file, selected) 
-                VALUES (
-                    'FIBRAPRINT_DEFAULT',
-                    'Etiqueta Fibraprint',
-                    'Template por defecto para etiquetas de productos Fibraprint',
-                    'CT~~CD,~CC^~CT~^XA~TA000~JSN^LT0^MNW^MTT^PON^PMN^LH0,0^JMA^PR6,6~SD20^JUS^LRN^CI0^XZ
-^XA
-^MMT
-^PW748
-^LL0527
-^LS0
-^FO30,0^GFA,02560,02560,00020,:Z64:eJztlUGL00AUx2cmKYmhTJND2YNxI3sqPYjegqLNQr1vYXsT3LuXLoh4UDpuUZc9eBA/QI9lPkHJKb24R1cQ9Gb8AtKDwh7Sjm8SFzIzvQkLCz4KSf/8ePPe+/MmCP2PWgwTQyKc6xJ+LESmi5zzqSY5QohC0zzg9IQRcELTuilPOVO1seSWxrH6wY7AEL6iEaMJ4Nam5m3gIr0HiLtzUxuvhjKSutblRoFYVKE0wv+dO69pJK1iVtMc8VuWN653Q6pMnspl5UPlWPnYwOFNXH2KWwL5EArnpcg9OTkmqZJPGrzUzpUTnCr5wN6SW6mcnIrinlPIyeRqvhmaGf0WUJqvukzmaL6Bk1aoHN+ZwqNb56zSMixUTg6a8DqHZROmv1PP9Pcs0rk0ZR74W+dgepnk8rrW5UzmYyrHJJdpXFfnotIQdTG90hB1SbZKbqVo0pCUq0vSKCT3S9HADmN/8Qtp3JnKdZBeHkIhNu8NOWpjhx3zHpIrMt3AJWY+A0M4MKQrFkO7nbQTG+839m3bbu9JTdBW3sspWlsFpbQn7xMswqjoLSMs3ooI4htoFqNuHMfX8WRCaYtaTHJZGIbPRxFenDo0+mhlFUfj+PY9NnkD3LuKg3zL+8vDxdfT79GNT1hq1rrZmvfyO6/E5Jw2f1bcF8j3EjjhPKLhs4t8rhsfPFkwQmnzVsUx4OLR+HPmRNvhuMrHaAj15T+YBdyDi/qiIh7lh5nj0HC7zEcY9AvcASOENv/2gfx24gfJAGF4hb+XFLgxHPSf9nf7e4HdfogH8uNF4OfuINc9gle3S0ouCD70h6+H7SCwgwEOSq6DjtBNNnXfM4audcix5Gx/tw/OokFg+43A3rusRq5a/AEzTEgX:8162
-^FT165,73^A0N,56,55^FH\^FDFIBRAPRINT^FS
-^FT56,176^A0N,23,24^FH\^FDProveedor^FS
-^FT56,135^A0N,23,24^FH\^FDCodigo^FS
-^FT56,260^A0N,23,24^FH\^FDAlmacen^FS
-^FT56,219^A0N,23,24^FH\^FDProducto^FS
-^FT56,340^A0N,23,24^FH\^FDMetros Lineal^FS
-^FT320,337^A0N,23,24^FH\^FDPeso Neto(Kg)^FS
-^FT56,298^A0N,23,24^FH\^FDUbicacien^FS
-^FT470,128^A0N,23,24^FH\^FDFecha ^FS
-^FT194,218^A0N,28,28^FH\^FD:^FS
-^FT194,257^A0N,28,28^FH\^FD:^FS
-^FT194,136^A0N,28,28^FH\^FD:^FS
-^FT194,173^A0N,28,28^FH\^FD:^FS
-^FT194,342^A0N,28,28^FH\^FD:^FS
-^FT194,299^A0N,28,28^FH\^FD:^FS
-^FT449,336^A0N,28,28^FH\^FD:^FS
-^FT570,129^A0N,28,28^FH\^FD:^FS
-^FT214,176^A0N,23,24^FH\^FD{Proveedor}^FS
-^FT214,135^A0N,23,24^FH\^FD{ItemCode}^FS
-^FT214,260^A0N,23,24^FH\^FD{Almacen}^FS
-^FB330,2,0,L,0^FT214,219^A0N,20,19^FH\^FD{name}^FS
-^FT214,340^A0N,23,24^FH\^FD{MetroLineal}^FS
-^FT462,337^A0N,23,24^FH\^FD{Peso}^FS
-^FT214,298^A0N,23,24^FH\^FD{Ubicacion}^FS
-^FT585,128^A0N,23,24^FH\^FD{CreateDate}^FS
-^BY2,2,70^FT66,425^BCN,,Y,N^FD>:{CodeBar}^FS
-^FT470,58^A0N,25,24^FH\^FDLote^FS
-^FT520,58^A0N,25,24^FH\^FD:^FS
-^FT535,58^A0N,25,24^FH\^FD{Lote}^FS
-^PQ1,0,1,Y^XZ',
-                    1
-                )
-            """.trimIndent())
+            INSERT INTO zpl_labels (code_name, name, description, zpl_file, selected, compania_id) 
+            VALUES (
+                'ZPL50X30',
+                'ETIQUEA 50X30',
+                'Template ZPL inicial con placeholders para producto, ubicación y código de barras.',
+                '^XA^CI28^MMT^PW400^LL240^LS0^FO5,5^FB390,2,0,C,0^A0N,18,18^FD{productName}^FS^FO5,45^A0N,13,13^FDUbicación:^FS^FO80,45^A0N,16,16^FD{ubicacion}^FS^FO5,75^GB390,2,2^FS^FO40,85^BY2,3,50^BCN,60,Y,N,N^FD{codebar}^FS^PQ1,0,1,Y^XZ',
+                1,
+                '01'
+            )
+        """.trimIndent())
 
-        // inser into
+        db.execSQL("""
+            INSERT INTO zpl_labels (code_name, name, description, zpl_file, selected, compania_id) 
+            VALUES (
+                'ZPL100X60',
+                'ETIQUETA LARGA',
+                'Etiqueta con imagen, varios campos y código de barras. Incluye placeholders.',
+                '^XA^CI28^MMT^PW800^LL480^LS0^FO680,60^GFA,397,784,14,:Z64:eJyNkbFqwzAQhu8UCsUF0UHeQ6eiwQ/gSRqyy2C/j8mUxxDuIjx0Dp36KKaTyeBn6EmyE5li0xsOTj8f3x3CSisFvhBegU0/wxCm4pMDNlrHLBcCWN9ZGybZZ4AK0YTJiBzYAG3kxmfeIkGRM0CcZbaz2VGyr3PgdGVE1WDjuZEN08hvUzfNvqbOq5OqyXfoP6yTL0Q7mYXMm1AF3432LHjbD2PhfagUEY0xIvpsSTZ7LaOPXqmF7Jt5ghr1JXvSauHIdDhHH2V1HTl/X9iTTYtPn4zA+u7rrAQXfI/y3KO8L81EMjm24oC4y8XNHPCWPuaeEXd8m6cr/OH+5XuXKQdpRB8P21m5nbm9++TOnv6+JEu53ftg5Vtxbp/b9HnuF+0baks=:107C^FO60,70^FB590,2,0,L,0^A0N,28,28^FD{productName}^FS^FO60,135^A0N,22,22^FDCódigo:^FS^FO200,135^A0N,22,22^FD{codigo}^FS^FO60,165^A0N,22,22^FDUbicación:^FS^FO200,165^A0N,22,22^FD{ubicacion}^FS^FO60,195^A0N,22,22^FDReferencia:^FS^FO200,195^A0N,22,22^FD{referencia}^FS^FO60,225^A0N,22,22^FDMáquina:^FS^FO200,225^A0N,22,22^FD{maquina}^FS^FO60,255^A0N,22,22^FDLote:^FS^FO200,255^A0N,22,22^FD{lote}^FS^FO60,285^GB680,2,2^FS^FO200,305^BY3,3,80^BCN,100,Y,N,N^FD{codebar}^FS^PQ1,0,1,Y^XZ',
+                0,
+                '01'
+            )
+        """.trimIndent())
 
+        // --- INSERT PARA LA COMPAÑÍA '02' ---
+
+        db.execSQL("""
+            INSERT INTO zpl_labels (code_name, name, description, zpl_file, selected, compania_id) 
+            VALUES (
+                'FIBRAPRINT_DEFAULT',
+                'Etiqueta Fibraprint',
+                'Template por defecto para etiquetas de productos Fibraprint',
+                'CT~~CD,~CC^~CT~^XA~TA000~JSN^LT0^MNW^MTT^PON^PMN^LH0,0^JMA^PR6,6~SD20^JUS^LRN^CI0^XZ... (tu código ZPL largo aquí) ...^PQ1,0,1,Y^XZ',
+                1,
+                '02'
+            )
+        """.trimIndent())
     }
 }

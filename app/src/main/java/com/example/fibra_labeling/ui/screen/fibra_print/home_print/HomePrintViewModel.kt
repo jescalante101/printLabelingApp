@@ -125,7 +125,13 @@ class HomePrintViewModel(
     }
 
     fun vericarConfiguracion() = viewModelScope.launch {
-        dao.getAllLabels()
+        //recuperamos empresa seleccionada, si es Fibrafil =01 sino 02
+        val empresa = empresaPrefs.empresaId.firstOrNull() ?: ""
+        if(empresa.isEmpty()){
+            return@launch
+        }
+
+        dao.getAllLabels(empresa)
             .catch {
                 _configState.value = false
             }

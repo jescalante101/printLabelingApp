@@ -19,7 +19,7 @@ data class ProductoDetalleUi(
     @SerialName("u_FIB_BinLocation")
     val ubicacion: String?,
     @SerialName("codeBars")
-    val codBar: String,
+    val codeBar: String,
     @SerializedName("whsCode")
     val whsCode: String="CH3-RE"
 )
@@ -31,5 +31,5 @@ fun ProductoDetalleUi.toZplMap(): Map<String, String> = mapOf(
     "referencia" to (referencia ?: ""),
     "maquina" to (maquina ?: ""),
     "lote" to (lote ?: ""),
-    "codebar" to codBar
+    "codebar" to codeBar
 )

@@ -22,6 +22,7 @@ import com.example.fibra_labeling.data.local.entity.fibrafil.FilUserEntity
 import com.example.fibra_labeling.data.local.entity.fibrafil.ZplLabel
 import com.example.fibra_labeling.data.migration.MIGRATION_3_4
 import com.example.fibra_labeling.data.migration.MIGRATION_4_5
+import com.example.fibra_labeling.data.migration.fibrafil.MIGRATION_5_6
 import com.example.fibra_labeling.data.migration.fibrafil.roomCallbackZpl
 
 @Database(
@@ -33,7 +34,7 @@ import com.example.fibra_labeling.data.migration.fibrafil.roomCallbackZpl
         FibOITMEntity::class,
         ZplLabel::class
     ],
-    version = 5,//TODO: incrementar la version a  5 para la migracion de la base de datos
+    version = 6,//TODO: incrementar la version a  5 para la migracion de la base de datos
     exportSchema = false
 )
 abstract class AppDatabase: RoomDatabase()  {
@@ -61,6 +62,7 @@ abstract class AppDatabase: RoomDatabase()  {
                     .fallbackToDestructiveMigrationOnDowngrade(true)
                     .addMigrations(MIGRATION_3_4)
                     .addMigrations(MIGRATION_4_5)
+                    .addMigrations(MIGRATION_5_6)
                     .addCallback(roomCallbackZpl)
                     .build().also { INSTANCE = it }
             }

@@ -13,7 +13,7 @@ fun ProductoDetalleUi.toEtiquetaDetalleEntity(
     u_FIB_Ref2 = referencia,
     u_FIB_MachineCode = maquina,
     u_FIB_BinLocation = ubicacion,
-    codeBars = codBar,
+    codeBars = codeBar,
     whsCode = whsCode,
     Cantidad = cantidad,
     isSynced = isSynced
@@ -26,6 +26,6 @@ fun EtiquetaDetalleEntity.toProductoDetalleUi(): ProductoDetalleUi = ProductoDet
     referencia = u_FIB_Ref2 ?: "",
     maquina = u_FIB_MachineCode ?: "",
     ubicacion = u_FIB_BinLocation ?: "",
-    codBar = codeBars,
+    codeBar = codeBars,
     whsCode = whsCode,
 )

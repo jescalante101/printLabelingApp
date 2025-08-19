@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.fibra_labeling.data.local.dao.fibrafil.ZplLabelDao
 import com.example.fibra_labeling.data.local.entity.fibrafil.ZplLabel
 import com.example.fibra_labeling.data.remote.SettingRepository
+import com.example.fibra_labeling.datastore.EmpresaPrefs
 import com.example.fibra_labeling.datastore.ImpresoraPreferences
 import com.example.fibra_labeling.ui.screen.setting.printer.form.PrintFormErrorState
 import com.example.fibra_labeling.ui.screen.setting.printer.form.PrintFormState
@@ -23,7 +24,8 @@ import kotlinx.coroutines.launch
 class PrinterSettingScreenViewModel(
     private val impresoraPreferences: ImpresoraPreferences,
     private val settingRepository: SettingRepository,
-    private val zplLabelDao: ZplLabelDao
+    private val zplLabelDao: ZplLabelDao,
+    private val empresaPrefs: EmpresaPrefs
 ) : ViewModel() {
     var formState by mutableStateOf(PrintFormState())
         private set
@@ -46,7 +48,10 @@ class PrinterSettingScreenViewModel(
         }
     }
 
-    val zplLabels: StateFlow<List<ZplLabel>> = zplLabelDao.getAllLabels()
+    val empresaName: StateFlow<String> = empresaPrefs.empresaId
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "")
+
+    val zplLabels: StateFlow<List<ZplLabel>> = zplLabelDao.getAllLabels(empresaName.value)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     var selectedLabelId by mutableStateOf<Long?>(null)

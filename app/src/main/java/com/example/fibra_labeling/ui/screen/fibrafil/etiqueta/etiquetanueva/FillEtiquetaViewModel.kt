@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.fibra_labeling.data.local.dao.fibrafil.FilAlmacenDao
 import com.example.fibra_labeling.data.local.dao.fibrafil.ZplLabelDao
 import com.example.fibra_labeling.data.local.entity.fibrafil.FibIncEntity
+import com.example.fibra_labeling.data.local.entity.fibrafil.ZplLabel
 import com.example.fibra_labeling.data.local.mapper.fibrafil.toApiData
 import com.example.fibra_labeling.data.local.mapper.fibrafil.toEtiquetaDetalleEntity
 import com.example.fibra_labeling.data.local.mapper.fibrafil.toResponse
@@ -23,6 +24,8 @@ import com.example.fibra_labeling.data.model.fibrafil.ZplPrintRequest
 import com.example.fibra_labeling.data.model.fibrafil.toZplMap
 import com.example.fibra_labeling.data.remote.fibrafil.FillRepository
 import com.example.fibra_labeling.data.utils.ZplTemplateMapper
+import com.example.fibra_labeling.datastore.EmpresaPrefs
+import com.example.fibra_labeling.datastore.GeneralPreference
 import com.example.fibra_labeling.datastore.ImpresoraPreferences
 import com.example.fibra_labeling.datastore.UserLoginPreference
 import com.example.fibra_labeling.ui.screen.fibrafil.etiqueta.etiquetanueva.form.AddEtiquetaFormErrorState
@@ -31,11 +34,14 @@ import com.example.fibra_labeling.ui.screen.fibrafil.etiqueta.etiquetanueva.form
 import com.example.fibra_labeling.ui.screen.fibrafil.etiqueta.etiquetanueva.form.validateAddEtiquetaForm
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlin.collections.map
 
@@ -47,11 +53,10 @@ class FillEtiquetaViewModel(
     private val userLoginPreference: UserLoginPreference,
     private val fibIncRepository: FibIncRepository,
     private val zplLabelDao: ZplLabelDao,
-    private val almacenDao: FilAlmacenDao
+    private val almacenDao: FilAlmacenDao,
+    private val empresaPrefs: EmpresaPrefs,
+    private val generalPrefs: GeneralPreference
 ): ViewModel() {
-
-
-
 
     var formState by mutableStateOf(AddEtiquetaFormState())
         private set
@@ -97,8 +102,26 @@ class FillEtiquetaViewModel(
     private val _docEntry= MutableStateFlow<String>("")
     val docEntry: MutableStateFlow<String> = _docEntry
 
+    val empresa = empresaPrefs.empresaId.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        "01"
+    )
 
+    val labels: StateFlow<List<ZplLabel>> = zplLabelDao.getAllLabels(empresa.value)
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000),
+            emptyList()
+        )
 
+    val conteoMode: StateFlow<Boolean> =flow {
+        generalPrefs.conteoUseMode.catch {
+            emit(false)
+        }.collect {
+            emit(it)
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
 
 
 
@@ -229,7 +252,7 @@ class FillEtiquetaViewModel(
                 maquina = formState.maquina?.code,
                 ubicacion = formState.ubicacion,
                 whsCode = formState.almacen?.whsCode ?: "CH3-RE",
-                codBar = "" // TODO: Generar o asignar el código de barras real aquí si lo tienes
+                codeBar = "" // TODO: Generar o asignar el código de barras real aquí si lo tienes
             )
 
             // 3. Mapear a la entidad Room
@@ -261,14 +284,14 @@ class FillEtiquetaViewModel(
         }
     }
 
-    fun printEtiqueta(){
+    fun printEtiqueta(nro: Int,zpl: String){
         viewModelScope.launch {
 
             _loading.value=true
             val ip = impresoraPrefs.impresoraIp.first() // suspende hasta obtener el valor real
             val puerto = impresoraPrefs.impresoraPuerto.first()
 
-            val zpl=zplLabelDao.getSelectedLabel()
+            //val zpl=zplLabelDao.getSelectedLabel()
 
             if (zpl==null){
                 _eventoNavegacion.emit("printSetting")
@@ -290,23 +313,16 @@ class FillEtiquetaViewModel(
                     maquina = formState.maquina?.name,
                     ubicacion = formState.ubicacion,
                     whsCode = formState.almacen?.whsCode ?: "CH3-RE",
-                    codBar = formState.codigo
+                    codeBar = formState.codigo
                 )
 
             val data= ZplPrintRequest(
                 ip=ip,
                 port=puerto.toInt(),
-                zplContent = ZplTemplateMapper.mapCustomTemplate(zpl.zplFile,details.toZplMap(),1)
+                zplContent = ZplTemplateMapper.mapCustomTemplate(zpl,details.toZplMap(),nro)
             )
 
 
-//            val data= FillPrintRequest(
-
-//                ipPrinter = ip,
-//                portPrinter = puerto.toInt(),
-//                nroCopias = 1
-//
-//            )
             repository.filCustomPrintZpl(data).catch {e->
                 Log.e("Error", e.message.toString());
                 _loading.value=false

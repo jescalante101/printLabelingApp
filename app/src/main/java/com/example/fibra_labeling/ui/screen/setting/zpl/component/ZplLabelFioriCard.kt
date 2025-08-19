@@ -113,7 +113,9 @@ fun PreviewCardZpl(){
             codeName = "bdbadbasbdsabjkd",
             name = "Nombre de la etiqueta",
             description = "Descripción de la etiqueta",
-            zplFile = "Código ZPL de la etiqueta"
+            zplFile = "Código ZPL de la etiqueta",
+            selected = false,
+            companiaId = "01"
         ),
         onEdit = {},
         onDelete = {},

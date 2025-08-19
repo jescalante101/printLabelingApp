@@ -5,15 +5,25 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fibra_labeling.data.local.entity.fibrafil.ZplLabel
 import com.example.fibra_labeling.data.local.dao.fibrafil.ZplLabelDao
+import com.example.fibra_labeling.datastore.EmpresaPrefs
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 class ZplTemplateViewModel(
-    private val dao: ZplLabelDao
+    private val dao: ZplLabelDao,
+    private val empresaPrefs: EmpresaPrefs
 ) : ViewModel() {
 
+    val empresa = empresaPrefs.empresaId
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000),
+            "01"
+        )
+
+
     // Lista de templates, observable por Compose
-    val labels: StateFlow<List<ZplLabel>> = dao.getAllLabels()
+    val labels: StateFlow<List<ZplLabel>> = dao.getAllLabels(empresa.value)
         .stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5000),
@@ -42,4 +52,7 @@ class ZplTemplateViewModel(
 
     // Para buscar por codeName
     suspend fun getLabelByCodeName(codeName: String): ZplLabel? = dao.getLabelByCodeName(codeName)
+
+    // recuperamos la empresa si es Fibrafil=01 sino 02
+
 }

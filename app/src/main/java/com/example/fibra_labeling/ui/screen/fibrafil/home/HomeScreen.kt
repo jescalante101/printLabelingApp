@@ -32,6 +32,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -44,18 +45,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.fibra_labeling.R
-import com.example.fibra_labeling.ui.component.CustomAppBar
 import com.example.fibra_labeling.ui.navigation.Screen
-import com.example.fibra_labeling.ui.screen.fibrafil.home.component.CustomBottomSheetMenu
-import com.example.fibra_labeling.ui.screen.fibrafil.home.component.CustomButtonCard
+import com.example.fibra_labeling.ui.screen.fibra_print.home_print.component.CustomPrintCard
 import com.example.fibra_labeling.ui.screen.fibrafil.home.component.FioriMenuDrawerSheet
 import com.example.fibra_labeling.ui.screen.fibrafil.home.component.HomeCategories
-import com.example.fibra_labeling.ui.util.gradientBrush
+import com.example.fibra_labeling.ui.theme.FioriBackground
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
@@ -97,6 +98,22 @@ fun HomeScreen(
     var menuExpanded by remember { mutableStateOf(false) }
 
     var selectedMenu by remember { mutableStateOf("Impresora") }
+
+    // Opción 1: Usar Configuration para detectar el tamaño de pantalla
+    val configuration = LocalConfiguration.current
+    val screenWidthDp = configuration.screenWidthDp.dp
+    val isSmallScreen = screenWidthDp < 600.dp
+
+    // Calcular el tamaño de celda basado en el ancho de pantalla
+    val cellSize = when {
+        screenWidthDp < 320.dp -> 100.dp  // Pantallas muy pequeñas
+        screenWidthDp < 400.dp -> 140.dp  // Pantallas pequeñas
+        else -> 160.dp                    // Pantallas medianas/grandes
+    }
+
+    val horizontalPadding = if (isSmallScreen) 12.dp else 20.dp
+    val verticalSpacing = if (isSmallScreen) 12.dp else 20.dp
+    val horizontalSpacing = if (isSmallScreen) 8.dp else 16.dp
 
 
     //Dialog
@@ -148,78 +165,35 @@ fun HomeScreen(
     ModalNavigationDrawer(
         drawerContent = {
             ModalDrawerSheet {
-                FioriMenuDrawerSheet (
+                FioriMenuDrawerSheet(
                     selectedMenu = selectedMenu,
                     onSelect = { selectedMenu = it },
-                   navController=navController
-                )
+                    navController = navController,
+
+                    )
             }
         },
         drawerState = drawerState
-
-    )
-    {
-
-
-        Box(
-            modifier = Modifier.fillMaxSize()
-                .background(gradientBrush)
-        ) {
-
-            Scaffold(
-                containerColor = Color.Transparent,
-                snackbarHost = { SnackbarHost(
-                    snackbarHostState,
-                    modifier = Modifier.align(alignment = Alignment.TopCenter)
-                ) },
-            ) { padding ->
-                LazyVerticalStaggeredGrid(
-                    columns = StaggeredGridCells.Adaptive(160.dp),
-                    verticalItemSpacing = 16.dp,
-                    modifier = Modifier.padding(padding).padding(top = 24.dp)
-                ) {
-                    item(span = StaggeredGridItemSpan.FullLine) {
-                        Spacer(modifier = Modifier.height(12.dp))
-                    }
-                    item(span = StaggeredGridItemSpan.FullLine) {
-                        Text(
-                            text = "Warehouse Management",
-                            style = MaterialTheme.typography.headlineMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White,
-                            modifier = Modifier.padding(16.dp)
-                        )
-                    }
-
-                    items(
-                        categories.size,
-                        key = { categories[it].name },
-                    ) { category ->
-                        CustomButtonCard (
-                            category = categories[category],
+    ) {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    navigationIcon = {
+                        IconButton(
                             onClick = {
-                                println("Clicked on ${categories[category].name}")
-                                when(categories[category].navigation){
-                                    "print" ->  navController.navigate(Screen.Print.route)
-                                    "reception" -> navController.navigate(Screen.Reception.route)
-                                    "transfer" -> navController.navigate(Screen.Transfer.route)
-                                    "inventory" -> navController.navigate(Screen.PrintOncScreen.route)
-                                    "packingList" -> navController.navigate(Screen.PackingList.route)
-                                    "production" -> navController.navigate(Screen.Production.route)
-                                    "sync"->{viewModel.getDataFromApiManual()}
+                                scope.launch {
+                                    if (drawerState.isClosed) drawerState.open()
+                                    else drawerState.close()
                                 }
-                            },
-                        )
-                    }
-
-
-                }
-            }
-
-            Box(
-                modifier = Modifier.padding(top= 32.dp)
-            ) {
-                CustomAppBar(
+                            }
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_menu),
+                                contentDescription = "Menu",
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    },
                     title = {
                         Image(
                             painter = painterResource(R.drawable.ic_logo3),
@@ -227,74 +201,91 @@ fun HomeScreen(
                             modifier = Modifier.size(150.dp)
                         )
                     },
-                    leadingIcon = {
-                        IconButton(
-                            onClick = {
-                                scope.launch {
-                                    if(drawerState.isClosed){
-                                        drawerState.open()
-                                    }else{
-                                        drawerState.close()
-                                    }
-                                }
-
-                            }
-                        ) {
+                    actions = {
+                        IconButton(onClick = { menuExpanded = true }) {
                             Icon(
-                                painter = painterResource(R.drawable.ic_menu),
-                                contentDescription = "User",
-                                tint = Color.Black
+                                painter = painterResource(R.drawable.ic_user),
+                                contentDescription = "user",
+                                tint = MaterialTheme.colorScheme.primary
                             )
                         }
-                    },
-                    trailingIcon = {
-                        Box { // Envuelve IconButton + DropdownMenu en un Box para el anchor
-                            IconButton(
+                        DropdownMenu(
+                            expanded = menuExpanded,
+                            onDismissRequest = { menuExpanded = false }
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text("Sincronizar") },
+                                trailingIcon = {
+                                    Icon(
+                                        painter = painterResource(R.drawable.sync_svgrepo_com),
+                                        contentDescription = "sync",
+                                        tint = Color.Black
+                                    )
+                                },
                                 onClick = {
-                                    menuExpanded = true
+                                    menuExpanded = false
+                                    viewModel.getDataFromApiManual()
                                 }
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Filled.AccountCircle,
-                                    contentDescription = "User",
-                                    tint = Color.Black
-                                )
-                            }
-
-                            DropdownMenu (
-                                expanded = menuExpanded,
-                                onDismissRequest = { menuExpanded = false }
-                            ) {
-
-                                DropdownMenuItem(
-                                    text = { Text("Syncronizar") },
-                                    trailingIcon = {
-                                        Icon(
-                                            painter = painterResource(R.drawable.sync_svgrepo_com),
-                                            contentDescription = "sync",
-                                            tint = Color.Black
-                                        )
-                                    },
-                                    onClick = {
-                                        menuExpanded = false
-                                        viewModel.getDataFromApiManual()
-                                    }
-                                )
-                                DropdownMenuItem(
-                                    text = { Text("Cerrar sesión") },
-                                    onClick = {
-                                        menuExpanded = false
-                                    }
-                                )
-                            }
+                            )
+                            DropdownMenuItem(
+                                text = { Text("Cerrar sesión") },
+                                onClick = {
+                                    menuExpanded = false
+                                }
+                            )
                         }
-                    },
+                    }
                 )
+            },
+            containerColor = FioriBackground,
+            snackbarHost = { SnackbarHost(snackbarHostState) }
+        ) { padding ->
+            Column(
+                modifier = Modifier
+                    .padding(padding)
+                    .fillMaxSize()
+            ) {
+                Text(
+                    text = "Warehouse Management",
+                    style = MaterialTheme.typography.headlineMedium.copy(
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    ),
+                    modifier = Modifier.padding(start = 24.dp, top = 12.dp, bottom = 16.dp).
+                    fillMaxWidth(),
+                    textAlign = TextAlign.Center
+                )
+
+                LazyVerticalStaggeredGrid(
+                    columns = StaggeredGridCells.Adaptive(cellSize),
+                    verticalItemSpacing = verticalSpacing,
+                    horizontalArrangement = Arrangement.spacedBy(horizontalSpacing),
+                    modifier = Modifier
+                        .padding(horizontal = 20.dp)
+                        .fillMaxSize()
+                ) {
+                    items(
+                        categories.size,
+                        key = { categories[it].name },
+                    ) { index ->
+                        CustomPrintCard(
+                            category = categories[index],
+                            onClick = {
+                                when (categories[index].navigation) {
+                                    "print" -> navController.navigate(Screen.FillImpresion.route)
+                                    "reception" -> navController.navigate(Screen.Reception.route)
+                                    "transfer" -> navController.navigate(Screen.Transfer.route)
+                                    "inventory" -> navController.navigate(Screen.InventarioOnc.route)
+                                    "packingList" -> navController.navigate(Screen.PackingList.route)
+                                    "production" -> navController.navigate(Screen.Production.route)
+                                    "sync" -> { viewModel.getDataFromApiManual() }
+                                }
+                            },
+                        )
+                    }
+                }
             }
         }
-
-
-
     }
 
 
