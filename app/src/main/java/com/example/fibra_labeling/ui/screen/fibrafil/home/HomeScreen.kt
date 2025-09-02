@@ -51,6 +51,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.compose.ui.res.stringResource
 import com.example.fibra_labeling.R
 import com.example.fibra_labeling.ui.navigation.Screen
 import com.example.fibra_labeling.ui.screen.fibra_print.home_print.component.CustomPrintCard
@@ -75,13 +76,13 @@ fun HomeScreen(
     navController: NavController
 ){
     val categories = listOf(
-        HomeCategories(R.drawable.ic_scan, "Generar etiquetas",Screen.Print.route),
-        HomeCategories(R.drawable.ic_report,"Recepción de compras",Screen.Reception.route),
-        HomeCategories(R.drawable.ic_transfer, "Tranferencias",Screen.Transfer.route),
-        HomeCategories(R.drawable.ic_inventory, "Toma de inventario",Screen.Inventory.route),
-        HomeCategories(R.drawable.ic_packing, "PackingList",Screen.PackingList.route),
-        HomeCategories(R.drawable.ic_report, "Recibo Producción",Screen.Production.route),
-        HomeCategories(R.drawable.sync_svgrepo_com,"Sincronizar","sync")
+        HomeCategories(R.drawable.ic_scan, stringResource(R.string.category_generate_labels), Screen.Print.route),
+        HomeCategories(R.drawable.ic_report, stringResource(R.string.category_warehouse_entry), Screen.Reception.route),
+        HomeCategories(R.drawable.ic_transfer, stringResource(R.string.category_transfers), Screen.Transfer.route),
+        HomeCategories(R.drawable.ic_inventory, stringResource(R.string.category_inventory), Screen.Inventory.route),
+        HomeCategories(R.drawable.ic_packing, stringResource(R.string.category_packing_list), Screen.PackingList.route),
+        HomeCategories(R.drawable.ic_report, stringResource(R.string.category_production_receipt), Screen.Production.route),
+        HomeCategories(R.drawable.sync_svgrepo_com, stringResource(R.string.category_sync), "sync")
     )
 
     val isSyncing by viewModel.isSyncing.collectAsState()
@@ -273,7 +274,7 @@ fun HomeScreen(
                             onClick = {
                                 when (categories[index].navigation) {
                                     "print" -> navController.navigate(Screen.FillImpresion.route)
-                                    "reception" -> navController.navigate(Screen.Reception.route)
+                                    "reception" -> navController.navigate(Screen.ReceptionMenu.route)
                                     "transfer" -> navController.navigate(Screen.Transfer.route)
                                     "inventory" -> navController.navigate(Screen.InventarioOnc.route)
                                     "packingList" -> navController.navigate(Screen.PackingList.route)

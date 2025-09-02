@@ -32,6 +32,8 @@ import com.example.fibra_labeling.ui.screen.fibrafil.inventario.details.IncScree
 import com.example.fibra_labeling.ui.screen.packing.PackingScreen
 import com.example.fibra_labeling.ui.screen.production.ProductionScreen
 import com.example.fibra_labeling.ui.screen.reception.ReceptionScreen
+import com.example.fibra_labeling.ui.screen.fibrafil.reception.ReceptionMenuScreen
+import com.example.fibra_labeling.ui.screen.fibra_print.reception.ReceptionMenuPrintScreen
 import com.example.fibra_labeling.ui.screen.setting.general.GeneralSettingScreen
 import com.example.fibra_labeling.ui.screen.setting.printer.PrintSettingScreen
 import com.example.fibra_labeling.ui.screen.setting.servidor.ServerSettingScreen
@@ -251,6 +253,24 @@ fun AppNavHost(navController: NavHostController = rememberNavController(), start
         ){
             ReceptionScreen (
                 onNavigateBack = { navController.popBackStack() },
+            )
+        }
+
+        composable(
+            Screen.ReceptionMenu.route,
+        ){
+            ReceptionMenuScreen(
+                navController = navController,
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        composable(
+            Screen.ReceptionMenuPrint.route,
+        ){
+            ReceptionMenuPrintScreen(
+                navController = navController,
+                onNavigateBack = { navController.popBackStack() }
             )
         }
 

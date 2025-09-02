@@ -1,3 +1,18 @@
 <resources>
     <string name="app_name">Fibra App</string>
+    
+    <!-- Menu Categories -->
+    <string name="category_generate_labels">Generar etiquetas</string>
+    <string name="category_warehouse_entry">Ingreso al Almacén</string>
+    <string name="category_transfers">Tranferencias</string>
+    <string name="category_inventory">Toma de inventario</string>
+    <string name="category_packing_list">PackingList</string>
+    <string name="category_production_receipt">Recibo Producción</string>
+    <string name="category_sync">Sincronizar</string>
+    
+    <!-- Reception Menu Items -->
+    <string name="reception_purchase">Recepción por Compras</string>
+    <string name="reception_warehouse_entry">Entrada al Almacén</string>
+    <string name="reception_return">Recepción por Devolución</string>
+    <string name="reception_menu_title">Menú de Recepción</string>
 </resources>
