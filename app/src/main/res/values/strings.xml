@@ -15,4 +15,49 @@
     <string name="reception_warehouse_entry">Entrada al Almacén</string>
     <string name="reception_return">Recepción por Devolución</string>
     <string name="reception_menu_title">Menú de Recepción</string>
+    
+    <!-- Welcome Screen -->
+    <string name="welcome_company_group">A grupo fibrafil</string>
+    <string name="welcome_select_company">Seleccione una empresa para gestionar el almacén</string>
+    <string name="company_fibrafil">Fibrafil</string>
+    <string name="company_fibrafil_description">Producción y almacén</string>
+    <string name="company_fibraprint">Fibraprint</string>
+    <string name="company_fibraprint_description">Diseño e impresión</string>
+    
+    <!-- Common UI -->
+    <string name="back_button">Back</string>
+    <string name="back_button_spanish">Regresar</string>
+    <string name="reception_screen_title">Reception Screen</string>
+    <string name="transfer_screen_title">Transfer Screen</string>
+    
+    <!-- Barcode Scanner -->
+    <string name="camera_permission_required">Se necesita permiso de cámara para escanear.</string>
+    <string name="no_lifecycle_owner">No hay LifecycleOwner disponible</string>
+    <string name="barcode_scan_result">barcode_scan_result</string>
+    
+    <!-- Sync Messages - FibraFil -->
+    <string name="sync_data_loading">Sincronizando datos...</string>
+    <string name="sync_data_with_server">Sincronizando datos con el servidor...</string>
+    <string name="sync_retrieving_machines">Recuperando máquinas...</string>
+    <string name="sync_retrieving_users">Recuperando usuarios...</string>
+    <string name="sync_retrieving_warehouses">Recuperando almacenes...</string>
+    <string name="sync_retrieving_articles">Recuperando artículos...</string>
+    <string name="sync_finishing">Terminando sincronización...</string>
+    <string name="sync_completed">Sincronización completada.</string>
+    <string name="sync_error_format">Error de sincronización: %s</string>
+    <string name="sync_error_network">Error en la sincronización: %s</string>
+    
+    <!-- Navigation Events -->
+    <string name="navigation_success">success</string>
+    <string name="navigation_error">error</string>
+    <string name="sync_error_code">errorSync</string>
+    
+    <!-- Content Descriptions -->
+    <string name="content_desc_back">Back</string>
+    <string name="content_desc_regresar">Regresar</string>
+    
+    <!-- Navigation Categories -->
+    <string name="nav_category_purchase">purchase</string>
+    <string name="nav_category_warehouse">warehouse</string>
+    <string name="nav_category_return">return</string>
 </resources>

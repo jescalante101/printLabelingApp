@@ -51,6 +51,11 @@ val FioriOnSurface = Color(0xFF222222)
 val FioriPrimaryContainer = FioriSecondary
 val FioriOnPrimaryContainer = FioriOnSecondary
 
+val FioriSuccessBg = Color(0xFFF0FFF4)
+val FioriSuccessText = Color(0xFF107E3E)
+val FioriWarningBg = Color(0xFFFFFBEB)
+val FioriWarningText = Color(0xFFB45309)
+
 
 
 val FioriDarkPrimary = Color(0xFF0A6ED1)

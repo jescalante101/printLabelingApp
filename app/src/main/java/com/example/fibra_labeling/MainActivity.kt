@@ -13,8 +13,8 @@ import androidx.navigation.compose.rememberNavController
 import com.example.fibra_labeling.datastore.ThemeManager
 import com.example.fibra_labeling.datastore.ThemeMode
 import com.example.fibra_labeling.ui.BarcodeViewModel
-import com.example.fibra_labeling.ui.navigation.AppNavHost
-import com.example.fibra_labeling.ui.navigation.Screen
+import com.example.fibra_labeling.core.navigation.MainAppNavHost
+import com.example.fibra_labeling.core.navigation.AppDestination
 import com.example.fibra_labeling.ui.theme.Fibra_labelingTheme
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -39,9 +39,9 @@ class MainActivity : ComponentActivity() {
             Fibra_labelingTheme(darkTheme = darkTheme) {
 
                val navController = rememberNavController()
-                AppNavHost(
+                MainAppNavHost(
                     navController = navController,
-                    startDestination = Screen.Welcome.route
+                    startDestination = AppDestination.Welcome.route
                 )
             }
         }
